@@ -16,5 +16,11 @@ POST     /admin/articles/:id/attachments   controllers.Articles.saveAttachment(i
 GET      /admin/attachments/:id            controllers.Articles.getAttachment(id)
 DELETE   /admin/attachments/:id            controllers.Articles.removeAttachment(id)
 
+POST     /api/aliments                     controllers.Aliments.create
+GET      /api/aliments                     controllers.Aliments.findAll
+GET      /api/aliments/:id                 controllers.Aliments.find(id: String)
+PUT      /api/aliments/:id                 controllers.Aliments.update(id: String)
+DELETE   /api/aliments/:id                 controllers.Aliments.delete(id: String)
+
 # Map static resources from the /public folder to the /assets URL path
 GET      /assets/*file                     controllers.Assets.at(path="/public", file)
