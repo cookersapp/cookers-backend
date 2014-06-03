@@ -2,15 +2,19 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET      /                           controllers.Articles.index
-GET      /articles/new               controllers.Articles.showCreationForm
-POST     /articles/new               controllers.Articles.create
-GET      /articles/:id               controllers.Articles.showEditForm(id)
-POST     /articles/:id               controllers.Articles.edit(id)
-DELETE   /articles/:id               controllers.Articles.delete(id)
-POST     /articles/:id/attachments   controllers.Articles.saveAttachment(id)
-GET      /attachments/:id            controllers.Articles.getAttachment(id)
-DELETE   /attachments/:id            controllers.Articles.removeAttachment(id)
+GET      /                                 controllers.Landing.index
+
+GET      /admin                            controllers.Admin.index
+
+GET      /admin/articles                   controllers.Articles.index
+GET      /admin/articles/new               controllers.Articles.showCreationForm
+POST     /admin/articles/new               controllers.Articles.create
+GET      /admin/articles/:id               controllers.Articles.showEditForm(id)
+POST     /admin/articles/:id               controllers.Articles.edit(id)
+DELETE   /admin/articles/:id               controllers.Articles.delete(id)
+POST     /admin/articles/:id/attachments   controllers.Articles.saveAttachment(id)
+GET      /admin/attachments/:id            controllers.Articles.getAttachment(id)
+DELETE   /admin/attachments/:id            controllers.Articles.removeAttachment(id)
 
 # Map static resources from the /public folder to the /assets URL path
-GET      /assets/*file               controllers.Assets.at(path="/public", file)
+GET      /assets/*file                     controllers.Assets.at(path="/public", file)

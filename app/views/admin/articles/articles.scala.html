@@ -1,8 +1,8 @@
-@(articles: List[models.Article], activeSort: String)
+@(pageTitle: String, articles: List[models.Article], activeSort: String)
 
-@main("Welcome to Play 2.0") {
+@admin.main(pageTitle, "articles") {
   <div class="row">
-    <div class="span12">
+    <div class="col-md-12">
       <h2>Available articles</h2>
       <div id="sort">
         <span>Sort by:</span>
@@ -23,7 +23,12 @@
       } else {
       <ul>
       @articles.map { article =>
-        <li><a href="@routes.Articles.showEditForm(article.id.get.stringify)">@article.title</a> <em>by @article.publisher</em> (last modified : @article.updateDate.map(u => org.joda.time.format.DateTimeFormat.forPattern("MMM dd, yyyy").print(u)).orElse(Some("n/a"))) - <a href="@routes.Articles.delete(article.id.get.stringify)" class="delete">delete</a></li>
+        <li>
+        	<a href="@routes.Articles.showEditForm(article.id.get.stringify)">@article.title</a>
+        	<em>by @article.publisher</em>
+        	(last modified : @article.updateDate.map(u => org.joda.time.format.DateTimeFormat.forPattern("MMM dd, yyyy").print(u)).orElse(Some("n/a"))) -
+        	<a href="@routes.Articles.delete(article.id.get.stringify)" class="delete">delete</a>
+        </li>
       }
       </ul>
       }

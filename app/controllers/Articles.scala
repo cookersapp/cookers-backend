@@ -18,6 +18,7 @@ import models.Article
 import models.Article._
 
 object Articles extends Controller with MongoController {
+  val pageTitle = "Articles admin"
 
   // get the collection 'articles'
   val collection = db[BSONCollection]("articles")
@@ -44,7 +45,7 @@ object Articles extends Controller with MongoController {
     val found = collection.find(query).cursor[Article]
     // build (asynchronously) a list containing all the articles
     found.collect[List]().map { articles =>
-      Ok(views.html.articles(articles, activeSort))
+      Ok(views.html.admin.articles.articles(pageTitle, articles, activeSort))
     }.recover {
       case e =>
         e.printStackTrace()
@@ -53,7 +54,7 @@ object Articles extends Controller with MongoController {
   }
 
   def showCreationForm = Action {
-    Ok(views.html.editArticle(None, Article.form, None))
+    Ok(views.html.admin.articles.editArticle(pageTitle, None, Article.form, None))
   }
 
   def showEditForm(id: String) = Action.async {
@@ -74,7 +75,7 @@ object Articles extends Controller with MongoController {
           val filesWithId = files.map { file =>
             file.id.asInstanceOf[BSONObjectID].stringify -> file
           }
-          Ok(views.html.editArticle(Some(id), Article.form.fill(article), Some(filesWithId)))
+          Ok(views.html.admin.articles.editArticle(pageTitle, Some(id), Article.form.fill(article), Some(filesWithId)))
         }
       }.getOrElse(Future(NotFound))
     } yield result
@@ -82,17 +83,16 @@ object Articles extends Controller with MongoController {
 
   def create = Action.async { implicit request =>
     Article.form.bindFromRequest.fold(
-      errors => Future.successful(Ok(views.html.editArticle(None, errors, None))),
+      errors => Future.successful(Ok(views.html.admin.articles.editArticle(pageTitle, None, errors, None))),
       // if no error, then insert the article into the 'articles' collection
       article =>
         collection.insert(article.copy(creationDate = Some(new DateTime()), updateDate = Some(new DateTime()))).map(_ =>
-          Redirect(routes.Articles.index))
-    )
+          Redirect(routes.Articles.index)))
   }
 
   def edit(id: String) = Action.async { implicit request =>
     Article.form.bindFromRequest.fold(
-      errors => Future.successful(Ok(views.html.editArticle(Some(id), errors, None))),
+      errors => Future.successful(Ok(views.html.admin.articles.editArticle(pageTitle, Some(id), errors, None))),
       article => {
         val objectId = new BSONObjectID(id)
         // create a modifier document, ie a document that contains the update operations to run onto the documents matching the query
@@ -151,7 +151,7 @@ object Articles extends Controller with MongoController {
     val file = gridFS.find(BSONDocument("_id" -> new BSONObjectID(id)))
     request.getQueryString("inline") match {
       case Some("true") => serve(gridFS, file, CONTENT_DISPOSITION_INLINE)
-      case _            => serve(gridFS, file)
+      case _ => serve(gridFS, file)
     }
   }
 
