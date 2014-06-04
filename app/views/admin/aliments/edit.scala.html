@@ -10,6 +10,7 @@
 				<fieldset>
 					<input type="hidden" name="@alimentForm("id").name" value="@alimentForm("id").value">
 					@text(alimentForm("name"), label="Name")
+					@text(alimentForm("category"), label="Category")
 					@select(alimentForm("rarity"), label="Rarity", options=rarities)
 				</fieldset>
 				<div class="form-group">
