@@ -34,14 +34,14 @@ object AlimentRarity extends Enumeration {
 
 import models.AlimentRarity._
 
-object AlimentRarityJsonFormat {
+object AlimentRarityFormat {
   implicit val enumReads: Reads[AlimentRarity] = EnumUtils.enumReads(AlimentRarity)
   implicit def enumWrites: Writes[AlimentRarity] = EnumUtils.enumWrites
 }
 
 case class AlimentCategory(name: String)
 
-object AlimentCategoryJsonFormat {
+object AlimentCategoryFormat {
   import play.api.libs.json.Json
   implicit val alimentCategoryFormat = Json.format[AlimentCategory]
   implicit object AlimentCategoryReader extends BSONDocumentReader[AlimentCategory] {
@@ -49,9 +49,9 @@ object AlimentCategoryJsonFormat {
   }
 }
 
-import models.AlimentCategoryJsonFormat._
-import models.AlimentRarityJsonFormat._
-import models.MetaJsonFormat._
+import models.AlimentCategoryFormat._
+import models.AlimentRarityFormat._
+import models.MetaFormat._
 
 case class Aliment(
   id: String,
@@ -82,7 +82,7 @@ object Aliment {
       })
 }
 
-object AlimentJsonFormat {
+object AlimentFormat {
   import play.api.libs.json.Json
   implicit val alimentFormat = Json.format[Aliment]
 }

@@ -3,7 +3,7 @@ package controllers
 import models.Aliment
 import models.AlimentRarity
 import dao.AlimentDao
-import models.AlimentJsonFormat._
+import models.AlimentFormat._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import play.api.mvc._

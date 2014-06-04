@@ -1,9 +1,9 @@
 package dao
 
 import models.Aliment
-import models.AlimentJsonFormat._
+import models.AlimentFormat._
 import models.AlimentCategory
-import models.AlimentCategoryJsonFormat._
+import models.AlimentCategoryFormat._
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json._
