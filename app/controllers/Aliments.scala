@@ -2,7 +2,7 @@ package controllers
 
 import models.Aliment
 import models.AlimentRarity
-import models.AlimentDao
+import dao.AlimentDao
 import models.AlimentJsonFormat._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
