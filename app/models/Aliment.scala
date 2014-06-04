@@ -1,5 +1,6 @@
 package models
 
+import org.joda.time.DateTime
 import scala.concurrent.Future
 import play.api.libs.functional.syntax.functionalCanBuildApplicative
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
@@ -44,11 +45,14 @@ object AlimentRarity extends Enumeration {
 }
 
 import models.AlimentRarity._
+import models.MetaJsonFormat._
 
 case class Aliment(
   id: String,
   name: String,
-  rarity: AlimentRarity)
+  rarity: AlimentRarity,
+  created: Meta,
+  updated: Meta)
 
 object Aliment {
   val form = Form(
@@ -58,9 +62,14 @@ object Aliment {
       "rarity" -> nonEmptyText) {
         (id, name, rarity) =>
           val alimentId = if (id.isEmpty()) BSONObjectID.generate.stringify else id
-          Aliment(alimentId, name, AlimentRarity.withName(rarity))
+          val meta = Meta(new DateTime(), "guest")
+          Aliment(alimentId, name, AlimentRarity.withName(rarity), meta, meta)
       } {
-        aliment => Some((aliment.id, aliment.name, aliment.rarity.toString()))
+        aliment =>
+          Some((
+            aliment.id,
+            aliment.name,
+            aliment.rarity.toString()))
       })
 }
 
@@ -74,6 +83,8 @@ object AlimentDao {
   import models.AlimentJsonFormat._
   private val COLLECTION_NAME = "aliments"
   private def collection()(implicit db: DB): JSONCollection = db.collection[JSONCollection](COLLECTION_NAME)
+  val removeId = (__ \ '$set \ 'id).json.prune
+  val removeCreated = (__ \ '$set \ 'created).json.prune
 
   def create(aliment: Aliment)(implicit db: DB): Future[LastError] = collection().insert(aliment)
 
@@ -81,7 +92,10 @@ object AlimentDao {
   def find(filter: JsObject)(implicit db: DB): Future[Set[Aliment]] = collection().find(filter).cursor[Aliment].collect[Set]()
   def findAll()(implicit db: DB): Future[Set[Aliment]] = collection().find(Json.obj()).cursor[Aliment].collect[Set]()
 
-  def update(id: String, aliment: Aliment)(implicit db: DB): Future[LastError] = collection().update(Json.obj("id" -> id), Json.obj("$set" -> aliment).transform((__ \ '$set \ 'id).json.prune).get)
+  def update(id: String, aliment: Aliment)(implicit db: DB): Future[LastError] =
+    collection().update(
+      Json.obj("id" -> id),
+      Json.obj("$set" -> aliment).transform(removeId andThen removeCreated).get)
 
   def delete(id: String)(implicit db: DB): Future[LastError] = collection().remove(Json.obj("id" -> id))
 }
