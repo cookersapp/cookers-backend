@@ -58,6 +58,7 @@ case class Aliment(
   name: String,
   category: AlimentCategory,
   rarity: AlimentRarity,
+  prices: List[Int],
   created: Meta,
   updated: Meta)
 
@@ -67,18 +68,20 @@ object Aliment {
       "id" -> text,
       "name" -> nonEmptyText,
       "category" -> nonEmptyText,
-      "rarity" -> nonEmptyText) {
-        (id, name, category, rarity) =>
+      "rarity" -> nonEmptyText,
+      "prices" -> list(number)) {
+        (id, name, category, rarity, prices) =>
           val alimentId = if (id.isEmpty()) BSONObjectID.generate.stringify else id
           val meta = Meta(new DateTime(), "guest")
-          Aliment(alimentId, name, AlimentCategory(category), AlimentRarity.withName(rarity), meta, meta)
+          Aliment(alimentId, name, AlimentCategory(category), AlimentRarity.withName(rarity), prices, meta, meta)
       } {
         aliment =>
           Some((
             aliment.id,
             aliment.name,
             aliment.category.name,
-            aliment.rarity.toString()))
+            aliment.rarity.toString(),
+            aliment.prices))
       })
 }
 

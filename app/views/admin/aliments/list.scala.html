@@ -16,6 +16,7 @@
 							<th>Name</th>
 							<th>Category</th>
 							<th>Rarity</th>
+							<th>Prices</th>
 							<th></th>
 						</tr>
 					</thead>
@@ -27,6 +28,7 @@
 								<td>@aliment.name</td>
 								<td>@aliment.category.name</td>
 								<td>@aliment.rarity</td>
+								<td>@aliment.prices.mkString(", ")</td>
 								<td>
 									<a href="@routes.Aliments.showEditForm(aliment.id)" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-pencil"></span></a>
 									@helper.form(routes.Aliments.delete(aliment.id), 'class -> "inline-form") {
