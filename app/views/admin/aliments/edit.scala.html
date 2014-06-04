@@ -1,4 +1,4 @@
-@(pageTitle: String, id: Option[String], alimentForm: Form[models.Aliment], rarities: Seq[(String, String)])
+@(pageTitle: String, id: Option[String], alimentForm: Form[models.Aliment], rarities: Seq[(String, String)], categories: Seq[(String, String)])
 
 @import helpers.bs3Tmpl._
 
@@ -10,7 +10,12 @@
 				<fieldset>
 					<input type="hidden" name="@alimentForm("id").name" value="@alimentForm("id").value">
 					@text(alimentForm("name"), label="Name")
-					@text(alimentForm("category"), label="Category")
+					<div class="form-group">
+				    	<div class="col-sm-offset-2 col-sm-10">
+				      		<button type="button" class="btn btn-default pull-right add-option-to-select" data-target="category">New category</button>
+				    	</div>
+				  	</div>
+					@select(alimentForm("category"), label="Category", options=categories)
 					@select(alimentForm("rarity"), label="Rarity", options=rarities)
 				</fieldset>
 				<div class="form-group">

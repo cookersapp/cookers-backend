@@ -13,4 +13,14 @@ $(function() {
 		e.preventDefault();
 		return false
 	});
+	
+	$('.add-option-to-select').click(function(e){
+		var selectId = $(this).attr('data-target');
+		var select = $('#'+selectId);
+		if(select.prop("tagName") === 'SELECT'){
+			var optionText = prompt('Element to add :');
+			select.append('<option value="'+optionText+'">'+optionText+'</option>');
+			select.find('option[value="'+optionText+'"]').prop('selected', true);
+		}
+	});
 });

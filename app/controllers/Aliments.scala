@@ -2,6 +2,7 @@ package controllers
 
 import models.Aliment
 import models.AlimentRarity
+import models.AlimentCategory
 import dao.AlimentDao
 import models.AlimentFormat._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,9 +15,9 @@ import reactivemongo.bson.BSONObjectID
 object Aliments extends Controller with MongoController {
   val pageTitle = "Aliments admin"
   implicit val DB = db
-  def toOptions(values: List[String]): Seq[(String, String)] = {
-    values.map(value => (value, value))
-  }
+
+  def options(values: List[String]): Seq[(String, String)] = values.map(value => (value, value))
+  def options(categories: Set[AlimentCategory]): Seq[(String, String)] = categories.map(category => (category.name, category.name)).toSeq
 
   def index = Action.async {
     AlimentDao.findAll().map { aliments =>
@@ -25,28 +26,38 @@ object Aliments extends Controller with MongoController {
   }
 
   def showCreationForm = Action.async {
-    Future.successful(Ok(views.html.admin.aliments.edit(pageTitle, None, Aliment.form, toOptions(AlimentRarity.strValues))))
+    AlimentDao.findAllCategories().map { categories =>
+      Ok(views.html.admin.aliments.edit(pageTitle, None, Aliment.form, options(AlimentRarity.strValues), options(categories)))
+    }
   }
 
   def create = Action.async { implicit request =>
     Aliment.form.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.admin.aliments.edit(pageTitle, None, formWithErrors, toOptions(AlimentRarity.strValues)))),
-      aliment => {
-        AlimentDao.create(aliment).map { lastError => Redirect(routes.Aliments.index()) }
-      })
+      formWithErrors => AlimentDao.findAllCategories().map { categories =>
+        BadRequest(views.html.admin.aliments.edit(pageTitle, None, formWithErrors, options(AlimentRarity.strValues), options(categories)))
+      },
+      aliment => AlimentDao.create(aliment).map { lastError => Redirect(routes.Aliments.index()) })
   }
 
   def showEditForm(id: String) = Action.async {
-    AlimentDao.find(id).map { mayBeAliment =>
-      mayBeAliment
-        .map { aliment => Ok(views.html.admin.aliments.edit(pageTitle, Some(id), Aliment.form.fill(aliment), toOptions(AlimentRarity.strValues))) }
-        .getOrElse(Redirect(routes.Aliments.index()))
+    val futureResults = for {
+      mayBeAliment <- AlimentDao.find(id)
+      categories <- AlimentDao.findAllCategories()
+    } yield (mayBeAliment, categories)
+
+    futureResults.map { results =>
+      results._1.map { aliment =>
+        val categories = results._2
+        Ok(views.html.admin.aliments.edit(pageTitle, Some(id), Aliment.form.fill(aliment), options(AlimentRarity.strValues), options(categories)))
+      }.getOrElse(Redirect(routes.Aliments.index()))
     }
   }
 
   def update(id: String) = Action.async { implicit request =>
     Aliment.form.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.admin.aliments.edit(pageTitle, Some(id), formWithErrors, toOptions(AlimentRarity.strValues)))),
+      formWithErrors => AlimentDao.findAllCategories().map { categories =>
+        BadRequest(views.html.admin.aliments.edit(pageTitle, Some(id), formWithErrors, options(AlimentRarity.strValues), options(categories)))
+      },
       aliment => {
         AlimentDao.update(id, aliment)
           .map { _ => Redirect(routes.Aliments.index()) }
@@ -55,7 +66,7 @@ object Aliments extends Controller with MongoController {
   }
 
   def delete(id: String) = Action.async {
-    println("remove("+id+")");
+    println("remove(" + id + ")");
     AlimentDao.delete(id)
       .map { _ => Redirect(routes.Aliments.index()) }
       .recover { case _ => InternalServerError }
