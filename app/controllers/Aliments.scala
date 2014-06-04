@@ -14,6 +14,9 @@ import reactivemongo.bson.BSONObjectID
 object Aliments extends Controller with MongoController {
   val pageTitle = "Aliments admin"
   implicit val DB = db
+  def toOptions(values: List[String]): Seq[(String, String)] = {
+    values.map(value => (value, value))
+  }
 
   def index = Action.async {
     AlimentDao.findAll().map { aliments =>
@@ -22,12 +25,12 @@ object Aliments extends Controller with MongoController {
   }
 
   def showCreationForm = Action.async {
-    Future.successful(Ok(views.html.admin.aliments.edit(pageTitle, None, Aliment.form, AlimentRarity.strValues)))
+    Future.successful(Ok(views.html.admin.aliments.edit(pageTitle, None, Aliment.form, toOptions(AlimentRarity.strValues))))
   }
 
   def create = Action.async { implicit request =>
     Aliment.form.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.admin.aliments.edit(pageTitle, None, formWithErrors, AlimentRarity.strValues))),
+      formWithErrors => Future.successful(BadRequest(views.html.admin.aliments.edit(pageTitle, None, formWithErrors, toOptions(AlimentRarity.strValues)))),
       aliment => {
         AlimentDao.create(aliment).map { lastError => Redirect(routes.Aliments.index()) }
       })
@@ -36,14 +39,14 @@ object Aliments extends Controller with MongoController {
   def showEditForm(id: String) = Action.async {
     AlimentDao.find(id).map { mayBeAliment =>
       mayBeAliment
-        .map { aliment => Ok(views.html.admin.aliments.edit(pageTitle, Some(id), Aliment.form.fill(aliment), AlimentRarity.strValues)) }
+        .map { aliment => Ok(views.html.admin.aliments.edit(pageTitle, Some(id), Aliment.form.fill(aliment), toOptions(AlimentRarity.strValues))) }
         .getOrElse(Redirect(routes.Aliments.index()))
     }
   }
 
   def update(id: String) = Action.async { implicit request =>
     Aliment.form.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.admin.aliments.edit(pageTitle, Some(id), formWithErrors, AlimentRarity.strValues))),
+      formWithErrors => Future.successful(BadRequest(views.html.admin.aliments.edit(pageTitle, Some(id), formWithErrors, toOptions(AlimentRarity.strValues)))),
       aliment => {
         AlimentDao.update(id, aliment)
           .map { _ => Redirect(routes.Aliments.index()) }

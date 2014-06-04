@@ -1,0 +1,20 @@
+@* from https://github.com/ics-software-engineering/play-example-form *@
+@(field: Field, label: String = "CHANGEME", checkboxMap: Map[String, Boolean], help:String = "")
+
+<div class="form-group @if(field.hasErrors) {has-error}">
+  <label class="col-sm-2 control-label" for="@field.id">@label</label>
+  <div class="col-sm-10" id="@field.id">
+    @for((checkboxName, isChecked) <- checkboxMap) {
+      <label class="checkbox-inline">
+        <input type="checkbox" name="@(field.name + "[]")" id="@checkboxName" value="@checkboxName" @if(isChecked) {checked}>
+        @checkboxName
+      </label>
+    }
+    <span class="help-block">@help</span>
+    @if(field.hasErrors) {
+    	<span class="help-block">@{field.errors.map { error => Messages(error.message, error.args: _*) }}</span>
+    } else {
+    	<span class="help-block">@{field.constraints.map { constraint => Messages(constraint._1, constraint._2) }}</span>
+    }
+  </div>
+</div>

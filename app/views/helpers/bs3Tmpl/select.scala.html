@@ -1,0 +1,22 @@
+@* from https://github.com/ics-software-engineering/play-example-form *@
+@(field: Field, label: String = "CHANGEME", options: Seq[(String,String)], defaultOption: String = "", help: String = "")
+
+<div class="form-group @if(field.hasErrors) {has-error}">
+  <label class="col-sm-2 control-label" for="@field.id">@label</label>
+  <div class="col-sm-10">
+    <select class="form-control" id="@field.id" name="@field.name">
+      @if(defaultOption.length > 0){
+      	<option class="blank" value="">@defaultOption</option>
+      }
+      @options.map { v =>
+      	<option value="@v._1" @(if(field.value == Some(v._1)) "selected" else "")>@v._2</option>
+      }
+    </select>
+    <span class="help-block">@help</span>
+    @if(field.hasErrors) {
+    	<span class="help-block">@{field.errors.map { error => Messages(error.message, error.args: _*) }}</span>
+    } else {
+    	<span class="help-block">@{field.constraints.map { constraint => Messages(constraint._1, constraint._2) }}</span>
+    }
+  </div>
+</div>

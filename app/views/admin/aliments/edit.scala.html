@@ -1,17 +1,16 @@
-@(pageTitle: String, id: Option[String], alimentForm: Form[models.Aliment], rarities: List[String])
+@(pageTitle: String, id: Option[String], alimentForm: Form[models.Aliment], rarities: Seq[(String, String)])
 
-@import helper._
-@implicitFieldConstructor = @{ FieldConstructor(helpers.twitterBootstrapInput.f) }
+@import helpers.bs3Tmpl._
 
 @admin.main(pageTitle, "aliments") {
 	<div class="row">
 		<div class="col-md-6">
 			<h2>@if(!id.isDefined) { Create new } else { Edit } aliment</h2>
-			@form(if(!id.isDefined) routes.Aliments.create else routes.Aliments.update(id.get)) {
+			@helper.form(if(!id.isDefined) routes.Aliments.create else routes.Aliments.update(id.get)) {
 				<fieldset>
 					<input type="hidden" name="@alimentForm("id").name" value="@alimentForm("id").value">
-					@inputText(alimentForm("name"), '_label -> "Aliment name", 'class -> "form-control")
-					@inputText(alimentForm("rarity"), '_label -> "Aliment rarity", 'class -> "form-control")
+					@text(alimentForm("name"), label="Name")
+					@select(alimentForm("rarity"), label="Rarity", options=rarities)
 				</fieldset>
 				<div class="form-group">
 		            <a href="@routes.Aliments.index()" class="btn btn-default">@if(!id.isDefined) { Cancel } else { Return }</a>
