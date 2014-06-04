@@ -18,3 +18,7 @@ h2 { margin-bottom: 20px;}
 form.form-horizontal label { width: 160px; float: left; }
 form.form-horizontal div.input { overflow: hidden; margin-bottom: 15px;}
 form.form-horizontal .help-block { font-style: italic; }
+
+.inline-form {
+	display: inline;
+}

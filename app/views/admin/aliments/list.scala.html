@@ -1,0 +1,32 @@
+@(pageTitle: String, aliments: List[models.Aliment])
+
+@admin.main(pageTitle, "aliments") {
+	<div class="row">
+		<div class="col-md-12">
+			<h2>Aliments</h2>
+			<a class="btn btn-success" href="@routes.Aliments.showCreationForm">Create</a>
+			@if(aliments.isEmpty) {
+				<p>No aliments yet.</p>
+			} else {
+				<table class="table table-striped">
+					<thead><tr><th>#</th><th>Id</th><th>Name</th><th></th></tr></thead>
+					<tbody>
+						@for((aliment, index) <- aliments.zipWithIndex) {
+							<tr>
+								<td>@{index+1}</td>
+								<td>@aliment.id</td>
+								<td>@aliment.name</td>
+								<td>
+									<a href="@routes.Aliments.showEditForm(aliment.id)" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-pencil"></span></a>
+									@helper.form(routes.Aliments.delete(aliment.id), 'class -> "inline-form") {
+					            		<button type="submit" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
+					            	}
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			}
+		</div>
+	</div>
+}

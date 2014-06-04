@@ -11,9 +11,53 @@ import play.modules.reactivemongo.MongoController
 import reactivemongo.bson.BSONObjectID
 
 object Aliments extends Controller with MongoController {
+  val pageTitle = "Aliments admin"
   implicit val DB = db
 
-  def create = Action.async(parse.json) { request =>
+  def index = Action.async {
+    AlimentDao.findAll().map { aliments =>
+      Ok(views.html.admin.aliments.list(pageTitle, aliments.toList))
+    }
+  }
+
+  def showCreationForm = Action.async {
+    Future.successful(Ok(views.html.admin.aliments.edit(pageTitle, None, Aliment.form)))
+  }
+
+  def create = Action.async { implicit request =>
+    Aliment.form.bindFromRequest.fold(
+      formWithErrors => Future.successful(BadRequest(views.html.admin.aliments.edit(pageTitle, None, formWithErrors))),
+      aliment => {
+        AlimentDao.create(aliment).map { lastError => Redirect(routes.Aliments.index()) }
+      })
+  }
+
+  def showEditForm(id: String) = Action.async {
+    AlimentDao.find(id).map { mayBeAliment =>
+      mayBeAliment
+        .map { aliment => Ok(views.html.admin.aliments.edit(pageTitle, Some(id), Aliment.form.fill(aliment))) }
+        .getOrElse(Redirect(routes.Aliments.index()))
+    }
+  }
+
+  def update(id: String) = Action.async { implicit request =>
+    Aliment.form.bindFromRequest.fold(
+      formWithErrors => Future.successful(BadRequest(views.html.admin.aliments.edit(pageTitle, Some(id), formWithErrors))),
+      aliment => {
+        AlimentDao.update(id, aliment)
+          .map { _ => Redirect(routes.Aliments.index()) }
+          .recover { case _ => InternalServerError }
+      })
+  }
+
+  def delete(id: String) = Action.async {
+    println("remove("+id+")");
+    AlimentDao.delete(id)
+      .map { _ => Redirect(routes.Aliments.index()) }
+      .recover { case _ => InternalServerError }
+  }
+
+  def apiCreate = Action.async(parse.json) { request =>
     val id = BSONObjectID.generate.stringify
     val aliment = request.body.as[JsObject] ++ Json.obj("id" -> id)
     aliment.validate[Aliment].map {
@@ -22,9 +66,9 @@ object Aliments extends Controller with MongoController {
     }.getOrElse(Future.successful(BadRequest("invalid json")))
   }
 
-  def findAll = Action.async { AlimentDao.findAll().map { aliments => Ok(Json.toJson(aliments)) } }
+  def apiFindAll = Action.async { AlimentDao.findAll().map { aliments => Ok(Json.toJson(aliments)) } }
 
-  def find(id: String) = Action.async {
+  def apiFind(id: String) = Action.async {
     AlimentDao.find(id).map { mayBeAliment =>
       mayBeAliment
         .map { aliment => Ok(Json.toJson(aliment)) }
@@ -32,7 +76,7 @@ object Aliments extends Controller with MongoController {
     }
   }
 
-  def update(id: String) = Action.async(parse.json) { request =>
+  def apiUpdate(id: String) = Action.async(parse.json) { request =>
     val aliment = request.body.as[JsObject]
     aliment.validate[Aliment].map {
       AlimentDao.update(id, _)
@@ -41,7 +85,7 @@ object Aliments extends Controller with MongoController {
     }.getOrElse(Future.successful(BadRequest("invalid json")))
   }
 
-  def delete(id: String) = Action.async {
+  def apiDelete(id: String) = Action.async {
     AlimentDao.delete(id)
       .map { _ => Ok(Json.obj("msg" -> s"Aliment Deleted")) }
       .recover { case _ => InternalServerError }

@@ -1,0 +1,22 @@
+@(pageTitle: String, id: Option[String], alimentForm: Form[models.Aliment])
+
+@import helper._
+@implicitFieldConstructor = @{ FieldConstructor(helpers.twitterBootstrapInput.f) }
+
+@admin.main(pageTitle, "aliments") {
+	<div class="row">
+		<div class="col-md-6">
+			<h2>@if(!id.isDefined) { Create new } else { Edit } aliment</h2>
+			@form(if(!id.isDefined) routes.Aliments.create else routes.Aliments.update(id.get)) {
+				<fieldset>
+					<input type="hidden" name="@alimentForm("id").name" value="@alimentForm("id").value">
+					@inputText(alimentForm("name"), '_label -> "Aliment name", 'class -> "form-control")
+				</fieldset>
+				<div class="form-group">
+		            <a href="@routes.Aliments.index()" class="btn btn-default">@if(!id.isDefined) { Cancel } else { Return }</a>
+		            <button type="submit" class="btn btn-primary">@if(!id.isDefined) { Create } else { Update } aliment</button>
+		        </div>
+			}
+		</div>
+	</div>
+}
