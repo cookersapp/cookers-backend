@@ -11,6 +11,7 @@
 				<fieldset>
 					<input type="hidden" name="@alimentForm("id").name" value="@alimentForm("id").value">
 					@inputText(alimentForm("name"), '_label -> "Aliment name", 'class -> "form-control")
+					@inputText(alimentForm("rarity"), '_label -> "Aliment rarity", 'class -> "form-control")
 				</fieldset>
 				<div class="form-group">
 		            <a href="@routes.Aliments.index()" class="btn btn-default">@if(!id.isDefined) { Cancel } else { Return }</a>

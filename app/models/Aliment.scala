@@ -16,18 +16,38 @@ import reactivemongo.api.DB
 import reactivemongo.bson.BSONObjectID
 import reactivemongo.core.commands.LastError
 
+/*
+ * Aliment {
+ * 	id: '538ef1434b0600340a0c7d42',
+ *  name: 'pomme',
+ *  rarity: 'common', // basic, common, rare
+ *  category: {
+ *  	id: '538ef1434b0600340a0c7d42',
+ *   	name: 'fruit'
+ *  },
+ *  prices: [
+ *  	{amount: 1.95, currency: 'euro', unit: 'kg', date: 1401880864, source: 'http://...'}
+ *  ],
+ *  created: {date: 1401880864, by: 'toto'},
+ *  updated: {date: 1401880864, by: 'toto'}
+ * }
+ */
 case class Aliment(
   id: String,
-  name: String)
+  name: String,
+  rarity: String)
 
 object Aliment {
   val form = Form(
     mapping(
       "id" -> text,
-      "name" -> nonEmptyText) {
-        (id, name) => if(id.isEmpty()){Aliment(BSONObjectID.generate.stringify, name)}else{Aliment(id, name)}
+      "name" -> nonEmptyText,
+      "rarity" -> nonEmptyText) {
+        (id, name, rarity) =>
+          val alimentId = if (id.isEmpty()) BSONObjectID.generate.stringify else id
+          Aliment(alimentId, name, rarity)
       } {
-        aliment => Some((aliment.id, aliment.name))
+        aliment => Some((aliment.id, aliment.name, aliment.rarity))
       })
 }
 
