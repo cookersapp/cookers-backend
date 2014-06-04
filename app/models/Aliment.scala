@@ -1,13 +1,13 @@
 package models
 
+import utils.EnumUtils
 import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.data.format.Formats._
 import play.api.data.validation.Constraints._
-import reactivemongo.bson.BSONObjectID
-import utils.EnumUtils
+import reactivemongo.bson._
 
 /*
  * Aliment {
@@ -44,6 +44,9 @@ case class AlimentCategory(name: String)
 object AlimentCategoryJsonFormat {
   import play.api.libs.json.Json
   implicit val alimentCategoryFormat = Json.format[AlimentCategory]
+  implicit object AlimentCategoryReader extends BSONDocumentReader[AlimentCategory] {
+    def read(doc: BSONDocument): AlimentCategory = AlimentCategory(doc.getAs[String]("name").get)
+  }
 }
 
 import models.AlimentCategoryJsonFormat._
