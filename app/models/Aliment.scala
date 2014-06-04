@@ -15,6 +15,7 @@ import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.api.DB
 import reactivemongo.bson.BSONObjectID
 import reactivemongo.core.commands.LastError
+import utils.EnumUtils
 
 /*
  * Aliment {
@@ -32,10 +33,22 @@ import reactivemongo.core.commands.LastError
  *  updated: {date: 1401880864, by: 'toto'}
  * }
  */
+
+object AlimentRarity extends Enumeration {
+  type AlimentRarity = Value
+  val basic, common, rare = Value
+  def strValues = AlimentRarity.values.toList.map(_.toString())
+
+  implicit val enumReads: Reads[AlimentRarity] = EnumUtils.enumReads(AlimentRarity)
+  implicit def enumWrites: Writes[AlimentRarity] = EnumUtils.enumWrites
+}
+
+import models.AlimentRarity._
+
 case class Aliment(
   id: String,
   name: String,
-  rarity: String)
+  rarity: AlimentRarity)
 
 object Aliment {
   val form = Form(
@@ -45,9 +58,9 @@ object Aliment {
       "rarity" -> nonEmptyText) {
         (id, name, rarity) =>
           val alimentId = if (id.isEmpty()) BSONObjectID.generate.stringify else id
-          Aliment(alimentId, name, rarity)
+          Aliment(alimentId, name, AlimentRarity.withName(rarity))
       } {
-        aliment => Some((aliment.id, aliment.name, aliment.rarity))
+        aliment => Some((aliment.id, aliment.name, aliment.rarity.toString()))
       })
 }
 

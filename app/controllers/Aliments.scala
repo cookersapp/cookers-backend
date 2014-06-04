@@ -1,6 +1,7 @@
 package controllers
 
 import models.Aliment
+import models.AlimentRarity
 import models.AlimentDao
 import models.AlimentJsonFormat._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -21,12 +22,12 @@ object Aliments extends Controller with MongoController {
   }
 
   def showCreationForm = Action.async {
-    Future.successful(Ok(views.html.admin.aliments.edit(pageTitle, None, Aliment.form)))
+    Future.successful(Ok(views.html.admin.aliments.edit(pageTitle, None, Aliment.form, AlimentRarity.strValues)))
   }
 
   def create = Action.async { implicit request =>
     Aliment.form.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.admin.aliments.edit(pageTitle, None, formWithErrors))),
+      formWithErrors => Future.successful(BadRequest(views.html.admin.aliments.edit(pageTitle, None, formWithErrors, AlimentRarity.strValues))),
       aliment => {
         AlimentDao.create(aliment).map { lastError => Redirect(routes.Aliments.index()) }
       })
@@ -35,14 +36,14 @@ object Aliments extends Controller with MongoController {
   def showEditForm(id: String) = Action.async {
     AlimentDao.find(id).map { mayBeAliment =>
       mayBeAliment
-        .map { aliment => Ok(views.html.admin.aliments.edit(pageTitle, Some(id), Aliment.form.fill(aliment))) }
+        .map { aliment => Ok(views.html.admin.aliments.edit(pageTitle, Some(id), Aliment.form.fill(aliment), AlimentRarity.strValues)) }
         .getOrElse(Redirect(routes.Aliments.index()))
     }
   }
 
   def update(id: String) = Action.async { implicit request =>
     Aliment.form.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.admin.aliments.edit(pageTitle, Some(id), formWithErrors))),
+      formWithErrors => Future.successful(BadRequest(views.html.admin.aliments.edit(pageTitle, Some(id), formWithErrors, AlimentRarity.strValues))),
       aliment => {
         AlimentDao.update(id, aliment)
           .map { _ => Redirect(routes.Aliments.index()) }
