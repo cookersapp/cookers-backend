@@ -30,7 +30,7 @@ DELETE   /api/aliments/:id                 controllers.Aliments.apiDelete(id: St
 
 GET      /samples                          controllers.Samples.index
 GET      /samples/inputtypes               controllers.SampleInputTypes.index
-GET      /samples/inputtypes/create        controllers.SampleInputTypes.create
+POST     /samples/inputtypes/create        controllers.SampleInputTypes.create
 GET      /samples/complexforms             controllers.SampleComplexForm.index
 POST     /samples/complexforms/create      controllers.SampleComplexForm.create
 

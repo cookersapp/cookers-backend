@@ -1,9 +1,9 @@
 @(field: Field, options: Seq[(String, String)], label: String = "", help: String = "", horizontal: Boolean = false, inline: Boolean = false)
 
 @fieldInput(field: Field, options: Seq[(String, String)], values: Set[String]) = {
-	@for((value, label) <- options) {
+	@for(((value, label), index) <- options.zipWithIndex) {
 		<label class="checkbox-inline">
-			<input type="checkbox" name="@field.name" id="@value" value="@value" @if(values.contains(value)) {checked}>
+			<input type="checkbox" name="@(field.name+"["+index+"]")" id="@value" value="@value" @if(values.contains(value)) {checked}>
 			@label
 		</label>
 	}

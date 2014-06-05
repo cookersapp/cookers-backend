@@ -14,7 +14,6 @@ object SampleInputTypes extends Controller {
    */
   /*
    * TODO :
-   * set values in checkboxes and multipleselect
    * rename all inputs with bs3... to avoid conflics with standards helpers
    * create generic input to allow html5 types (number, date...)
    * split inputs in layout & input to better modularize
