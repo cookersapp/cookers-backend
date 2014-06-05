@@ -1,33 +1,20 @@
-#sort {
-	font-size: 0.9em;
+/* Bootstrap integration */
+
+.form-horizontal .form-group .form-group {
+	margin-bottom: 0px;
+}
+.form-horizontal .form-inline .form-group {
+	margin-right: 0px;
+	margin-left: 0px;
 }
 
-#sort span, #sort li a, #sort li.active a {
-	padding: 2px;
-}
-
-#sort span {
-	display: block;
-	margin-right: 10px;
-	float: left;
-}
-
-a.delete { color: #CC0000; }
-h2 { margin-bottom: 20px;}
-
-form.form-horizontal label { width: 160px; float: left; }
-form.form-horizontal div.input { overflow: hidden; margin-bottom: 15px;}
-form.form-horizontal .help-block { font-style: italic; }
-
-.form-inline .form-group label.control-label.top {
-	display: block;
-}
+/* App CSS */
 
 .inline-form {
 	display: inline;
 }
 
-.price-template {
+.dom-template {
 	display: none;
 }
 

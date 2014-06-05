@@ -37,12 +37,9 @@ object SampleComplexForm extends Controller {
 
   def index = Action {
     val existingContact = Contact("Fake", "Contact", Some("Fake company"), informations = List(
-      ContactInformation(
-        "Personal", Some("fakecontact@gmail.com"), List("01.23.45.67.89", "98.76.54.32.10")),
-      ContactInformation(
-        "Professional", Some("fakecontact@company.com"), List("01.23.45.67.89")),
-      ContactInformation(
-        "Previous", Some("fakecontact@oldcompany.com"), List())))
+      ContactInformation("Personal", Some("fakecontact@gmail.com"), List("01.23.45.67.89", "98.76.54.32.10", "98.76.54.32.10")),
+      ContactInformation("Professional", Some("fakecontact@company.com"), List("01.23.45.67.89")),
+      ContactInformation("Previous", Some("fakecontact@oldcompany.com"), List())))
 
     Ok(views.html.samples.complexform(contactForm.fill(existingContact)))
   }

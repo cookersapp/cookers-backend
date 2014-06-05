@@ -6,21 +6,30 @@
 	<div class="row">
 		<div class="col-sm-offset-1 col-md-10 card-black">
 			<h2>Contact form</h2>
-			@helper.form(routes.SampleComplexForm.create) {
-				@text(contactForm("firstname"))
-				@text(contactForm("lastname"))
-				@text(contactForm("company"))
-				@helper.repeat(contactForm("informations"), min=0) { informationField =>
-					@text(informationField("label"))
-					@text(informationField("email"))
-					@helper.repeat(informationField("phones"), min=0) { phoneField =>
-						@text(phoneField)
+			@defining(true) { horizontal =>
+				@helper.form(routes.SampleComplexForm.create, 'class -> {if(horizontal) "form-horizontal" else ""}) {
+					@text(contactForm("firstname"), label="Firstname", horizontal=horizontal)
+					@text(contactForm("lastname"), label="Lastname", horizontal=horizontal)
+					@text(contactForm("company"), label="Company", horizontal=horizontal)
+					@helper.repeat(contactForm("informations"), min=0) { informationField =>
+						<div class="form-group">
+							<label class="control-label @if(horizontal){col-md-2}">Information</label>
+							@if(horizontal){<div class="col-md-10">}
+								<div class="form-inline">
+									@text(informationField("label"), horizontal=horizontal, inline=true)
+									@text(informationField("email"), horizontal=horizontal, inline=true)
+								</div>
+								@helper.repeat(informationField("phones"), min=0) { phoneField =>
+									@text(phoneField, label="Phone", horizontal=true)
+								}
+							@if(horizontal){</div>}
+						</div>
 					}
+					<div class="form-group">
+			            <a href="@routes.SampleComplexForm.index" class="btn btn-default">Cancel</a>
+			            <button type="submit" class="btn btn-primary">Update</button>
+			        </div>
 				}
-				<div class="form-group">
-		            <a href="@routes.SampleComplexForm.index" class="btn btn-default">Cancel</a>
-		            <button type="submit" class="btn btn-primary">Update</button>
-		        </div>
 			}
 		</div>
 	</div>
