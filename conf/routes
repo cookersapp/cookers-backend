@@ -28,8 +28,11 @@ GET      /api/aliments/:id                 controllers.Aliments.apiFind(id: Stri
 PUT      /api/aliments/:id                 controllers.Aliments.apiUpdate(id: String)
 DELETE   /api/aliments/:id                 controllers.Aliments.apiDelete(id: String)
 
-GET      /samples/forms                    controllers.SampleComplexForm.index
-POST     /samples/forms/create             controllers.SampleComplexForm.create
+GET      /samples                          controllers.Samples.index
+GET      /samples/inputtypes               controllers.SampleInputTypes.index
+GET      /samples/inputtypes/create        controllers.SampleInputTypes.create
+GET      /samples/complexforms             controllers.SampleComplexForm.index
+POST     /samples/complexforms/create      controllers.SampleComplexForm.create
 
 # Map static resources from the /public folder to the /assets URL path
 GET      /assets/*file                     controllers.Assets.at(path="/public", file)

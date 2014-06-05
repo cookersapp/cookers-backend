@@ -1,19 +1,40 @@
-@* from https://github.com/ics-software-engineering/play-example-form *@
-@(field: Field, label: String = "CHANGEME", optionMap: Map[String, Boolean], help: String = "")
+@(field: Field, options: Seq[(String,String)], label: String = "", placeholder: String = "", help: String = "", horizontal: Boolean = false, inline: Boolean = false)
 
-<div class="form-group @if(field.hasErrors) {has-error}">
-  <label class="col-sm-2 control-label" for="@field.id">@label</label>
-  <div class="col-sm-10">
-    <select class="form-control" id="@field.id" name="@(field.name + "[]")" multiple="multiple">
-      @for((optionName, isSelected) <- optionMap) {
-        <option id="@optionName" value="@optionName" @if(isSelected) {selected}>@optionName</option>
-      }
+@fieldInput(field: Field, options: Seq[(String, String)], values: Set[String], placeholder: String) = {
+	<select class="form-control" id="@field.id" name="@(field.name + "[]")" placeholder="@placeholder" multiple="multiple">
+		@for((value, label) <- options) {
+			<option value="@value" @if(values.contains(value)) {selected}>@label</option>
+		}
     </select>
-    <span class="help-block">@help</span>
-    @if(field.hasErrors) {
-    	<span class="help-block">@{field.errors.map { error => Messages(error.message, error.args: _*) }}</span>
-    } else {
-    	<span class="help-block">@{field.constraints.map { constraint => Messages(constraint._1, constraint._2) }}</span>
-    }
-  </div>
-</div>
+}
+@fieldHelpers(field: Field, help: String) = {
+	<span class="help-block">@help</span>
+	@if(field.hasErrors) {
+		<span class="help-block">@{field.errors.map { error => Messages(error.message, error.args: _*) }}</span>
+	} else {
+		<span class="help-block">@{field.constraints.map { constraint => Messages(constraint._1, constraint._2) }}</span>
+	}
+}
+
+
+@defining(if(label.length > 0) label else field.name) { _label =>
+	@defining(if(placeholder.length > 0) placeholder else _label ) { _placeholder =>
+		@defining(if(field.indexes.isEmpty) field.value.toSet else field.indexes.map( i => field("[%s]".format(i)).value ).flatten.toSet){ values =>
+			@if(horizontal && !inline){
+				<div class="form-group @if(field.hasErrors) {has-error}">
+					<label for="@field.id" class="control-label col-sm-2">@_label</label>
+					<div class="col-sm-10">
+						@fieldInput(field, options, values, _placeholder)
+						@fieldHelpers(field, help)
+					</div>
+				</div>
+			} else {
+				<div class="form-group @if(field.hasErrors) {has-error}">
+					<label for="@field.id" class="control-label @if(inline) {sr-only}">@_label</label>
+					@fieldInput(field, options, values, _placeholder)
+					@fieldHelpers(field, help)
+				</div>
+			}
+		}
+	}
+}

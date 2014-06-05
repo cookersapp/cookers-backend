@@ -1,6 +1,5 @@
 package controllers
 
-import scala.concurrent.Future
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
@@ -44,12 +43,12 @@ object SampleComplexForm extends Controller {
     Ok(views.html.samples.complexform(contactForm.fill(existingContact)))
   }
 
-  def create = Action.async { implicit request =>
+  def create = Action { implicit request =>
     contactForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.samples.complexform(formWithErrors))),
+      formWithErrors => BadRequest(views.html.samples.complexform(formWithErrors)),
       contact => {
         println("Create contact :\n" + contact)
-        Future.successful(Ok(views.html.samples.complexform(contactForm)))
+        Ok(views.html.samples.complexform(contactForm))
       })
   }
 }
