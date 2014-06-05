@@ -14,7 +14,6 @@ object SampleInputTypes extends Controller {
    */
   /*
    * TODO :
-   * rename all inputs with bs3... to avoid conflics with standards helpers
    * create generic input to allow html5 types (number, date...)
    * split inputs in layout & input to better modularize
    */
@@ -41,9 +40,9 @@ object SampleInputTypes extends Controller {
   val contactForm: Form[Contact] = Form(Contact.mapForm)
 
   val sexeValues: List[String] = List("Mme", "Mlle", "M.") // for radios
-  val statusValues: Seq[(String, String)] = List("Single", "Married").map(s => (s, s)).toSeq // for select
-  val languageValues: Seq[(String, String)] = List("Scala", "JavaScript", "Ruby", "Java", "Python").map(s => (s, s)).toSeq // for multiselect
-  val frameworkValues: Seq[(String, String)] = List("Play", "Struts", "Angular", "Django", "Symphony").map(s => (s, s)).toSeq // for checkboxes
+  val statusValues: List[String] = List("Single", "Married") // for select
+  val languageValues: List[String] = List("Scala", "JavaScript", "Ruby", "Java", "Python") // for multiselect
+  val frameworkValues: List[String] = List("Play", "Struts", "Angular", "Django", "Symphony") // for checkboxes
 
   def index = Action {
     val existingContact = Contact(

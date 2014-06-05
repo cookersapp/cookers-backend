@@ -1,5 +1,6 @@
-@(sampleForm: Form[SampleInputTypes.Contact], sexeValues: List[String], languageValues: Seq[(String, String)], frameworkValues: Seq[(String, String)], statusValues: Seq[(String,String)])
+@(sampleForm: Form[SampleInputTypes.Contact], sexeValues: List[String], languageValues: List[String], frameworkValues: List[String], statusValues: List[String])
 
+@import helper._
 @import helpers.bs3Tmpl._
 
 @admin.main("Sample input types", "samples") {
@@ -8,13 +9,13 @@
 			<h2>Input types</h2>
 			@defining(true) { horizontal =>
 				@helper.form(routes.SampleInputTypes.create, 'class -> {if(horizontal) "form-horizontal" else ""}) {
-					@radiobuttons(sampleForm("sexe"), sexeValues, horizontal=horizontal)
-					@text(sampleForm("mail"), horizontal=horizontal)
-					@password(sampleForm("password"), horizontal=horizontal)
-					@select(sampleForm("status"), statusValues, horizontal=horizontal)
-					@selectMultiple(sampleForm("languages"), languageValues, horizontal=horizontal)
-					@checkboxes(sampleForm("frameworks"), frameworkValues, horizontal=horizontal)
-					@textarea(sampleForm("bio"), horizontal=horizontal)
+					@bs3RadioGroup(sampleForm("sexe"), sexeValues, horizontal=horizontal)
+					@bs3Text(sampleForm("mail"), horizontal=horizontal)
+					@bs3Password(sampleForm("password"), horizontal=horizontal)
+					@bs3Select(sampleForm("status"), options(statusValues), horizontal=horizontal)
+					@bs3MultiSelect(sampleForm("languages"), options(languageValues), horizontal=horizontal)
+					@bs3CheckboxGroup(sampleForm("frameworks"), options(frameworkValues), horizontal=horizontal)
+					@bs3Textarea(sampleForm("bio"), horizontal=horizontal)
 					<div class="form-group">
 			            <a href="@routes.SampleInputTypes.index" class="btn btn-default">Cancel</a>
 			            <button type="submit" class="btn btn-primary">Update</button>
@@ -26,13 +27,13 @@
 			<h2>Input types</h2>
 			@defining(false) { horizontal =>
 				@helper.form(routes.SampleInputTypes.create, 'class -> {if(horizontal) "form-horizontal" else ""}) {
-					@radiobuttons(sampleForm("sexe"), sexeValues, horizontal=horizontal)
-					@text(sampleForm("mail"), horizontal=horizontal)
-					@password(sampleForm("password"), horizontal=horizontal)
-					@select(sampleForm("status"), statusValues, horizontal=horizontal)
-					@selectMultiple(sampleForm("languages"), languageValues, horizontal=horizontal)
-					@checkboxes(sampleForm("frameworks"), frameworkValues, horizontal=horizontal)
-					@textarea(sampleForm("bio"), horizontal=horizontal)
+					@bs3RadioGroup(sampleForm("sexe"), sexeValues, horizontal=horizontal)
+					@bs3Text(sampleForm("mail"), horizontal=horizontal)
+					@bs3Password(sampleForm("password"), horizontal=horizontal)
+					@bs3Select(sampleForm("status"), options(statusValues), horizontal=horizontal)
+					@bs3MultiSelect(sampleForm("languages"), options(languageValues), horizontal=horizontal)
+					@bs3CheckboxGroup(sampleForm("frameworks"), options(frameworkValues), horizontal=horizontal)
+					@bs3Textarea(sampleForm("bio"), horizontal=horizontal)
 					<div class="form-group">
 			            <a href="@routes.SampleInputTypes.index" class="btn btn-default">Cancel</a>
 			            <button type="submit" class="btn btn-primary">Update</button>

@@ -10,14 +10,14 @@
 			@defining(true) { horizontal =>
 				@helper.form(if(!id.isDefined) routes.Aliments.create else routes.Aliments.update(id.get)) {
 					<input type="hidden" name="@alimentForm("id").name" value="@alimentForm("id").value">
-					@text(alimentForm("name"), label="Name", horizontal=horizontal)
+					@bs3Text(alimentForm("name"), label="Name", horizontal=horizontal)
 					<div class="form-group">
 				    	<div class="col-sm-offset-2 col-sm-10">
 				      		<button type="button" class="btn btn-default pull-right add-option-to-select" data-target="category">New category</button>
 				    	</div>
 				  	</div>
-					@select(alimentForm("category"), label="Category", options=categories, horizontal=horizontal)
-					@select(alimentForm("rarity"), label="Rarity", options=rarities, horizontal=horizontal)
+					@bs3Select(alimentForm("category"), label="Category", options=categories, horizontal=horizontal)
+					@bs3Select(alimentForm("rarity"), label="Rarity", options=rarities, horizontal=horizontal)
 					<div class="form-group">
 					    <label class="col-sm-2 control-label">Prices</label>
 					    <div class="col-sm-10 form-inline price-forms">

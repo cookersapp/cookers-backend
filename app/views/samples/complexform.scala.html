@@ -8,19 +8,19 @@
 			<h2>Contact form</h2>
 			@defining(true) { horizontal =>
 				@helper.form(routes.SampleComplexForm.create, 'class -> {if(horizontal) "form-horizontal" else ""}) {
-					@text(contactForm("firstname"), label="Firstname", horizontal=horizontal)
-					@text(contactForm("lastname"), label="Lastname", horizontal=horizontal)
-					@text(contactForm("company"), label="Company", horizontal=horizontal)
+					@bs3Text(contactForm("firstname"), label="Firstname", horizontal=horizontal)
+					@bs3Text(contactForm("lastname"), label="Lastname", horizontal=horizontal)
+					@bs3Text(contactForm("company"), label="Company", horizontal=horizontal)
 					@helper.repeat(contactForm("informations"), min=0) { informationField =>
 						<div class="form-group">
 							<label class="control-label @if(horizontal){col-md-2}">Information</label>
 							@if(horizontal){<div class="col-md-10">}
 								<div class="form-inline">
-									@text(informationField("label"), horizontal=horizontal, inline=true)
-									@text(informationField("email"), horizontal=horizontal, inline=true)
+									@bs3Text(informationField("label"), horizontal=horizontal, inline=true)
+									@bs3Text(informationField("email"), horizontal=horizontal, inline=true)
 								</div>
 								@helper.repeat(informationField("phones"), min=0) { phoneField =>
-									@text(phoneField, label="Phone", horizontal=true)
+									@bs3Text(phoneField, label="Phone", horizontal=true)
 								}
 							@if(horizontal){</div>}
 						</div>
