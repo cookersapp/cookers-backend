@@ -1,0 +1,27 @@
+@(contactForm: Form[SampleComplexForm.Contact])
+
+@import helpers.bs3Tmpl._
+
+@admin.main("Sample", "forms") {
+	<div class="row">
+		<div class="col-sm-offset-1 col-md-10 card-black">
+			<h2>Contact form</h2>
+			@helper.form(routes.SampleComplexForm.create) {
+				@text(contactForm("firstname"))
+				@text(contactForm("lastname"))
+				@text(contactForm("company"))
+				@helper.repeat(contactForm("informations"), min=0) { informationField =>
+					@text(informationField("label"))
+					@text(informationField("email"))
+					@helper.repeat(informationField("phones"), min=0) { phoneField =>
+						@text(phoneField)
+					}
+				}
+				<div class="form-group">
+		            <a href="@routes.SampleComplexForm.index" class="btn btn-default">Cancel</a>
+		            <button type="submit" class="btn btn-primary">Update</button>
+		        </div>
+			}
+		</div>
+	</div>
+}

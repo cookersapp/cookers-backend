@@ -25,16 +25,19 @@ $(function() {
 	});
 	
 	$('.price-forms').on('click', '.price-add', function(e){
+		var fieldName = 'price';
 		var $this = $(this);
 		var $root = $this.parents('.form-inline');
-		var $template = $root.find('.price-template').clone();
-		var cpt = parseInt($this.attr('data-price-cpt'));
-		if(!cpt){ cpt = $root.find('.price').length-1; }
-		$this.attr('data-price-cpt', cpt+1);
+		var $template = $root.find('.'+fieldName+'-template').clone();
+		var cpt = parseInt($this.attr('data-'+fieldName+'-cpt'));
+		if(!cpt){ cpt = $root.find('.'+fieldName).length-1; }
+		$this.attr('data-'+fieldName+'-cpt', cpt+1);
 		
-		$template.removeClass('price-template').addClass('price');
+		$template.removeClass(fieldName+'-template').addClass(fieldName);
 		var htmlTemplate = $template.html();
-		var newHtmlTemplate = htmlTemplate.replace(new RegExp('_x_', "g"), '_'+cpt+'_').replace(new RegExp('\\[x\\]', "g"), '['+cpt+']');
+		var newHtmlTemplate = htmlTemplate
+										.replace(new RegExp(fieldName+'s_x_', "g"), fieldName+'s_'+cpt+'_')
+										.replace(new RegExp(fieldName+'s\\[x\\]', "g"), fieldName+'s['+cpt+']');
 		var $newTemplate = $(newHtmlTemplate);
 		$newTemplate.insertBefore($this);
 		

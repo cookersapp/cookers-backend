@@ -30,3 +30,10 @@ form.form-horizontal .help-block { font-style: italic; }
 .price-template {
 	display: none;
 }
+
+.card-black {
+	border-radius:3px;
+	color:#545454;
+	border: 1px solid #8c8c8c;
+	border-top: 6px solid #1d1717;
+}
