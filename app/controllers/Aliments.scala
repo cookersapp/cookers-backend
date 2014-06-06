@@ -14,7 +14,7 @@ import play.api.data.Form
 
 object Aliments extends Controller with MongoController {
   implicit val DB = db
-  
+
   val pageTitle = "Aliments admin"
   val alimentRarityValues = List("basic", "common", "rare")
   val currencyValues = List("euro", "dollar")
@@ -31,14 +31,14 @@ object Aliments extends Controller with MongoController {
 
   def showCreationForm = Action.async {
     AlimentDao.findAllCategories().map { categories =>
-      Ok(views.html.admin.aliments.edit(pageTitle, None, alimentForm, alimentRarityValues, options(categories)))
+      Ok(views.html.admin.aliments.edit(pageTitle, None, alimentForm, options(categories), alimentRarityValues, currencyValues, unitValues))
     }
   }
 
   def create = Action.async { implicit request =>
     alimentForm.bindFromRequest.fold(
       formWithErrors => AlimentDao.findAllCategories().map { categories =>
-        BadRequest(views.html.admin.aliments.edit(pageTitle, None, formWithErrors, alimentRarityValues, options(categories)))
+        BadRequest(views.html.admin.aliments.edit(pageTitle, None, formWithErrors, options(categories), alimentRarityValues, currencyValues, unitValues))
       },
       aliment => AlimentDao.create(aliment).map { lastError => Redirect(routes.Aliments.index()) })
   }
@@ -52,7 +52,7 @@ object Aliments extends Controller with MongoController {
     futureResults.map { results =>
       results._1.map { aliment =>
         val categories = results._2
-        Ok(views.html.admin.aliments.edit(pageTitle, Some(id), alimentForm.fill(aliment), alimentRarityValues, options(categories)))
+        Ok(views.html.admin.aliments.edit(pageTitle, Some(id), alimentForm.fill(aliment), options(categories), alimentRarityValues, currencyValues, unitValues))
       }.getOrElse(Redirect(routes.Aliments.index()))
     }
   }
@@ -60,7 +60,7 @@ object Aliments extends Controller with MongoController {
   def update(id: String) = Action.async { implicit request =>
     alimentForm.bindFromRequest.fold(
       formWithErrors => AlimentDao.findAllCategories().map { categories =>
-        BadRequest(views.html.admin.aliments.edit(pageTitle, Some(id), formWithErrors, alimentRarityValues, options(categories)))
+        BadRequest(views.html.admin.aliments.edit(pageTitle, Some(id), formWithErrors, options(categories), alimentRarityValues, currencyValues, unitValues))
       },
       aliment => {
         AlimentDao.update(id, aliment)

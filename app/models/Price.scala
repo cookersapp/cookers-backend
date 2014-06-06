@@ -1,6 +1,5 @@
 package models
 
-import utils.EnumUtils
 import scala.BigDecimal
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
@@ -25,5 +24,5 @@ object Price {
 
 object PriceFormat {
   import play.api.libs.json.Json
-  implicit val alimentCategoryFormat = Json.format[AlimentCategory]
+  implicit val priceFormat = Json.format[Price]
 }

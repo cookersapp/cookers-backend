@@ -14,37 +14,45 @@ $(function() {
 		return false
 	});
 	
+	
+	
+	
 	$('.add-option-to-select').click(function(e){
+		console.log('ici');
 		var selectId = $(this).attr('data-target');
 		var select = $('#'+selectId);
-		if(select.prop("tagName") === 'SELECT'){
+		if(select.prop("tagName") !== 'SELECT'){ select = $('#'+selectId+' select'); }
+		
+		if(select.prop("tagName") === 'SELECT' && select.length === 1){
 			var optionText = prompt('Element to add :');
-			select.append('<option value="'+optionText+'">'+optionText+'</option>');
-			select.find('option[value="'+optionText+'"]').prop('selected', true);
+			if(optionText){
+				select.append('<option value="'+optionText+'">'+optionText+'</option>');
+				select.find('option[value="'+optionText+'"]').prop('selected', true);
+			}
 		}
 	});
 	
-	$('.price-forms').on('click', '.price-add', function(e){
+	$('.repeated-field').on('click', '.field-add', function(e){
 		var fieldName = 'price';
 		var $this = $(this);
-		var $root = $this.parents('.form-inline');
-		var $template = $root.find('.'+fieldName+'-template').clone();
-		var cpt = parseInt($this.attr('data-'+fieldName+'-cpt'));
-		if(!cpt){ cpt = $root.find('.'+fieldName).length-1; }
-		$this.attr('data-'+fieldName+'-cpt', cpt+1);
+		var $root = $this.parents('.repeated-field');
+		var $template = $root.find('> .field-template').clone();
+		var cpt = parseInt($this.attr('data-field-cpt'));
+		console.log('1 -> cpt', cpt);
+		if(!cpt){ cpt = $root.find('> .field-elt').length; }
+		console.log('2 -> cpt', cpt);
+		$this.attr('data-field-cpt', cpt+1);
 		
-		$template.removeClass(fieldName+'-template').addClass(fieldName);
 		var htmlTemplate = $template.html();
 		var newHtmlTemplate = htmlTemplate
-										.replace(new RegExp(fieldName+'s_x_', "g"), fieldName+'s_'+cpt+'_')
-										.replace(new RegExp(fieldName+'s\\[x\\]', "g"), fieldName+'s['+cpt+']');
-		var $newTemplate = $(newHtmlTemplate);
-		$newTemplate.insertBefore($this);
+										.replace(new RegExp('_x_', "g"), '_'+cpt+'_')
+										.replace(new RegExp('\\[x\\]', "g"), '['+cpt+']');
+		$(newHtmlTemplate).insertBefore($this);
 		
 		$this.blur();
 		return false;
 	});
-	$('.price-forms').on('click', '.price-remove', function(e){
-		$(this).parents('.price').remove();
+	$('.repeated-field').on('click', '.field-remove', function(e){
+		$(this).parents('.field-elt').remove();
 	});
 });

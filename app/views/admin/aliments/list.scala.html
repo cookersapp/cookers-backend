@@ -12,7 +12,7 @@
 					<thead>
 						<tr>
 							<th>#</th>
-							<th>Id</th>
+							<th class="hidden">Id</th>
 							<th>Name</th>
 							<th>Category</th>
 							<th>Rarity</th>
@@ -24,11 +24,15 @@
 						@for((aliment, index) <- aliments.zipWithIndex) {
 							<tr>
 								<td>@{index+1}</td>
-								<td>@aliment.id</td>
+								<td class="hidden">@aliment.id</td>
 								<td>@aliment.name</td>
 								<td>@aliment.category.name</td>
 								<td>@aliment.rarity</td>
-								<td>@aliment.prices.mkString(", ")</td>
+								<td>
+									@aliment.prices.map { price =>
+										<a href="@price.source" target="source">@price.amount @price.currency/@price.unit</a>
+									}
+								</td>
 								<td>
 									<a href="@routes.Aliments.showEditForm(aliment.id)" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-pencil"></span></a>
 									@helper.form(routes.Aliments.delete(aliment.id), 'class -> "inline-form") {
