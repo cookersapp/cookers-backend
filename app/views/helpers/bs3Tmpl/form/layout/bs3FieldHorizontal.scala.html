@@ -1,20 +1,11 @@
 @(field: Field, input: Html, label: String = "", help: String = "")
 
-@fieldHelpers(field: Field, help: String) = {
-	<span class="help-block">@help</span>
-	@if(field.hasErrors) {
-		<span class="help-block">@{field.errors.map { error => Messages(error.message, error.args: _*) }}</span>
-	} else {
-		<span class="help-block">@{field.constraints.map { constraint => Messages(constraint._1, constraint._2) }}</span>
-	}
-}
-
 @defining(if(label.length > 0) label else field.name) { _label =>
 	<div class="form-group @if(field.hasErrors) {has-error}">
 		<label for="@field.id" class="control-label col-sm-2">@_label</label>
 		<div class="col-sm-10">
 			@input
-			@fieldHelpers(field, help)
+			@bs3FieldHelpers(field, help)
 		</div>
 	</div>
 }
