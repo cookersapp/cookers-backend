@@ -1,4 +1,4 @@
-package controllers
+package controllers.crud
 
 import models.Aliment
 import models.AlimentCategory
@@ -11,6 +11,8 @@ import play.api.libs.json._
 import play.modules.reactivemongo.MongoController
 import reactivemongo.bson.BSONObjectID
 import play.api.data.Form
+import controllers.routes
+import play.api.libs.json.Json.toJsFieldJsValueWrapper
 
 object Aliments extends Controller with MongoController {
   implicit val DB = db

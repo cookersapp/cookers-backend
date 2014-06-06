@@ -28,7 +28,7 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li @if(menu == "home"){class="active"}><a href="@routes.Admin.index">Home</a></li>
-            <li @if(menu == "aliments"){class="active"}><a href="@routes.Aliments.index">Aliments</a></li>
+            <li @if(menu == "aliments"){class="active"}><a href="@crud.routes.Aliments.index">Aliments</a></li>
             <li @if(menu == "samples"){class="active"}><a href="@routes.Samples.index">Samples</a></li>
             <li @if(menu == "articles"){class="active"}><a href="@routes.Articles.index">Articles</a></li>
           </ul>
