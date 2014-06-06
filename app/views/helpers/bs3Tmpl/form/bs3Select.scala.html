@@ -1,4 +1,4 @@
-@(field: Field, options: Seq[(String,String)], defaultOption: String = "", label: String = "", placeholder: String = "", help: String = "", horizontal: Boolean = false, inline: Boolean = false)
+@(field: Field, options: Seq[(String,String)], defaultOption: String = "", label: String = "", placeholder: String = "", help: String = "", horizontal: Boolean = false, inline: Boolean = false, inputOnly: Boolean = false)
 
 @fieldInput(field: Field, options: Seq[(String,String)], defaultOption: String, placeholder: String) = {
 	<select class="form-control" id="@field.id" name="@field.name" placeholder="@placeholder">
@@ -15,7 +15,8 @@
 	defining(if(placeholder.length > 0) placeholder else _label ) { _placeholder =>
 		val input = fieldInput(field, options, defaultOption, _placeholder)
 		
-		if(horizontal && !inline) layout.bs3FieldHorizontal(field, input, label, help)
+		if(inputOnly) input
+		else if(horizontal && !inline) layout.bs3FieldHorizontal(field, input, label, help)
 		else if(inline) layout.bs3FieldInline(field, input, label, help)
 		else layout.bs3Field(field, input, label, help)
 	}

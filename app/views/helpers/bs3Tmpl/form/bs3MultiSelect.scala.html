@@ -1,4 +1,4 @@
-@(field: Field, options: Seq[(String,String)], label: String = "", placeholder: String = "", help: String = "", horizontal: Boolean = false, inline: Boolean = false)
+@(field: Field, options: Seq[(String,String)], label: String = "", placeholder: String = "", help: String = "", horizontal: Boolean = false, inline: Boolean = false, inputOnly: Boolean = false)
 
 @fieldInput(field: Field, options: Seq[(String, String)], values: Set[String], placeholder: String) = {
 	<select class="form-control" id="@field.id" name="@(field.name + "[]")" placeholder="@placeholder" multiple="multiple">
@@ -13,7 +13,8 @@
 		defining(if(field.indexes.isEmpty) field.value.toSet else field.indexes.map( i => field("[%s]".format(i)).value ).flatten.toSet){ values =>
 			val input = fieldInput(field, options, values, _placeholder)
 			
-			if(horizontal && !inline) layout.bs3FieldHorizontal(field, input, label, help)
+			if(inputOnly) input
+			else if(horizontal && !inline) layout.bs3FieldHorizontal(field, input, label, help)
 			else if(inline) layout.bs3FieldInline(field, input, label, help)
 			else layout.bs3Field(field, input, label, help)
 		}
