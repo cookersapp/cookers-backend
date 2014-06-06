@@ -1,0 +1,22 @@
+@(pageTitle: String, id: Option[String], categoryForm: Form[models.AlimentCategory])
+
+@import helper._
+@import helpers.bs3Tmpl.form._
+
+@admin.main(pageTitle, "crud") {
+	<div class="row">
+		<div class="col-md-12 card-black">
+			<h2>@if(!id.isDefined) { Créer } else { Modifier } une catégorie d'aliments</h2>
+			@helper.form(if(!id.isDefined) crud.routes.AlimentCategories.create else crud.routes.AlimentCategories.update(id.get), 'class -> "form-horizontal") {
+				@bs3Hidden(categoryForm("id"))
+				@bs3Text(categoryForm("name"), label="Name", horizontal=true)
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+			            <a href="@crud.routes.AlimentCategories.index" class="btn btn-default">@if(!id.isDefined) { Cancel } else { Return }</a>
+			            <button type="submit" class="btn btn-primary">@if(!id.isDefined) { Create } else { Update } aliment</button>
+					</div>
+		        </div>
+			}
+		</div>
+	</div>
+}

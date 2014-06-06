@@ -2,24 +2,23 @@ package controllers.crud
 
 import models.Aliment
 import models.AlimentCategory
-import dao.AlimentDao
 import models.AlimentFormat._
-import scala.concurrent.ExecutionContext.Implicits.global
+import models.Constants
+import dao.AlimentDao
+import dao.AlimentCategoryDao
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.mvc._
 import play.api.libs.json._
-import play.modules.reactivemongo.MongoController
-import reactivemongo.bson.BSONObjectID
 import play.api.data.Form
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
+import play.modules.reactivemongo.MongoController
+import reactivemongo.bson.BSONObjectID
 
 object Aliments extends Controller with MongoController {
   implicit val DB = db
 
   val pageTitle = "Aliments admin"
-  val alimentRarityValues = List("basic", "common", "rare")
-  val currencyValues = List("euro", "dollar")
-  val unitValues = List("unit", "kg", "g", "litre", "cl")
   val alimentForm: Form[Aliment] = Form(Aliment.mapForm)
 
   def options(categories: Set[AlimentCategory]): Seq[(String, String)] = categories.map(category => (category.name, category.name)).toSeq
@@ -31,15 +30,16 @@ object Aliments extends Controller with MongoController {
   }
 
   def showCreationForm = Action.async {
-    AlimentDao.findAllCategories().map { categories =>
-      Ok(views.html.admin.crud.aliments.edit(pageTitle, None, alimentForm, options(categories), alimentRarityValues, currencyValues, unitValues))
+    AlimentCategoryDao.findAll().map { categories =>
+      Ok(views.html.admin.crud.aliments.edit(pageTitle, None, alimentForm, options(categories), Constants.alimentRarityValues, Constants.currencyValues, Constants.unitValues))
     }
   }
 
+  // TODO link aliment to alimentcategory (not working actually...)
   def create = Action.async { implicit request =>
     alimentForm.bindFromRequest.fold(
-      formWithErrors => AlimentDao.findAllCategories().map { categories =>
-        BadRequest(views.html.admin.crud.aliments.edit(pageTitle, None, formWithErrors, options(categories), alimentRarityValues, currencyValues, unitValues))
+      formWithErrors => AlimentCategoryDao.findAll().map { categories =>
+        BadRequest(views.html.admin.crud.aliments.edit(pageTitle, None, formWithErrors, options(categories), Constants.alimentRarityValues, Constants.currencyValues, Constants.unitValues))
       },
       aliment => AlimentDao.create(aliment).map { lastError => Redirect(routes.Aliments.index()) })
   }
@@ -47,21 +47,21 @@ object Aliments extends Controller with MongoController {
   def showEditForm(id: String) = Action.async {
     val futureResults = for {
       mayBeAliment <- AlimentDao.find(id)
-      categories <- AlimentDao.findAllCategories()
+      categories <- AlimentCategoryDao.findAll()
     } yield (mayBeAliment, categories)
 
     futureResults.map { results =>
       results._1.map { aliment =>
         val categories = results._2
-        Ok(views.html.admin.crud.aliments.edit(pageTitle, Some(id), alimentForm.fill(aliment), options(categories), alimentRarityValues, currencyValues, unitValues))
+        Ok(views.html.admin.crud.aliments.edit(pageTitle, Some(id), alimentForm.fill(aliment), options(categories), Constants.alimentRarityValues, Constants.currencyValues, Constants.unitValues))
       }.getOrElse(Redirect(routes.Aliments.index()))
     }
   }
 
   def update(id: String) = Action.async { implicit request =>
     alimentForm.bindFromRequest.fold(
-      formWithErrors => AlimentDao.findAllCategories().map { categories =>
-        BadRequest(views.html.admin.crud.aliments.edit(pageTitle, Some(id), formWithErrors, options(categories), alimentRarityValues, currencyValues, unitValues))
+      formWithErrors => AlimentCategoryDao.findAll().map { categories =>
+        BadRequest(views.html.admin.crud.aliments.edit(pageTitle, Some(id), formWithErrors, options(categories), Constants.alimentRarityValues, Constants.currencyValues, Constants.unitValues))
       },
       aliment => {
         AlimentDao.update(id, aliment)

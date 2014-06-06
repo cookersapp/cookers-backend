@@ -1,0 +1,39 @@
+@(pageTitle: String, categories: List[models.AlimentCategory])
+
+@admin.main(pageTitle, "crud") {
+	<div class="row">
+		<div class="col-md-12">
+			<h2>Catégories d'aliments</h2>
+			<a class="btn btn-success" href="@crud.routes.AlimentCategories.showCreationForm">Create</a>
+			@if(categories.isEmpty) {
+				<p>Pas encore de catégories.</p>
+			} else {
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th class="hidden">Id</th>
+							<th>Name</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						@for((category, index) <- categories.zipWithIndex) {
+							<tr>
+								<td>@{index+1}</td>
+								<td class="hidden">@category.id</td>
+								<td>@category.name</td>
+								<td>
+									<a href="@crud.routes.AlimentCategories.showEditForm(category.id)" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-pencil"></span></a>
+									@helper.form(crud.routes.AlimentCategories.delete(category.id), 'class -> "inline-form") {
+					            		<button type="submit" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
+					            	}
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			}
+		</div>
+	</div>
+}

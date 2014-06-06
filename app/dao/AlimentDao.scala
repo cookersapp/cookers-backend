@@ -27,10 +27,10 @@ object AlimentDao {
   def find(id: String)(implicit db: DB): Future[Option[Aliment]] = collection().find(Json.obj("id" -> id)).one[Aliment]
   def find(filter: JsObject)(implicit db: DB): Future[Set[Aliment]] = collection().find(filter).cursor[Aliment].collect[Set]()
   def findAll()(implicit db: DB): Future[Set[Aliment]] = collection().find(Json.obj()).cursor[Aliment].collect[Set]()
-  def findAllCategories()(implicit db: DB): Future[Set[AlimentCategory]] =
+  /*def findAllCategories()(implicit db: DB): Future[Set[AlimentCategory]] =
     db
       .command(RawCommand(BSONDocument("distinct" -> COLLECTION_NAME, "key" -> "category")))
-      .map { doc => doc.getAs[Set[AlimentCategory]]("values").get }
+      .map { doc => doc.getAs[Set[AlimentCategory]]("values").get }*/
 
   def insert(aliment: Aliment)(implicit db: DB): Future[LastError] = collection().insert(aliment)
   def create(aliment: Aliment)(implicit db: DB): Future[LastError] = collection().insert(generateId(aliment))

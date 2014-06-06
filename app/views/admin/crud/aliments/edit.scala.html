@@ -23,13 +23,9 @@
 			@helper.form(if(!id.isDefined) crud.routes.Aliments.create else crud.routes.Aliments.update(id.get), 'class -> "form-horizontal") {
 				@bs3Hidden(alimentForm("id"))
 				@bs3Text(alimentForm("name"), label="Name", horizontal=true)
-				<div class="form-group">
-					<label class="control-label col-md-2">Category</label>
-					<div class="col-md-10 form-inline" id="category">
-						@bs3Select(alimentForm("category")("name"), label="Name", options=categories, inline=true)
-						<button type="button" class="btn btn-default add-option-to-select" data-target="category">New category</button>
-					</div>
-				</div>
+				@bs3Text(alimentForm("category")("id"), label="Category Id", horizontal=true)
+				@bs3Text(alimentForm("category")("name"), label="Category Name", horizontal=true)
+				@*@bs3Select(alimentForm("category"), label="Category", options=categories, horizontal=true)*@
 				@bs3Select(alimentForm("rarity"), label="Rarity", options=options(rarities), horizontal=true)
 				<div class="form-group">
 					<label class="control-label col-md-2">Prices</label>

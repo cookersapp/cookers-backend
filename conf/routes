@@ -2,42 +2,49 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET      /                                 controllers.Landing.index
+GET      /                                          controllers.Landing.index
 
-GET      /admin                            controllers.Admin.index
+GET      /admin                                     controllers.Admin.index
 
-GET      /admin/crud                       controllers.crud.CrudMain.index
+GET      /admin/crud                                controllers.crud.CrudMain.index
 
-GET      /admin/crud/aliments              controllers.crud.Aliments.index
-GET      /admin/crud/aliments/new          controllers.crud.Aliments.showCreationForm
-POST     /admin/crud/aliments/new          controllers.crud.Aliments.create
-GET      /admin/crud/aliments/:id          controllers.crud.Aliments.showEditForm(id: String)
-POST     /admin/crud/aliments/:id          controllers.crud.Aliments.update(id: String)
-POST     /admin/crud/aliments/:id/delete   controllers.crud.Aliments.delete(id: String)
-POST     /api/aliments                     controllers.crud.Aliments.apiCreate
-GET      /api/aliments                     controllers.crud.Aliments.apiFindAll
-GET      /api/aliments/:id                 controllers.crud.Aliments.apiFind(id: String)
-PUT      /api/aliments/:id                 controllers.crud.Aliments.apiUpdate(id: String)
-DELETE   /api/aliments/:id                 controllers.crud.Aliments.apiDelete(id: String)
+GET      /admin/crud/alimentcategories              controllers.crud.AlimentCategories.index
+GET      /admin/crud/alimentcategories/new          controllers.crud.AlimentCategories.showCreationForm
+POST     /admin/crud/alimentcategories/new          controllers.crud.AlimentCategories.create
+GET      /admin/crud/alimentcategories/:id          controllers.crud.AlimentCategories.showEditForm(id: String)
+POST     /admin/crud/alimentcategories/:id          controllers.crud.AlimentCategories.update(id: String)
+POST     /admin/crud/alimentcategories/:id/delete   controllers.crud.AlimentCategories.delete(id: String)
 
-GET      /api/operations/export            controllers.Operations.exportDB
-POST     /api/operations/import            controllers.Operations.importDB
+GET      /admin/crud/aliments                       controllers.crud.Aliments.index
+GET      /admin/crud/aliments/new                   controllers.crud.Aliments.showCreationForm
+POST     /admin/crud/aliments/new                   controllers.crud.Aliments.create
+GET      /admin/crud/aliments/:id                   controllers.crud.Aliments.showEditForm(id: String)
+POST     /admin/crud/aliments/:id                   controllers.crud.Aliments.update(id: String)
+POST     /admin/crud/aliments/:id/delete            controllers.crud.Aliments.delete(id: String)
+POST     /api/aliments                              controllers.crud.Aliments.apiCreate
+GET      /api/aliments                              controllers.crud.Aliments.apiFindAll
+GET      /api/aliments/:id                          controllers.crud.Aliments.apiFind(id: String)
+PUT      /api/aliments/:id                          controllers.crud.Aliments.apiUpdate(id: String)
+DELETE   /api/aliments/:id                          controllers.crud.Aliments.apiDelete(id: String)
 
-GET      /samples                          controllers.Samples.index
-GET      /samples/inputtypes               controllers.SampleInputTypes.index
-POST     /samples/inputtypes/create        controllers.SampleInputTypes.create
-GET      /samples/complexforms             controllers.SampleComplexForm.index
-POST     /samples/complexforms/create      controllers.SampleComplexForm.create
+GET      /api/operations/export                     controllers.Operations.exportDB
+POST     /api/operations/import                     controllers.Operations.importDB
 
-GET      /admin/articles                   controllers.Articles.index
-GET      /admin/articles/new               controllers.Articles.showCreationForm
-POST     /admin/articles/new               controllers.Articles.create
-GET      /admin/articles/:id               controllers.Articles.showEditForm(id)
-POST     /admin/articles/:id               controllers.Articles.edit(id)
-DELETE   /admin/articles/:id               controllers.Articles.delete(id)
-POST     /admin/articles/:id/attachments   controllers.Articles.saveAttachment(id)
-GET      /admin/attachments/:id            controllers.Articles.getAttachment(id)
-DELETE   /admin/attachments/:id            controllers.Articles.removeAttachment(id)
+GET      /samples                                   controllers.Samples.index
+GET      /samples/inputtypes                        controllers.SampleInputTypes.index
+POST     /samples/inputtypes/create                 controllers.SampleInputTypes.create
+GET      /samples/complexforms                      controllers.SampleComplexForm.index
+POST     /samples/complexforms/create               controllers.SampleComplexForm.create
+
+GET      /admin/articles                            controllers.Articles.index
+GET      /admin/articles/new                        controllers.Articles.showCreationForm
+POST     /admin/articles/new                        controllers.Articles.create
+GET      /admin/articles/:id                        controllers.Articles.showEditForm(id)
+POST     /admin/articles/:id                        controllers.Articles.edit(id)
+DELETE   /admin/articles/:id                        controllers.Articles.delete(id)
+POST     /admin/articles/:id/attachments            controllers.Articles.saveAttachment(id)
+GET      /admin/attachments/:id                     controllers.Articles.getAttachment(id)
+DELETE   /admin/attachments/:id                     controllers.Articles.removeAttachment(id)
 
 # Map static resources from the /public folder to the /assets URL path
-GET      /assets/*file                     controllers.Assets.at(path="/public", file)
+GET      /assets/*file                              controllers.Assets.at(path="/public", file)
