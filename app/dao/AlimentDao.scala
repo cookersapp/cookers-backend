@@ -32,7 +32,10 @@ object AlimentDao {
       .command(RawCommand(BSONDocument("distinct" -> COLLECTION_NAME, "key" -> "category")))
       .map { doc => doc.getAs[Set[AlimentCategory]]("values").get }
 
+  def insert(aliment: Aliment)(implicit db: DB): Future[LastError] = collection().insert(aliment)
   def create(aliment: Aliment)(implicit db: DB): Future[LastError] = collection().insert(generateId(aliment))
   def update(id: String, aliment: Aliment)(implicit db: DB): Future[LastError] = collection().update(Json.obj("id" -> id), toUpdateFormat(aliment))
   def delete(id: String)(implicit db: DB): Future[LastError] = collection().remove(Json.obj("id" -> id))
+  def insertAll(aliments: List[Aliment])(implicit db: DB): Future[List[LastError]] = Future.sequence(aliments.map(aliment => collection().insert(aliment)))
+  def deleteAll()(implicit db: DB): Future[LastError] = collection().remove(Json.obj())
 }
