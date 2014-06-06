@@ -11,7 +11,6 @@ import play.api.libs.json._
 import play.modules.reactivemongo.MongoController
 import reactivemongo.bson.BSONObjectID
 import play.api.data.Form
-import controllers.routes
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 
 object Aliments extends Controller with MongoController {
@@ -27,20 +26,20 @@ object Aliments extends Controller with MongoController {
 
   def index = Action.async {
     AlimentDao.findAll().map { aliments =>
-      Ok(views.html.admin.aliments.list(pageTitle, aliments.toList))
+      Ok(views.html.admin.crud.aliments.list(pageTitle, aliments.toList))
     }
   }
 
   def showCreationForm = Action.async {
     AlimentDao.findAllCategories().map { categories =>
-      Ok(views.html.admin.aliments.edit(pageTitle, None, alimentForm, options(categories), alimentRarityValues, currencyValues, unitValues))
+      Ok(views.html.admin.crud.aliments.edit(pageTitle, None, alimentForm, options(categories), alimentRarityValues, currencyValues, unitValues))
     }
   }
 
   def create = Action.async { implicit request =>
     alimentForm.bindFromRequest.fold(
       formWithErrors => AlimentDao.findAllCategories().map { categories =>
-        BadRequest(views.html.admin.aliments.edit(pageTitle, None, formWithErrors, options(categories), alimentRarityValues, currencyValues, unitValues))
+        BadRequest(views.html.admin.crud.aliments.edit(pageTitle, None, formWithErrors, options(categories), alimentRarityValues, currencyValues, unitValues))
       },
       aliment => AlimentDao.create(aliment).map { lastError => Redirect(routes.Aliments.index()) })
   }
@@ -54,7 +53,7 @@ object Aliments extends Controller with MongoController {
     futureResults.map { results =>
       results._1.map { aliment =>
         val categories = results._2
-        Ok(views.html.admin.aliments.edit(pageTitle, Some(id), alimentForm.fill(aliment), options(categories), alimentRarityValues, currencyValues, unitValues))
+        Ok(views.html.admin.crud.aliments.edit(pageTitle, Some(id), alimentForm.fill(aliment), options(categories), alimentRarityValues, currencyValues, unitValues))
       }.getOrElse(Redirect(routes.Aliments.index()))
     }
   }
@@ -62,7 +61,7 @@ object Aliments extends Controller with MongoController {
   def update(id: String) = Action.async { implicit request =>
     alimentForm.bindFromRequest.fold(
       formWithErrors => AlimentDao.findAllCategories().map { categories =>
-        BadRequest(views.html.admin.aliments.edit(pageTitle, Some(id), formWithErrors, options(categories), alimentRarityValues, currencyValues, unitValues))
+        BadRequest(views.html.admin.crud.aliments.edit(pageTitle, Some(id), formWithErrors, options(categories), alimentRarityValues, currencyValues, unitValues))
       },
       aliment => {
         AlimentDao.update(id, aliment)

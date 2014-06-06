@@ -6,12 +6,14 @@ GET      /                                 controllers.Landing.index
 
 GET      /admin                            controllers.Admin.index
 
-GET      /admin/aliments                   controllers.crud.Aliments.index
-GET      /admin/aliments/new               controllers.crud.Aliments.showCreationForm
-POST     /admin/aliments/new               controllers.crud.Aliments.create
-GET      /admin/aliments/:id               controllers.crud.Aliments.showEditForm(id: String)
-POST     /admin/aliments/:id               controllers.crud.Aliments.update(id: String)
-POST     /admin/aliments/:id/delete        controllers.crud.Aliments.delete(id: String)
+GET      /admin/crud                       controllers.crud.CrudMain.index
+
+GET      /admin/crud/aliments              controllers.crud.Aliments.index
+GET      /admin/crud/aliments/new          controllers.crud.Aliments.showCreationForm
+POST     /admin/crud/aliments/new          controllers.crud.Aliments.create
+GET      /admin/crud/aliments/:id          controllers.crud.Aliments.showEditForm(id: String)
+POST     /admin/crud/aliments/:id          controllers.crud.Aliments.update(id: String)
+POST     /admin/crud/aliments/:id/delete   controllers.crud.Aliments.delete(id: String)
 POST     /api/aliments                     controllers.crud.Aliments.apiCreate
 GET      /api/aliments                     controllers.crud.Aliments.apiFindAll
 GET      /api/aliments/:id                 controllers.crud.Aliments.apiFind(id: String)

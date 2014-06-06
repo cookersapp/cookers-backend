@@ -16,7 +16,7 @@
 	</div>
 }
 
-@admin.main(pageTitle, "aliments") {
+@admin.main(pageTitle, "crud") {
 	<div class="row">
 		<div class="col-md-12 card-black">
 			<h2>@if(!id.isDefined) { Create new } else { Edit } aliment</h2>
@@ -43,7 +43,7 @@
 				</div>
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
-			            <a href="@crud.routes.Aliments.index()" class="btn btn-default">@if(!id.isDefined) { Cancel } else { Return }</a>
+			            <a href="@crud.routes.Aliments.index" class="btn btn-default">@if(!id.isDefined) { Cancel } else { Return }</a>
 			            <button type="submit" class="btn btn-primary">@if(!id.isDefined) { Create } else { Update } aliment</button>
 					</div>
 		        </div>
