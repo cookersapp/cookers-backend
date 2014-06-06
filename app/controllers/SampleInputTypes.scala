@@ -12,11 +12,6 @@ object SampleInputTypes extends Controller {
    * https://github.com/playframework/playframework/tree/2.2.x/framework/src/play/src/main/scala/views/helper 
    * http://workwithplay.com/blog/2013/07/10/advanced-forms-techniques/
    */
-  /*
-   * TODO :
-   * create generic input to allow html5 types (number, date...)
-   * split inputs in layout & input to better modularize
-   */
   case class Contact(
     sexe: String,
     mail: String,
