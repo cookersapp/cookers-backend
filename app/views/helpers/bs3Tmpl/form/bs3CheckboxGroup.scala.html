@@ -11,11 +11,12 @@
 
 @{defining(if(label.length > 0) label else field.name) { _label =>
 	defining(if(field.indexes.isEmpty) field.value.toSet else field.indexes.map( i => field("[%s]".format(i)).value ).flatten.toSet){ values =>
+		import helpers.bs3Tmpl.form.layout._
 		val input = fieldInput(field, options, values)
 		
 		if(inputOnly) input
-		else if(horizontal && !inline) layout.bs3FieldHorizontal(field, input, label, help)
-		else if(inline) layout.bs3FieldInline(field, input, label, help)
-		else layout.bs3Field(field, input, label, help)
+		else if(horizontal && !inline) bs3FieldHorizontal(field, input, label, help)
+		else if(inline) bs3FieldInline(field, input, label, help)
+		else bs3Field(field, input, label, help)
 	}
 }}
