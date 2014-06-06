@@ -1,7 +1,6 @@
 package controllers
 
 import models.Aliment
-import models.AlimentRarity
 import models.AlimentCategory
 import dao.AlimentDao
 import models.AlimentFormat._
@@ -11,12 +10,17 @@ import play.api.mvc._
 import play.api.libs.json._
 import play.modules.reactivemongo.MongoController
 import reactivemongo.bson.BSONObjectID
+import play.api.data.Form
 
 object Aliments extends Controller with MongoController {
-  val pageTitle = "Aliments admin"
   implicit val DB = db
+  
+  val pageTitle = "Aliments admin"
+  val alimentRarityValues = List("basic", "common", "rare")
+  val currencyValues = List("euro", "dollar")
+  val unitValues = List("unit", "kg", "g", "litre", "cl")
+  val alimentForm: Form[Aliment] = Form(Aliment.mapForm)
 
-  def options(values: List[String]): Seq[(String, String)] = values.map(value => (value, value))
   def options(categories: Set[AlimentCategory]): Seq[(String, String)] = categories.map(category => (category.name, category.name)).toSeq
 
   def index = Action.async {
@@ -27,14 +31,14 @@ object Aliments extends Controller with MongoController {
 
   def showCreationForm = Action.async {
     AlimentDao.findAllCategories().map { categories =>
-      Ok(views.html.admin.aliments.edit(pageTitle, None, Aliment.form, options(AlimentRarity.strValues), options(categories)))
+      Ok(views.html.admin.aliments.edit(pageTitle, None, alimentForm, alimentRarityValues, options(categories)))
     }
   }
 
   def create = Action.async { implicit request =>
-    Aliment.form.bindFromRequest.fold(
+    alimentForm.bindFromRequest.fold(
       formWithErrors => AlimentDao.findAllCategories().map { categories =>
-        BadRequest(views.html.admin.aliments.edit(pageTitle, None, formWithErrors, options(AlimentRarity.strValues), options(categories)))
+        BadRequest(views.html.admin.aliments.edit(pageTitle, None, formWithErrors, alimentRarityValues, options(categories)))
       },
       aliment => AlimentDao.create(aliment).map { lastError => Redirect(routes.Aliments.index()) })
   }
@@ -48,15 +52,15 @@ object Aliments extends Controller with MongoController {
     futureResults.map { results =>
       results._1.map { aliment =>
         val categories = results._2
-        Ok(views.html.admin.aliments.edit(pageTitle, Some(id), Aliment.form.fill(aliment), options(AlimentRarity.strValues), options(categories)))
+        Ok(views.html.admin.aliments.edit(pageTitle, Some(id), alimentForm.fill(aliment), alimentRarityValues, options(categories)))
       }.getOrElse(Redirect(routes.Aliments.index()))
     }
   }
 
   def update(id: String) = Action.async { implicit request =>
-    Aliment.form.bindFromRequest.fold(
+    alimentForm.bindFromRequest.fold(
       formWithErrors => AlimentDao.findAllCategories().map { categories =>
-        BadRequest(views.html.admin.aliments.edit(pageTitle, Some(id), formWithErrors, options(AlimentRarity.strValues), options(categories)))
+        BadRequest(views.html.admin.aliments.edit(pageTitle, Some(id), formWithErrors, alimentRarityValues, options(categories)))
       },
       aliment => {
         AlimentDao.update(id, aliment)

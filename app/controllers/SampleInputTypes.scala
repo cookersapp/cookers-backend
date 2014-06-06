@@ -8,8 +8,9 @@ import play.api.data.validation.Constraints._
 object SampleInputTypes extends Controller {
   /*
    * Look at :
-   * https://www.playframework.com/documentation/2.2.x/ScalaForms
-   * https://github.com/playframework/playframework/tree/2.2.x/framework/src/play/src/main/scala/views/helper 
+   * https://www.playframework.com/documentation/2.2.3/ScalaForms
+   * https://www.playframework.com/documentation/2.2.3/api/scala/index.html#play.api.data.Forms$
+   * https://github.com/playframework/playframework/tree/2.2.3/framework/src/play/src/main/scala/views/helper
    * http://workwithplay.com/blog/2013/07/10/advanced-forms-techniques/
    */
   case class Contact(

@@ -1,7 +1,6 @@
 package models
 
 import utils.EnumUtils
-import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.data._
 import play.api.data.Forms._
@@ -15,7 +14,6 @@ import reactivemongo.bson._
  *  name: 'pomme',
  *  rarity: 'common', // basic, common, rare
  *  category: {
- *  	id: '538ef1434b0600340a0c7d42',
  *   	name: 'fruit'
  *  },
  *  prices: [
@@ -26,20 +24,27 @@ import reactivemongo.bson._
  * }
  */
 
-object AlimentRarity extends Enumeration {
-  type AlimentRarity = Value
-  val basic, common, rare = Value
-  def strValues = AlimentRarity.values.toList.map(_.toString())
-}
-
-import models.AlimentRarity._
-
-object AlimentRarityFormat {
-  implicit val enumReads: Reads[AlimentRarity] = EnumUtils.enumReads(AlimentRarity)
-  implicit def enumWrites: Writes[AlimentRarity] = EnumUtils.enumWrites
-}
-
 case class AlimentCategory(name: String)
+
+object AlimentCategory {
+  val mapForm = mapping("name" -> nonEmptyText)(AlimentCategory.apply)(AlimentCategory.unapply)
+}
+
+case class Aliment(
+  id: String,
+  name: String,
+  category: AlimentCategory,
+  rarity: String,
+  prices: List[Int])
+
+object Aliment {
+  val mapForm = mapping(
+    "id" -> text,
+    "name" -> nonEmptyText,
+    "category" -> AlimentCategory.mapForm,
+    "rarity" -> nonEmptyText,
+    "prices" -> list(number))(Aliment.apply)(Aliment.unapply)
+}
 
 object AlimentCategoryFormat {
   import play.api.libs.json.Json
@@ -50,40 +55,6 @@ object AlimentCategoryFormat {
 }
 
 import models.AlimentCategoryFormat._
-import models.AlimentRarityFormat._
-import models.MetaFormat._
-
-case class Aliment(
-  id: String,
-  name: String,
-  category: AlimentCategory,
-  rarity: AlimentRarity,
-  prices: List[Int],
-  created: Meta,
-  updated: Meta)
-
-object Aliment {
-  val form = Form(
-    mapping(
-      "id" -> text,
-      "name" -> nonEmptyText,
-      "category" -> nonEmptyText,
-      "rarity" -> nonEmptyText,
-      "prices" -> list(number)) {
-        (id, name, category, rarity, prices) =>
-          val alimentId = if (id.isEmpty()) BSONObjectID.generate.stringify else id
-          val meta = Meta(new DateTime(), "guest")
-          Aliment(alimentId, name, AlimentCategory(category), AlimentRarity.withName(rarity), prices, meta, meta)
-      } {
-        aliment =>
-          Some((
-            aliment.id,
-            aliment.name,
-            aliment.category.name,
-            aliment.rarity.toString(),
-            aliment.prices))
-      })
-}
 
 object AlimentFormat {
   import play.api.libs.json.Json
