@@ -1,7 +1,7 @@
 @(field: Field, inputType: String, label: String = "", placeholder: String = "", help: String = "", horizontal: Boolean = false, inline: Boolean = false)
 
 @fieldInput(field: Field, inputType: String, placeholder: String) = {
-	<input type="@inputType" class="form-control" id="@field.id" name="@field.name" value="@field.value.getOrElse("")" placeholder="@placeholder" />
+	<input type="@inputType" class="form-control" id="@field.id" name="@field.name" value="@field.value" placeholder="@placeholder" />
 }
 
 @{defining(if(label.length > 0) label else field.name) { _label =>

@@ -1,7 +1,7 @@
 @(field: Field, label: String = "", placeholder: String = "", help: String = "", rows: String = "3", horizontal: Boolean = false, inline: Boolean = false)
 
 @fieldInput(field: Field, rows: String, placeholder: String) = {
-	<textarea class="form-control" rows="@rows" id="@field.id" name="@field.name" placeholder="@placeholder">@field.value.getOrElse("")</textarea>
+	<textarea class="form-control" rows="@rows" id="@field.id" name="@field.name" placeholder="@placeholder">@field.value</textarea>
 }
 
 @{defining(if(label.length > 0) label else field.name) { _label =>

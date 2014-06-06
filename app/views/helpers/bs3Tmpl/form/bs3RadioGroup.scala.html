@@ -3,7 +3,7 @@
 @fieldInput(field: Field, options: Seq[(String, String)]) = {
 	@for((value, label) <- options) {
 	    <label class="radio-inline">
-	      <input type="radio" name="@field.name" id="@value" value="@value" @if(value == field.value.getOrElse("")) {checked} />
+	      <input type="radio" name="@field.name" id="@value" value="@value" @if(field.value == Some(value)) {checked} />
 	      @label
 	    </label>
     }
