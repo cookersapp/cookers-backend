@@ -1,16 +1,16 @@
-@(field: Field, buttonNameList: List[String], label: String = "", help: String = "", horizontal: Boolean = false, inline: Boolean = false)
+@(field: Field, options: Seq[(String, String)], label: String = "", help: String = "", horizontal: Boolean = false, inline: Boolean = false)
 
-@fieldInput(field: Field, buttonNameList: List[String]) = {
-	@for(buttonName <- buttonNameList) {
+@fieldInput(field: Field, options: Seq[(String, String)]) = {
+	@for((value, label) <- options) {
 	    <label class="radio-inline">
-	      <input type="radio" name="@field.name" id="@buttonName" value="@buttonName" @if(buttonName == field.value.getOrElse("")) {checked} />
-	      @buttonName
+	      <input type="radio" name="@field.name" id="@value" value="@value" @if(value == field.value.getOrElse("")) {checked} />
+	      @label
 	    </label>
     }
 }
 
 @{defining(if(label.length > 0) label else field.name) { _label =>
-	val input = fieldInput(field, buttonNameList)
+	val input = fieldInput(field, options)
 	
 	if(horizontal && !inline) layout.bs3FieldHorizontal(field, input, label, help)
 	else if(inline) layout.bs3FieldInline(field, input, label, help)

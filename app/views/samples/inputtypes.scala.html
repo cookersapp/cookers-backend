@@ -9,7 +9,7 @@
 			<h2>Input types</h2>
 			@defining(true) { horizontal =>
 				@helper.form(routes.SampleInputTypes.create, 'class -> {if(horizontal) "form-horizontal" else ""}) {
-					@bs3RadioGroup(sampleForm("sexe"), sexeValues, horizontal=horizontal)
+					@bs3RadioGroup(sampleForm("sexe"), options(sexeValues), horizontal=horizontal)
 					@bs3Text(sampleForm("mail"), horizontal=horizontal)
 					@bs3Password(sampleForm("password"), horizontal=horizontal)
 					@bs3Select(sampleForm("status"), options(statusValues), horizontal=horizontal)
@@ -27,7 +27,7 @@
 			<h2>Input types</h2>
 			@defining(false) { horizontal =>
 				@helper.form(routes.SampleInputTypes.create, 'class -> {if(horizontal) "form-horizontal" else ""}) {
-					@bs3RadioGroup(sampleForm("sexe"), sexeValues, horizontal=horizontal)
+					@bs3RadioGroup(sampleForm("sexe"), options(sexeValues), horizontal=horizontal)
 					@bs3Text(sampleForm("mail"), horizontal=horizontal)
 					@bs3Password(sampleForm("password"), horizontal=horizontal)
 					@bs3Select(sampleForm("status"), options(statusValues), horizontal=horizontal)
