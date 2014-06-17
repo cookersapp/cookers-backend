@@ -1,9 +1,12 @@
 angular.module('firebaseAdminApp')
 
 .factory("foodDb", function($firebase, firebaseUrl) {
-  var foodRef = new Firebase(firebaseUrl+"/food");
-  var db = $firebase(foodRef);
+  var ref = new Firebase(firebaseUrl+"/food");
+  var db = $firebase(ref);
   return {
-    get: function(){return db;}
+    getRef: function(){return ref;},
+    get: function(){return db;},
+    getChildRef: function(child){return ref.child(child);},
+    getChild: function(child){return $firebase(this.getChildRef(child));}
   };
 });

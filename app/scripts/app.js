@@ -25,7 +25,9 @@ angular.module('firebaseAdminApp', ['ui.router', 'firebase'])
 
 .constant('firebaseUrl', 'https://crackling-fire-7710.firebaseio.com')
 .constant('foodConst', {
-  categories: ["Viandes & Poissons", "Fruits & Légumes", "Pains & Pâtisseries", "Frais", "Surgelés", "Épicerie salée", "Épicerie sucrée", "Boissons", "Bébé", "Bio", "Hygiène & Beauté", "Entretien & Nettoyage", "Animalerie", "Bazar & Textile"]
+  categories: ['Viandes & Poissons', 'Fruits & Légumes', 'Pains & Pâtisseries', 'Frais', 'Surgelés', 'Épicerie salée', 'Épicerie sucrée', 'Boissons', 'Bébé', 'Bio', 'Hygiène & Beauté', 'Entretien & Nettoyage', 'Animalerie', 'Bazar & Textile'],
+  units: ['litre', 'kg'],
+  currencies: ['€']
 })
 
 .run(function($rootScope, $location){

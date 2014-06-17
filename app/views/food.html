@@ -9,6 +9,7 @@
               <tr>
                 <th>Nom</th>
                 <th>Catégorie</th>
+                <th>Prix</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -17,7 +18,13 @@
                 <td>{{elt.name}}</td>
                 <td>{{elt.category}}</td>
                 <td>
+                  <span ng-repeat="price in elt.prices">
+                    <a href="{{price.source}}" title="{{price.added | date}}" target="source">{{price.value}} {{price.unit}}</a>{{$last ? '' : ', '}}
+                  </span>
+                </td>
+                <td>
                   <button type="button" class="btn btn-info btn-xs" ng-click="edit(key, elt)"><i class="fa fa-pencil-square-o"></i></button>
+                  <button type="button" class="btn btn-info btn-xs" ng-click="addPrice(key)">Add <i class="fa fa-eur"></i></button>
                   <button type="button" class="btn btn-danger btn-xs" ng-click="remove(key)"><i class="fa fa-times"></i></button>
                 </td>
               </tr>
@@ -25,14 +32,14 @@
           </table>
         </div>
         <div class="col-md-4">
-          <form ng-submit="save()">
+          <form ng-submit="save()" ng-if="!priceFor">
             <div class="form-group">
               <label for="id">Id</label>
-              <input type="text" class="form-control" id="id" ng-model="create.id" disabled>
+              <input id="id" type="text" class="form-control" ng-model="create.id" disabled>
             </div>
             <div class="form-group">
               <label for="nom">Nom</label>
-              <input type="text" class="form-control" id="nom" placeholder="Ex: pomme de terre" ng-model="create.name">
+              <input id="nom" type="text" class="form-control" placeholder="Ex: pomme de terre" ng-model="create.name">
             </div>
             <div class="form-group">
               <label for="category">Catégorie</label>
@@ -41,6 +48,27 @@
             <button type="submit" class="btn btn-primary" ng-if="!edited">Ajouter</button>
             <button class="btn btn-default" ng-if="edited" ng-click="cancel()">Annuler</button>
             <button type="submit" class="btn btn-primary" ng-if="edited">Enregistrer</button>
+          </form>
+          <form ng-submit="savePrice()" ng-if="priceFor">
+            <div class="form-group">
+              <label for="price">Prix</label>
+              <input id="price" type="text" class="form-control" ng-model="createPrice.value">
+            </div>
+            <div class="form-group">
+              <label for="currency">Devise</label>
+              <select id="currency" class="form-control" ng-model="createPrice.currency" ng-options="currency for currency in currencies"></select>
+            </div>
+            <div class="form-group">
+              <label for="unit">Unité</label>
+              <select id="unit" class="form-control" ng-model="createPrice.unit" ng-options="unit for unit in units"></select>
+            </div>
+            <div class="form-group">
+              <label for="source">Source</label>
+              <input id="source" type="text" class="form-control" ng-model="createPrice.source">
+            </div>
+            <pre>{{createPrice | json}}</pre>
+            <button class="btn btn-default" ng-click="cancelPrice()">Annuler</button>
+            <button type="submit" class="btn btn-primary">Ajouter prix</button>
           </form>
         </div>
       </div>
