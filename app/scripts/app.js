@@ -1,4 +1,4 @@
-angular.module('firebaseAdminApp', ['ui.router'])
+angular.module('firebaseAdminApp', ['ui.router', 'firebase'])
 
 .config(function($stateProvider, $urlRouterProvider){
   'use strict';
@@ -15,7 +15,17 @@ angular.module('firebaseAdminApp', ['ui.router'])
     url: '/home',
     templateUrl: 'views/home.html',
     controller: 'HomeCtrl'
+  })
+  .state('app.food', {
+    url: '/food',
+    templateUrl: 'views/food.html',
+    controller: 'FoodCtrl'
   });
+})
+
+.constant('firebaseUrl', 'https://crackling-fire-7710.firebaseio.com')
+.constant('foodConst', {
+  categories: ["Viandes & Poissons", "Fruits & Légumes", "Pains & Pâtisseries", "Frais", "Surgelés", "Épicerie salée", "Épicerie sucrée", "Boissons", "Bébé", "Bio", "Hygiène & Beauté", "Entretien & Nettoyage", "Animalerie", "Bazar & Textile"]
 })
 
 .run(function($rootScope, $location){
