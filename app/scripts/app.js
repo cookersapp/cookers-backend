@@ -40,13 +40,15 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage', 'firebase'])
 })
 
 .constant('firebaseUrl', 'https://crackling-fire-7710.firebaseio.com')
-.constant('foodConst', {
-  categories: ['Viandes & Poissons', 'Fruits & Légumes', 'Pains & Pâtisseries', 'Frais', 'Surgelés', 'Épicerie salée', 'Épicerie sucrée', 'Boissons', 'Bébé', 'Bio', 'Hygiène & Beauté', 'Entretien & Nettoyage', 'Animalerie', 'Bazar & Textile'],
-  units: ['litre', 'kg'],
-  currencies: ['€']
-})
-.constant('recipeConst', {
-  categories: ['Plat principal', 'Entrée', 'Dessert', 'Vin']
+
+.constant('dataList', {
+  foodCategories:   ['Viandes & Poissons', 'Fruits & Légumes', 'Pains & Pâtisseries', 'Frais', 'Surgelés', 'Épicerie salée', 'Épicerie sucrée', 'Boissons', 'Bébé', 'Bio', 'Hygiène & Beauté', 'Entretien & Nettoyage', 'Animalerie', 'Bazar & Textile'],
+  courseCategories: ['Plat principal', 'Entrée', 'Dessert', 'Vin'],
+  currencies:       ['€'],
+  servingUnits:     ['personnes'],
+  timeUnits:        ['minutes', 'secondes'],
+  quantityUnits:    ['g', 'kg', 'cl', 'litre', 'pièce'],
+  foodRoles:        ['essentiel', 'secondaire', 'habituel']
 })
 
 .run(function($rootScope, $location){

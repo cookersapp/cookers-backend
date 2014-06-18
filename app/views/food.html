@@ -32,7 +32,7 @@
             </tbody>
           </table>
         </div>
-        
+
         <div class="col-md-3">
           <form ng-submit="save()" ng-if="!priceFor">
             <div class="form-group">
@@ -44,7 +44,7 @@
               <select id="category" class="form-control" ng-model="create.category" ng-options="category for category in categories" required></select>
             </div>
             <div class="form-group">
-              <label>Prix <button type="button" class="btn btn-default btn-xs" ng-click="addPrice()">Ajouter un prix</button></label>
+              <label>Prix</label>
               <div class="form-inline" ng-repeat="price in create.prices" style="margin-bottom: 5px;">
                 <div class="form-group">
                   <input type="number" step="any" class="form-control input-small" ng-model="price.value" placeholder="Ex: 1.99" required>
@@ -60,6 +60,7 @@
                 </div>
                 <button type="button" class="btn btn-danger" ng-click="removePrice($index)"><i class="fa fa-times"></i></button>
               </div>
+              <button type="button" class="btn btn-default btn-xs" ng-click="addPrice()">Ajouter un prix</button>
             </div>
             <a class="btn btn-default" ng-click="cancel()">Annuler</a>
             <button type="submit" class="btn btn-primary" ng-if="!create.key">Créer</button>

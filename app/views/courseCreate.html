@@ -58,7 +58,7 @@
               </div>
             </div>
             <div class="form-group">
-              <label>Ingrédients <button type="button" class="btn btn-default btn-xs" ng-click="addIngredient()">Ajouter un ingrédient</button></label>
+              <label>Ingrédients</label>
               <div class="form-inline" ng-repeat="ingredient in create.ingredients">
                 <div class="form-group">
                   <input type="number" step="any" class="form-control input-small" ng-model="ingredient.quantity.value" placeholder="Ex: 50" required>
@@ -83,9 +83,10 @@
                 <button type="button" class="btn btn-danger" ng-click="removeIngredient($index)"><i class="fa fa-times"></i></button>
                 <button type="button" class="btn btn-default" ng-click="moveDownIngredient($index)" ng-if="!$last"><i class="fa fa-arrow-down"></i></button>
               </div>
+              <button type="button" class="btn btn-default btn-xs" ng-click="addIngredient()">Ajouter un ingrédient</button>
             </div>
             <div class="form-group">
-              <label>Instructions <button type="button" class="btn btn-default btn-xs" ng-click="addInstruction()">Ajouter une instruction</button></label>
+              <label>Instructions</label>
               <div class="form-group" ng-repeat="instruction in create.instructions">
                 <div class="row">
                   <div class="col-md-11">
@@ -96,6 +97,7 @@
                   </div>
                 </div>
               </div>
+              <button type="button" class="btn btn-default btn-xs" ng-click="addInstruction()">Ajouter une instruction</button>
             </div>
             <div class="form-group">
               <label for="source">Source</label>

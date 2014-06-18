@@ -12,12 +12,12 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('FoodCtrl', function($scope, $firebase, foodDb, firebaseUtils, formTmp, foodConst){
+.controller('FoodCtrl', function($scope, $firebase, foodDb, firebaseUtils, formTmp, dataList){
   'use strict';
   $scope.elts = foodDb.get();
-  $scope.categories = foodConst.categories;
-  $scope.currencies = foodConst.currencies;
-  $scope.units = foodConst.units;
+  $scope.categories = dataList.foodCategories;
+  $scope.currencies = dataList.currencies;
+  $scope.units = dataList.quantityUnits;
   $scope.create = formTmp.set('food');
 
   $scope.edit = function(key, elt){
@@ -70,15 +70,15 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('CourseCreateCtrl', function($scope, $state, foodDb, courseDb, recipeConst, formTmp){
+.controller('CourseCreateCtrl', function($scope, $state, foodDb, courseDb, dataList, formTmp){
   'use strict';
   $scope.elts = courseDb.get();
   $scope.foods = foodDb.get();
-  $scope.categories = recipeConst.categories;
-  $scope.servings = ['personnes'];
-  $scope.timeUnits = ['minutes', 'secondes'];
-  $scope.quantityUnits = ['g', 'kg', 'cl', 'litre', 'pièces'];
-  $scope.foodRoles = ['essentiel', 'secondaire', 'habituel'];
+  $scope.categories = dataList.courseCategories;
+  $scope.servings = dataList.servingUnits;
+  $scope.timeUnits = dataList.timeUnits;
+  $scope.quantityUnits = dataList.quantityUnits;
+  $scope.foodRoles = dataList.foodRoles;
   $scope.create = formTmp.set('course');
 
   $scope.addIngredient = function(){
