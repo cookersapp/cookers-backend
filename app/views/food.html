@@ -3,10 +3,11 @@
     <div class="col-md-12 main">
       <h1 class="page-header">Food</h1>
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-9">
           <table class="table">
             <thead>
               <tr>
+                <th>Id</th>
                 <th>Nom</th>
                 <th>Catégorie</th>
                 <th>Prix</th>
@@ -15,6 +16,7 @@
             </thead>
             <tbody>
               <tr ng-repeat="(key, elt) in elts">
+                <td>{{elt.id}}</td>
                 <td>{{elt.name}}</td>
                 <td>{{elt.category}}</td>
                 <td>
@@ -23,50 +25,46 @@
                   </span>
                 </td>
                 <td>
-                  <button type="button" class="btn btn-info btn-xs" ng-click="edit(key, elt)"><i class="fa fa-pencil-square-o"></i></button>
-                  <button type="button" class="btn btn-info btn-xs" ng-click="addPrice(key)">Add <i class="fa fa-eur"></i></button>
-                  <button type="button" class="btn btn-danger btn-xs" ng-click="remove(key)"><i class="fa fa-times"></i></button>
+                  <button type="button" class="btn btn-xs btn-info" ng-click="edit(key, elt)"><i class="fa fa-pencil-square-o"></i></button>
+                  <button type="button" class="btn btn-xs  btn-success" ng-click="addPrice(key)">Add <i class="fa fa-eur"></i></button>
+                  <button type="button" class="btn btn-xs btn-danger" ng-click="remove(key)"><i class="fa fa-times"></i></button>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <form ng-submit="save()" ng-if="!priceFor">
             <div class="form-group">
-              <label for="id">Id</label>
-              <input id="id" type="text" class="form-control" ng-model="create.id" disabled>
-            </div>
-            <div class="form-group">
-              <label for="nom">Nom</label>
-              <input id="nom" type="text" class="form-control" placeholder="Ex: pomme de terre" ng-model="create.name">
+              <label for="name">Nom</label>
+              <input id="name" type="text" class="form-control" ng-model="create.name" placeholder="Ex: pomme de terre" required>
             </div>
             <div class="form-group">
               <label for="category">Catégorie</label>
-              <select id="category" class="form-control" ng-model="create.category" ng-options="category for category in categories"></select>
+              <select id="category" class="form-control" ng-model="create.category" ng-options="category for category in categories" required></select>
             </div>
-            <button type="submit" class="btn btn-primary" ng-if="!edited">Ajouter</button>
+            <button type="submit" class="btn btn-primary" ng-if="!edited">Créer</button>
             <button class="btn btn-default" ng-if="edited" ng-click="cancel()">Annuler</button>
             <button type="submit" class="btn btn-primary" ng-if="edited">Enregistrer</button>
           </form>
+          
           <form ng-submit="savePrice()" ng-if="priceFor">
             <div class="form-group">
               <label for="price">Prix</label>
-              <input id="price" type="text" class="form-control" ng-model="createPrice.value">
+              <input id="price" type="number" step="any" class="form-control" ng-model="createPrice.value" placeholder="Ex: 3.56" required>
             </div>
             <div class="form-group">
               <label for="currency">Devise</label>
-              <select id="currency" class="form-control" ng-model="createPrice.currency" ng-options="currency for currency in currencies"></select>
+              <select id="currency" class="form-control" ng-model="createPrice.currency" ng-options="currency for currency in currencies" ng-init="createPrice.currency=currencies[0]" required></select>
             </div>
             <div class="form-group">
               <label for="unit">Unité</label>
-              <select id="unit" class="form-control" ng-model="createPrice.unit" ng-options="unit for unit in units"></select>
+              <select id="unit" class="form-control" ng-model="createPrice.unit" ng-options="unit for unit in units" ng-init="createPrice.unit=units[0]" required></select>
             </div>
             <div class="form-group">
               <label for="source">Source</label>
-              <input id="source" type="text" class="form-control" ng-model="createPrice.source">
+              <input id="source" type="text" class="form-control" ng-model="createPrice.source" placeholder="Ex: http://fd2-www.leclercdrive.fr/117701/courses/pgeWMEL009_Courses.aspx">
             </div>
-            <pre>{{createPrice | json}}</pre>
             <button class="btn btn-default" ng-click="cancelPrice()">Annuler</button>
             <button type="submit" class="btn btn-primary">Ajouter prix</button>
           </form>

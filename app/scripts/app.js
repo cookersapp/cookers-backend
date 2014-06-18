@@ -1,4 +1,4 @@
-angular.module('firebaseAdminApp', ['ui.router', 'firebase'])
+angular.module('firebaseAdminApp', ['ui.router', 'ngStorage', 'firebase'])
 
 .config(function($stateProvider, $urlRouterProvider){
   'use strict';
@@ -20,6 +20,22 @@ angular.module('firebaseAdminApp', ['ui.router', 'firebase'])
     url: '/food',
     templateUrl: 'views/food.html',
     controller: 'FoodCtrl'
+  })
+  .state('app.course', {
+    url: '/course',
+    abstract: true,
+    template: '<ui-view></ui-view>',
+    controller: 'CourseCtrl'
+  })
+  .state('app.course.list', {
+    url: '/list',
+    templateUrl: 'views/courseList.html',
+    controller: 'CourseListCtrl'
+  })
+  .state('app.course.create', {
+    url: '/create',
+    templateUrl: 'views/courseCreate.html',
+    controller: 'CourseCreateCtrl'
   });
 })
 
@@ -28,6 +44,9 @@ angular.module('firebaseAdminApp', ['ui.router', 'firebase'])
   categories: ['Viandes & Poissons', 'Fruits & Légumes', 'Pains & Pâtisseries', 'Frais', 'Surgelés', 'Épicerie salée', 'Épicerie sucrée', 'Boissons', 'Bébé', 'Bio', 'Hygiène & Beauté', 'Entretien & Nettoyage', 'Animalerie', 'Bazar & Textile'],
   units: ['litre', 'kg'],
   currencies: ['€']
+})
+.constant('recipeConst', {
+  categories: ['Plat principal', 'Entrée', 'Dessert', 'Vin']
 })
 
 .run(function($rootScope, $location){

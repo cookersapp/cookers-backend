@@ -1,0 +1,39 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 main">
+      <h1 class="page-header">Plats <button type="button" class="btn btn-success pull-right" ui-sref="app.course.create"><i class="fa fa-plus"></i> Créer un plat</button></h1>
+      <div class="list-group">
+        <div class="list-group-item" ng-repeat="elt in elts">
+          <h4 class="list-group-item-heading pull-right">{{elt.category}}</h4>
+          <h4 class="list-group-item-heading">{{elt.name}}</h4>
+          <div class="list-group-item-text">
+            <div class="row">
+              <div class="col-md-3">
+                <h5>Ingrédients :</h5>
+                <ul>
+                  <li ng-repeat="ingredient in elt.ingredients">{{ingredient.quantity | quantity}} {{ingredient.pre}} {{ingredient.food.name}} {{ingredient.post}}</li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <h5>Instructions :</h5>
+                <ul>
+                  <li ng-repeat="instruction in elt.instructions">{{instruction.content}}</li>
+                </ul>
+              </div>
+              <div class="col-md-3">
+                <h5>Propriétés :</h5>
+                <ul>
+                  <li>Pour: {{elt.servings.value}} {{elt.servings.unit}}</li>
+                  <li>Prix: {{elt.price.value}} {{elt.price.unit}}</li>
+                  <li>Préparation: {{elt.time.preparation}} {{elt.time.unit}}</li>
+                  <li>Cuisson: {{elt.time.cooking}} {{elt.time.unit}}</li>
+                  <li>Avant de manger: {{elt.time.eat}} {{elt.time.unit}}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
