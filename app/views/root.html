@@ -14,9 +14,8 @@
         <li ng-class="{active: isActive('/home')}"><a ui-sref="app.home">Accueil</a></li>
         <li ng-class="{active: isActive('/food')}"><a ui-sref="app.food">Food</a></li>
         <li ng-class="{active: isActive('/course.*')}"><a ui-sref="app.course.list">Plat</a></li>
-        <li><a>Repas</a></li>
+        <li ng-class="{active: isActive('/meal')}"><a ui-sref="app.meal">Repas</a></li>
         <li><a>Planning</a></li>
-        <li ng-class="{active: isActive('/dynamicform')}"><a ui-sref="app.dynamicform">Dynamicform</a></li>
       </ul>
     </div>
   </div>

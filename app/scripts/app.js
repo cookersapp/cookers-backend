@@ -36,6 +36,11 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage', 'firebase'])
     url: '/create',
     templateUrl: 'views/courseCreate.html',
     controller: 'CourseCreateCtrl'
+  })
+  .state('app.meal', {
+    url: '/meal',
+    templateUrl: 'views/meal.html',
+    controller: 'MealCtrl'
   });
 })
 

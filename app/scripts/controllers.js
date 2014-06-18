@@ -137,4 +137,65 @@ angular.module('firebaseAdminApp')
     console.log(prices);
     return 0;
   }
+})
+
+
+.controller('MealCtrl', function($scope, $firebase, mealDb, courseDb, firebaseUtils, formTmp){
+  'use strict';
+  $scope.elts = mealDb.get();
+  $scope.courses = courseDb.get();
+  $scope.create = formTmp.set('meal');
+
+  $scope.edit = function(key, elt){
+    angular.copy(elt, $scope.create);
+    $scope.create.key = key;
+  };
+  $scope.cancel = function(){
+    formTmp.reset('meal');
+  };
+  $scope.remove = function(key){
+    if(confirm('Supprimer cet élément ?')){
+      $scope.elts.$remove(key);
+    }
+  };
+  $scope.save = function(){
+    if($scope.create.key){
+      var key = $scope.create.key;
+      delete $scope.create.key;
+      $scope.create.updated = Date.now();
+      $scope.elts[key] = processMeal($scope.create);
+      $scope.elts.$save(key);
+    } else {
+      $scope.create.id = firebaseUtils.generateIdFromText($scope.elts, $scope.create.name);
+      $scope.create.added = Date.now();
+      $scope.elts.$add(processMeal($scope.create));
+    }
+
+    formTmp.reset('meal');
+  };
+  
+  function processMeal(meal){
+    var result = angular.copy(meal);
+    updateCourse(result.starter);
+    updateCourse(result.mainCourse);
+    updateCourse(result.desert);
+    updateCourse(result.wine);
+    var difficulty = 0;
+    if(result.starter && result.starter.difficulty && result.starter.difficulty > difficulty){difficulty = result.starter.difficulty;}
+    if(result.mainCourse && result.mainCourse.difficulty && result.mainCourse.difficulty > difficulty){difficulty = result.mainCourse.difficulty;}
+    if(result.desert && result.desert.difficulty && result.desert.difficulty > difficulty){difficulty = result.desert.difficulty;}
+    if(result.wine && result.wine.difficulty && result.wine.difficulty > difficulty){difficulty = result.wine.difficulty;}
+    result.difficulty = difficulty;
+    return result;
+  }
+  function updateCourse(course){
+    if(course){
+      if(course.id && course.id.length > 0){
+        var c = firebaseUtils.findById($scope.courses, course.id);
+        angular.copy(c, course);
+      } else {
+        angular.copy({}, course);
+      }
+    }
+  }
 });

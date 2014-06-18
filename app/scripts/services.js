@@ -5,14 +5,21 @@ angular.module('firebaseAdminApp')
   var db = $firebase(ref);
   return {
     getRef: function(){return ref;},
-    get: function(){return db;},
-    getChildRef: function(child){return ref.child(child);},
-    getChild: function(child){return $firebase(this.getChildRef(child));}
+    get: function(){return db;}
   };
 })
 
 .factory("courseDb", function($firebase, firebaseUrl){
   var ref = new Firebase(firebaseUrl+"/course");
+  var db = $firebase(ref);
+  return {
+    getRef: function(){return ref;},
+    get: function(){return db;}
+  };
+})
+
+.factory("mealDb", function($firebase, firebaseUrl){
+  var ref = new Firebase(firebaseUrl+"/meal");
   var db = $firebase(ref);
   return {
     getRef: function(){return ref;},
