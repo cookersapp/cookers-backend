@@ -41,6 +41,11 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage', 'firebase'])
     url: '/meal',
     templateUrl: 'views/meal.html',
     controller: 'MealCtrl'
+  })
+  .state('app.planning', {
+    url: '/planning',
+    templateUrl: 'views/planning.html',
+    controller: 'PlanningCtrl'
   });
 })
 
@@ -53,7 +58,8 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage', 'firebase'])
   servingUnits:     ['personnes'],
   timeUnits:        ['minutes', 'secondes'],
   quantityUnits:    ['g', 'kg', 'cl', 'litre', 'pièce'],
-  foodRoles:        ['essentiel', 'secondaire', 'habituel']
+  foodRoles:        ['essentiel', 'secondaire', 'habituel'],
+  days:             ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
 })
 
 .run(function($rootScope, $location){

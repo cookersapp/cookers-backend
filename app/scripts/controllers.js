@@ -44,12 +44,11 @@ angular.module('firebaseAdminApp')
       var key = $scope.create.key;
       delete $scope.create.key;
       $scope.create.updated = Date.now();
-      $scope.elts[key] = $scope.create;
-      $scope.elts.$save(key);
+      foodDb.save(key, $scope.create);
     } else {
       $scope.create.id = firebaseUtils.generateIdFromText($scope.elts, $scope.create.name);
       $scope.create.added = Date.now();
-      $scope.elts.$add($scope.create);
+      foodDb.save($scope.create.id, $scope.create);
     }
 
     formTmp.reset('food');
@@ -103,12 +102,13 @@ angular.module('firebaseAdminApp')
   }
 
   $scope.save = function(){
-    $scope.elts.$add(processNewCourse($scope.create));
+    var course = processCourse($scope.create);
+    courseDb.save(course.id, course);
     formTmp.reset('course');
     $state.go('app.course.list');
   };
 
-  function processNewCourse(newCourse){
+  function processCourse(newCourse){
     var result = angular.copy(newCourse);
     result.added = Date.now();
     result.id = getSlug(result.name);
@@ -163,17 +163,16 @@ angular.module('firebaseAdminApp')
       var key = $scope.create.key;
       delete $scope.create.key;
       $scope.create.updated = Date.now();
-      $scope.elts[key] = processMeal($scope.create);
-      $scope.elts.$save(key);
+      mealDb.save(key, processMeal($scope.create));
     } else {
       $scope.create.id = firebaseUtils.generateIdFromText($scope.elts, $scope.create.name);
       $scope.create.added = Date.now();
-      $scope.elts.$add(processMeal($scope.create));
+      mealDb.save($scope.create.id, processMeal($scope.create));
     }
 
     formTmp.reset('meal');
   };
-  
+
   function processMeal(meal){
     var result = angular.copy(meal);
     updateCourse(result.starter);
@@ -195,6 +194,72 @@ angular.module('firebaseAdminApp')
         angular.copy(c, course);
       } else {
         angular.copy({}, course);
+      }
+    }
+  }
+})
+
+
+.controller('PlanningCtrl', function($scope, $firebase, planningDb, mealDb, firebaseUtils, formTmp, dataList){
+  'use strict';
+  $scope.elts = planningDb.get();
+  $scope.meals = mealDb.get();
+  $scope.days = dataList.days;
+  $scope.create = formTmp.set('planning');
+  createDaysIfNotExist($scope.create);
+
+  $scope.edit = function(key, elt){
+    angular.copy(elt, $scope.create);
+    $scope.create.key = key;
+  };
+  $scope.cancel = function(){
+    formTmp.reset('planning');
+    createDaysIfNotExist($scope.create);
+  };
+  $scope.remove = function(key){
+    if(confirm('Supprimer cet élément ?')){
+      $scope.elts.$remove(key);
+    }
+  };
+  $scope.save = function(){
+    if($scope.create.key){
+      var key = $scope.create.key;
+      delete $scope.create.key;
+      $scope.create.updated = Date.now();
+      planningDb.save(key, processPlanning($scope.create));
+    } else {
+      $scope.create.id = firebaseUtils.generateIdFromText($scope.elts, $scope.create.week.toString());
+      $scope.create.added = Date.now();
+      planningDb.save($scope.create.id, processPlanning($scope.create));
+    }
+
+    formTmp.reset('planning');
+    createDaysIfNotExist($scope.create);
+  };
+
+  function processPlanning(planning){
+    var result = angular.copy(planning);
+    result.meals = [];
+    for(var i in result.days){
+      addMealIfNoExist(result.meals, result.days[i].lunch);
+      addMealIfNoExist(result.meals, result.days[i].dinner);
+    }
+    return result;
+  }
+  function addMealIfNoExist(meals, meal){
+    if(meal && meal.recommended && meal.recommended.length > 0){
+      var index = _.findIndex(meals, {id: meal.recommended});
+      if(index === -1){
+        var m = firebaseUtils.findById($scope.meals, meal.recommended);
+        meals.push(m);
+      }
+    }
+  }
+  function createDaysIfNotExist(elt){
+    if(!elt.days){
+      elt.days = [];
+      for(var i in $scope.days){
+        elt.days.push({name: $scope.days[i], lunch: {recommended: ''}, dinner: {recommended: ''}})
       }
     }
   }

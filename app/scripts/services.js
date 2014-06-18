@@ -5,7 +5,8 @@ angular.module('firebaseAdminApp')
   var db = $firebase(ref);
   return {
     getRef: function(){return ref;},
-    get: function(){return db;}
+    get: function(){return db;},
+    save: function(key, value){ref.child(key).set(value);}
   };
 })
 
@@ -14,7 +15,8 @@ angular.module('firebaseAdminApp')
   var db = $firebase(ref);
   return {
     getRef: function(){return ref;},
-    get: function(){return db;}
+    get: function(){return db;},
+    save: function(key, value){ref.child(key).set(value);}
   };
 })
 
@@ -23,7 +25,18 @@ angular.module('firebaseAdminApp')
   var db = $firebase(ref);
   return {
     getRef: function(){return ref;},
-    get: function(){return db;}
+    get: function(){return db;},
+    save: function(key, value){ref.child(key).set(value);}
+  };
+})
+
+.factory("planningDb", function($firebase, firebaseUrl){
+  var ref = new Firebase(firebaseUrl+"/planning");
+  var db = $firebase(ref);
+  return {
+    getRef: function(){return ref;},
+    get: function(){return db;},
+    save: function(key, value){ref.child(key).set(value);}
   };
 })
 
