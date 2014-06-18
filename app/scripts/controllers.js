@@ -12,68 +12,62 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('FoodCtrl', function($scope, $firebase, foodDb, foodConst){
+.controller('FoodCtrl', function($scope, $firebase, foodDb, formTmp, foodConst){
   'use strict';
   $scope.elts = foodDb.get();
   $scope.categories = foodConst.categories;
   $scope.currencies = foodConst.currencies;
   $scope.units = foodConst.units;
-  $scope.create = {};
-  $scope.edited = null;
+  $scope.create = formTmp.set('food');
 
   $scope.edit = function(key, elt){
     angular.copy(elt, $scope.create);
-    $scope.edited = key;
+    $scope.create.key = key;
   };
   $scope.cancel = function(){
-    $scope.create = {};
-    $scope.edited = null;
+    formTmp.reset('food');
   };
   $scope.remove = function(key){
     if(confirm('Supprimer cet élément ?')){
       $scope.elts.$remove(key);
     }
   };
+  $scope.addPrice = function(){
+    if(!$scope.create.prices){$scope.create.prices = [];}
+    $scope.create.prices.push({});
+  };
+  $scope.removePrice = function(index){
+    $scope.create.prices.splice(index, 1);
+  }
   $scope.save = function(){
-    if($scope.edited){
+    if($scope.create.key){
+      var key = $scope.create.key;
+      delete $scope.create.key;
       $scope.create.id = generateId($scope.elts, getSlug($scope.create.name));
-      $scope.elts[$scope.edited] = $scope.create;
-      $scope.elts.$save($scope.edited);
+      $scope.elts[key] = $scope.create;
+      $scope.elts.$save(key);
     } else {
       $scope.create.id = generateId($scope.elts, getSlug($scope.create.name));
       $scope.create.added = Date.now();
       $scope.elts.$add($scope.create);
     }
-    $scope.create = {};
-    $scope.edited = null;
-  };
-
-
-  $scope.priceFor = null;
-  $scope.createPrice = {};
-
-  $scope.addPrice = function(key){
-    $scope.priceFor = key;
-  };
-  $scope.cancelPrice = function(){
-    $scope.priceFor = null;
-    $scope.createPrice = {};
-  };
-  $scope.savePrice = function(){
-    $scope.createPrice.added = Date.now();
-    $scope.createPrice.unit = $scope.createPrice.currency+'/'+$scope.createPrice.unit;
-    delete $scope.createPrice.currency;
-    foodDb.getChild($scope.priceFor+'/prices').$add($scope.createPrice);
-    $scope.priceFor = null;
-    $scope.createPrice = {};
+    formTmp.reset('food');
   };
 
   function generateId(list, slug, index){
     var id = index ? slug+'-'+index : slug;
-    if(_.findKey(list, {id: id})){
+    if(findById(list, id)){
       return generateId(list, slug, index ? index+1 : 2);
     } else {
       return id;
+    }
+  }
+
+  function findById(firebaseDb, id){
+    for(var i in firebaseDb){
+      if(i[0] !== '$' && firebaseDb[i].id === id){
+        return firebaseDb[i];
+      }
     }
   }
 })
@@ -88,7 +82,7 @@ angular.module('firebaseAdminApp')
 .controller('CourseListCtrl', function($scope, courseDb){
   'use strict';
   $scope.elts = courseDb.get();
-  
+
 })
 
 
