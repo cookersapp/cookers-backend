@@ -12,7 +12,7 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('FoodCtrl', function($scope, $firebase, foodDb, formTmp, foodConst){
+.controller('FoodCtrl', function($scope, $firebase, foodDb, firebaseUtils, formTmp, foodConst){
   'use strict';
   $scope.elts = foodDb.get();
   $scope.categories = foodConst.categories;
@@ -43,33 +43,17 @@ angular.module('firebaseAdminApp')
     if($scope.create.key){
       var key = $scope.create.key;
       delete $scope.create.key;
-      $scope.create.id = generateId($scope.elts, getSlug($scope.create.name));
+      $scope.create.updated = Date.now();
       $scope.elts[key] = $scope.create;
       $scope.elts.$save(key);
     } else {
-      $scope.create.id = generateId($scope.elts, getSlug($scope.create.name));
+      $scope.create.id = firebaseUtils.generateIdFromText($scope.elts, $scope.create.name);
       $scope.create.added = Date.now();
       $scope.elts.$add($scope.create);
     }
+
     formTmp.reset('food');
   };
-
-  function generateId(list, slug, index){
-    var id = index ? slug+'-'+index : slug;
-    if(findById(list, id)){
-      return generateId(list, slug, index ? index+1 : 2);
-    } else {
-      return id;
-    }
-  }
-
-  function findById(firebaseDb, id){
-    for(var i in firebaseDb){
-      if(i[0] !== '$' && firebaseDb[i].id === id){
-        return firebaseDb[i];
-      }
-    }
-  }
 })
 
 
@@ -134,9 +118,9 @@ angular.module('firebaseAdminApp')
         var ingredient = result.ingredients[i];
         var foodKey = _.findKey($scope.foods, {id: ingredient.food.id});
         var foodObj = $scope.foods[foodKey];
-        ingredient.food = angular.copy(foodObj);
-        totalPrice += getPriceForQuantity(ingredient.quantity, ingredient.food.prices);
-        delete ingredient.food.prices;
+        ingredient.food.name = foodObj.name;
+        ingredient.food.category = foodObj.category;
+        totalPrice += getPriceForQuantity(ingredient.quantity, foodObj.prices);
       }
     }
     result.price = {
