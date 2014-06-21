@@ -44,11 +44,14 @@ angular.module('firebaseAdminApp')
       var key = $scope.create.key;
       delete $scope.create.key;
       $scope.create.updated = Date.now();
-      foodDb.save(key, $scope.create);
+      $scope.elts[key] = $scope.create;
+      $scope.elts.$save(key);
+      //foodDb.save(key, $scope.create);
     } else {
       $scope.create.id = firebaseUtils.generateIdFromText($scope.elts, $scope.create.name);
       $scope.create.added = Date.now();
-      foodDb.save($scope.create.id, $scope.create);
+      $scope.elts.$add($scope.create);
+      //foodDb.save($scope.create.id, $scope.create);
     }
 
     formTmp.reset('food');
