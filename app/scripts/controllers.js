@@ -40,7 +40,7 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('CourseCtrl', function($scope, $state, foodDb, courseDb, dataList, crudFactory){
+.controller('CourseCtrl', function($scope, $state, foodDb, courseDb, dataList, priceCalculator, crudFactory){
   'use strict';
   var crud = crudFactory.create('course', courseDb, processCourse);
   $scope.elts = crud.elts;
@@ -89,30 +89,16 @@ angular.module('firebaseAdminApp')
 
   function processCourse(course){
     var result = angular.copy(course);
-    var totalPrice = 0;
     if(result.ingredients){
       for(var i in result.ingredients){
         var ingredient = result.ingredients[i];
-        var foodKey = _.findKey($scope.foods, {id: ingredient.food.id});
-        var foodObj = $scope.foods[foodKey];
+        var foodObj = _.find($scope.foods, {id: ingredient.food.id});
         ingredient.food.name = foodObj.name;
         ingredient.food.category = foodObj.category;
-        totalPrice += getPriceForQuantity(ingredient.quantity, foodObj.prices);
       }
     }
-    result.price = {
-      value: totalPrice/result.servings.value,
-      unit: '€/personne'
-    };
+    result.price = priceCalculator.forCourse(result);
     return result;
-  }
-
-  function getPriceForQuantity(quantity, prices){
-    // TODO
-    console.log('Find price for :');
-    console.log(quantity);
-    console.log(prices);
-    return 0;
   }
 })
 

@@ -27,7 +27,7 @@
                 <h5>Propriétés :</h5>
                 <ul>
                   <li>Pour: {{elt.servings.value}} {{elt.servings.unit}}</li>
-                  <li>Prix: {{elt.price.value}} {{elt.price.unit}}</li>
+                  <li>Prix: {{elt.price.value | number:2}} {{elt.price.unit}}</li>
                   <li>Préparation: {{elt.time.preparation}} {{elt.time.unit}}</li>
                   <li>Cuisson: {{elt.time.cooking}} {{elt.time.unit}}</li>
                   <li>Avant de manger: {{elt.time.eat}} {{elt.time.unit}}</li>

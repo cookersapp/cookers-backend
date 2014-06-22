@@ -24,6 +24,63 @@ angular.module('firebaseAdminApp')
   return firebaseCollection.service;
 })
 
+.factory('priceCalculator', function(foodDb, unitConversion){
+  'use strict';
+  var foods = foodDb.getAll();
+  var service = {
+    forCourse: coursePrice
+  };
+
+  function getPriceForQuantity(quantity, prices){
+    var price = _.find(prices, {unit: quantity.unit});
+    if(price){
+      return price.value * quantity.value;
+    } else {
+      for(var i in unitConversion){
+        var src = _.find(unitConversion[i].convert, {unit: quantity.unit});
+        if(src){
+          for(var j in prices){
+            var dest = _.find(unitConversion[i].convert, {unit: prices[j].unit});
+            if(dest){
+              return prices[j].value * quantity.value * (src.factor / dest.factor);
+            }
+          }
+        }
+      }
+      console.warn('Unable to find price for <'+quantity.unit+'> in ', prices);
+      return 0;
+    }
+  }
+
+  function coursePrice(course){
+    var currency = '€';
+    var totalPrice = 0;
+    if(course && course.ingredients){
+      for(var i in course.ingredients){
+        var ingredient = course.ingredients[i];
+        var food = _.find(foods, {id: ingredient.food.id});
+        if(food){
+          totalPrice += getPriceForQuantity(ingredient.quantity, food.prices);
+        }
+      }
+    }
+
+    if(course && course.servings){
+      return {
+        value: totalPrice/course.servings.value,
+        unit: currency+'/'+course.servings.unit
+      };
+    } else {
+      return {
+        value: totalPrice,
+        unit: currency
+      };
+    }
+  }
+
+  return service;
+})
+
 .factory('Utils', function(){
   'use strict';
   var service = {

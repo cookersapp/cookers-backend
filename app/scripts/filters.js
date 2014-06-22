@@ -14,6 +14,6 @@ angular.module('firebaseAdminApp')
 .filter('quantity', function($filter){
   'use strict';
   return function(quantity) {
-    return quantity.value+' '+$filter('unit')(quantity.unit);
+    return quantity.value > 0 ? quantity.value+' '+$filter('unit')(quantity.unit) : '';
   };
 });

@@ -63,9 +63,20 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage'])
   servingUnits:     ['personnes'],
   timeUnits:        ['minutes', 'secondes'],
   quantityUnits:    ['g', 'kg', 'cl', 'litre', 'pièce'],
-  foodRoles:        ['essentiel', 'secondaire', 'habituel'],
+  foodRoles:        ['essentiel', 'secondaire', 'accompagnement', 'facultatif'],
   days:             ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
 })
+
+.constant('unitConversion', [
+  {ref: 'g', convert: [
+    {unit: 'g', factor: 1},
+    {unit: 'kg', factor: 1000}
+  ]},
+  {ref: 'ml', convert: [
+    {unit: 'cl', factor: 10},
+    {unit: 'litre', factor: 1000}
+  ]}
+])
 
 .run(function($rootScope, $location){
   'use strict';
