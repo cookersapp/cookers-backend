@@ -11,7 +11,7 @@
             </div>
             <div class="form-group">
               <label for="category">Catégorie</label>
-              <select id="category" class="form-control" ng-model="form.category" ng-options="category for category in categories" ng-init="form.category=categories[0]" required></select>
+              <select id="category" class="form-control" ng-model="form.category" ng-options="category for category in categories" required></select>
             </div>
             <div class="form-group">
               <label for="servings.value">Pour</label>
@@ -20,7 +20,7 @@
                   <input id="servings.value" type="number" class="form-control" ng-model="form.servings.value" placeholder="Ex: 2" required>
                 </div>
                 <div class="col-md-6">
-                  <select id="servings.unit" class="form-control" ng-model="form.servings.unit" ng-options="serving for serving in servings" ng-init="form.servings.unit=servings[0]" required></select>
+                  <select id="servings.unit" class="form-control" ng-model="form.servings.unit" ng-options="serving for serving in servings" required></select>
                 </div>
               </div>
             </div>
@@ -52,7 +52,7 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label for="time.unit">Unité</label>
-                    <select id="time.unit" class="form-control" ng-model="form.time.unit" ng-options="timeUnit for timeUnit in timeUnits" ng-init="form.time.unit=timeUnits[0]" required></select>
+                    <select id="time.unit" class="form-control" ng-model="form.time.unit" ng-options="timeUnit for timeUnit in timeUnits" required></select>
                   </div>
                 </div>
               </div>
@@ -64,7 +64,7 @@
                   <input type="number" step="any" class="form-control input-small" ng-model="ingredient.quantity.value" placeholder="Ex: 50" required>
                 </div>
                 <div class="form-group">
-                  <select class="form-control" ng-model="ingredient.quantity.unit" ng-options="quantityUnit for quantityUnit in quantityUnits" ng-init="ingredient.quantity.unit=quantityUnits[0]" required></select>
+                  <select class="form-control" ng-model="ingredient.quantity.unit" ng-options="quantityUnit for quantityUnit in quantityUnits" required></select>
                 </div>
                 <div class="form-group">
                   <input type="text" class="form-control input-small" ng-model="ingredient.pre" placeholder="Ex: de">
@@ -78,7 +78,7 @@
                   <input type="text" class="form-control input-small" ng-model="ingredient.post" placeholder="Ex: fin">
                 </div>
                 <div class="form-group">
-                  <select class="form-control" ng-model="ingredient.role" ng-options="foodRole for foodRole in foodRoles" ng-init="ingredient.role=foodRoles[0]" required></select>
+                  <select class="form-control" ng-model="ingredient.role" ng-options="foodRole for foodRole in foodRoles" required></select>
                 </div>
                 <button type="button" class="btn btn-danger" ng-click="removeIngredient($index)"><i class="fa fa-times"></i></button>
                 <button type="button" class="btn btn-default" ng-click="moveDownIngredient($index)" ng-if="!$last"><i class="fa fa-arrow-down"></i></button>

@@ -7,7 +7,7 @@
           <table class="table">
             <thead>
               <tr>
-                <th>Id</th>
+                <th class="hide">Id</th>
                 <th>Nom</th>
                 <th>Catégorie</th>
                 <th>Prix</th>
@@ -16,7 +16,7 @@
             </thead>
             <tbody>
               <tr ng-repeat="elt in elts">
-                <td>{{elt.id}}</td>
+                <td class="hide">{{elt.id}}</td>
                 <td>{{elt.name}}</td>
                 <td>{{elt.category}}</td>
                 <td>
@@ -50,10 +50,10 @@
                   <input type="number" step="any" class="form-control input-small" ng-model="price.value" placeholder="Ex: 1.99" required>
                 </div>
                 <div class="form-group">
-                  <select class="form-control" ng-model="price.currency" ng-options="currency for currency in currencies" ng-init="price.currency=currencies[0]" required></select>
+                  <select class="form-control" ng-model="price.currency" ng-options="currency for currency in currencies" required></select>
                 </div>
                 <div class="form-group">
-                  / <select class="form-control" ng-model="price.unit" ng-options="unit for unit in units" ng-init="price.unit=units[0]" required></select>
+                  / <select class="form-control" ng-model="price.unit" ng-options="unit for unit in units" required></select>
                 </div>
                 <div class="form-group">
                   <input type="text" class="form-control" ng-model="price.source" placeholder="Ex: http://fd2-www.leclercdrive.fr/117701/courses/pgeWMEL009_Courses.aspx">
