@@ -1,0 +1,5 @@
+<div>
+  <file name="image" ng-model="file" accept="image/png,image/jpg,image/jpeg" />
+  <i class="fa fa-circle-o-notch fa-spin" ng-if="loading"></i>
+  <img ng-src="{{ngModel}}" ng-if="ngModel" style="max-height: 150px;" />
+</div>

@@ -12,12 +12,15 @@
           <div class="list-group-item-text">
             <div class="row">
               <div class="col-md-3">
+                <img ng-src="{{elt.images.landing}}" style="width: 100%;" />
+              </div>
+              <div class="col-md-3">
                 <h5>Ingrédients :</h5>
                 <ul>
                   <li ng-repeat="ingredient in elt.ingredients">{{ingredient.quantity | quantity}} {{ingredient.pre}} {{ingredient.food.name}} {{ingredient.post}}</li>
                 </ul>
               </div>
-              <div class="col-md-6">
+              <div class="col-md-3">
                 <h5>Instructions :</h5>
                 <ul>
                   <li ng-repeat="instruction in elt.instructions">{{instruction.content}}</li>

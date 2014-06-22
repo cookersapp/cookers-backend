@@ -5,7 +5,6 @@ angular.module('firebaseAdminApp')
 
 })
 
-
 .controller('HomeCtrl', function($scope){
   'use strict';
 
