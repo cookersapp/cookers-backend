@@ -1,4 +1,4 @@
-angular.module('firebaseAdminApp', ['ui.router', 'ngStorage', 'firebase'])
+angular.module('firebaseAdminApp', ['ui.router', 'ngStorage'])
 
 .config(function($stateProvider, $urlRouterProvider){
   'use strict';
@@ -63,6 +63,7 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage', 'firebase'])
 })
 
 .run(function($rootScope, $location){
+  'use strict';
   $rootScope.isActive = function (viewLocation) {
     var regex = new RegExp('^'+viewLocation+'$', 'g');
     return regex.test($location.path());

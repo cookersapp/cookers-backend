@@ -7,26 +7,26 @@
           <form ng-submit="save()" ng-if="!priceFor">
             <div class="form-group">
               <label for="name">Nom</label>
-              <input id="name" type="text" class="form-control" ng-model="create.name" placeholder="Ex: Tartare de saumon" required>
+              <input id="name" type="text" class="form-control" ng-model="form.name" placeholder="Ex: Tartare de saumon" required>
             </div>
             <div class="form-group">
               <label for="category">Catégorie</label>
-              <select id="category" class="form-control" ng-model="create.category" ng-options="category for category in categories" ng-init="create.category=categories[0]" required></select>
+              <select id="category" class="form-control" ng-model="form.category" ng-options="category for category in categories" ng-init="form.category=categories[0]" required></select>
             </div>
             <div class="form-group">
               <label for="servings.value">Pour</label>
               <div class="row">
                 <div class="col-md-6">
-                  <input id="servings.value" type="number" class="form-control" ng-model="create.servings.value" placeholder="Ex: 2" required>
+                  <input id="servings.value" type="number" class="form-control" ng-model="form.servings.value" placeholder="Ex: 2" required>
                 </div>
                 <div class="col-md-6">
-                  <select id="servings.unit" class="form-control" ng-model="create.servings.unit" ng-options="serving for serving in servings" ng-init="create.servings.unit=servings[0]" required></select>
+                  <select id="servings.unit" class="form-control" ng-model="form.servings.unit" ng-options="serving for serving in servings" ng-init="form.servings.unit=servings[0]" required></select>
                 </div>
               </div>
             </div>
             <div class="form-group">
               <label for="difficulty">Difficulté (note sur 10)</label>
-              <input id="difficulty" type="number" step="any" class="form-control" ng-model="create.difficulty" placeholder="Ex: 3" required>
+              <input id="difficulty" type="number" step="any" class="form-control" ng-model="form.difficulty" placeholder="Ex: 3" required>
             </div>
             <div class="form-group">
               <label for="time">Temps</label>
@@ -34,32 +34,32 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label for="time.preparation">Préparation</label>
-                    <input id="time.preparation" type="number" class="form-control" ng-model="create.time.preparation" placeholder="Ex: 15">
+                    <input id="time.preparation" type="number" class="form-control" ng-model="form.time.preparation" placeholder="Ex: 15">
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label for="time.cooking">Cuisson</label>
-                    <input id="time.cooking" type="number" class="form-control" ng-model="create.time.cooking" placeholder="Ex: 20">
+                    <input id="time.cooking" type="number" class="form-control" ng-model="form.time.cooking" placeholder="Ex: 20">
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label for="time.eat">Pour manger</label>
-                    <input id="time.eat" type="number" class="form-control" ng-model="create.time.eat" placeholder="Ex: 35" required>
+                    <input id="time.eat" type="number" class="form-control" ng-model="form.time.eat" placeholder="Ex: 35" required>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label for="time.unit">Unité</label>
-                    <select id="time.unit" class="form-control" ng-model="create.time.unit" ng-options="timeUnit for timeUnit in timeUnits" ng-init="create.time.unit=timeUnits[0]" required></select>
+                    <select id="time.unit" class="form-control" ng-model="form.time.unit" ng-options="timeUnit for timeUnit in timeUnits" ng-init="form.time.unit=timeUnits[0]" required></select>
                   </div>
                 </div>
               </div>
             </div>
             <div class="form-group">
               <label>Ingrédients</label>
-              <div class="form-inline" ng-repeat="ingredient in create.ingredients">
+              <div class="form-inline" ng-repeat="ingredient in form.ingredients">
                 <div class="form-group">
                   <input type="number" step="any" class="form-control input-small" ng-model="ingredient.quantity.value" placeholder="Ex: 50" required>
                 </div>
@@ -87,7 +87,7 @@
             </div>
             <div class="form-group">
               <label>Instructions</label>
-              <div class="form-group" ng-repeat="instruction in create.instructions">
+              <div class="form-group" ng-repeat="instruction in form.instructions">
                 <div class="row">
                   <div class="col-md-11">
                     <textarea class="form-control" rows="3" ng-model="instruction.content" required></textarea>
@@ -101,7 +101,7 @@
             </div>
             <div class="form-group">
               <label for="source">Source</label>
-              <input id="source" type="text" class="form-control" ng-model="create.source" placeholder="Ex: http://www.cuisineaz.com/dossiers/cuisine/spaghetti-16278.aspx">
+              <input id="source" type="text" class="form-control" ng-model="form.source" placeholder="Ex: http://www.cuisineaz.com/dossiers/cuisine/spaghetti-16278.aspx">
             </div>
             <button type="submit" class="btn btn-primary">Créer</button>
           </form>

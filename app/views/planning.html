@@ -13,12 +13,12 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="(key, elt) in elts">
+              <tr ng-repeat="elt in elts">
                 <td class="hide">{{elt.id}}</td>
                 <td>{{elt.week}}</td>
                 <td>
-                  <button type="button" class="btn btn-xs btn-info" ng-click="edit(key, elt)"><i class="fa fa-pencil-square-o"></i></button>
-                  <button type="button" class="btn btn-xs btn-danger" ng-click="remove(key)"><i class="fa fa-times"></i></button>
+                  <button type="button" class="btn btn-xs btn-info" ng-click="edit(elt)"><i class="fa fa-pencil-square-o"></i></button>
+                  <button type="button" class="btn btn-xs btn-danger" ng-click="remove(elt)"><i class="fa fa-times"></i></button>
                 </td>
               </tr>
             </tbody>
@@ -29,9 +29,9 @@
           <form ng-submit="save()">
             <div class="form-group">
               <label for="week">Semaine</label>
-              <input id="week" type="number" class="form-control" ng-model="create.week" placeholder="Ex: 26" required>
+              <input id="week" type="number" class="form-control" ng-model="form.week" placeholder="Ex: 26" required>
             </div>
-            <div class="form-group" ng-repeat="day in create.days">
+            <div class="form-group" ng-repeat="day in form.days">
               <div class="row">
                 <div class="col-md-2">
                   <label>{{day.name}}</label>
@@ -55,8 +55,8 @@
               </div>
             </div>
             <a class="btn btn-default" ng-click="cancel()">Annuler</a>
-            <button type="submit" class="btn btn-primary" ng-if="!create.key">Créer</button>
-            <button type="submit" class="btn btn-success" ng-if="create.key">Enregistrer</button>
+            <button type="submit" class="btn btn-primary" ng-if="!form.id">Créer</button>
+            <button type="submit" class="btn btn-success" ng-if="form.id">Enregistrer</button>
           </form>
         </div>
       </div>

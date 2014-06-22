@@ -7,7 +7,7 @@
           <table class="table">
             <thead>
               <tr>
-                <th class="hide">Id</th>
+                <th>Id</th>
                 <th>Nom</th>
                 <th>Catégorie</th>
                 <th>Prix</th>
@@ -15,8 +15,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="(key, elt) in elts">
-                <td class="hide">{{elt.id}}</td>
+              <tr ng-repeat="elt in elts">
+                <td>{{elt.id}}</td>
                 <td>{{elt.name}}</td>
                 <td>{{elt.category}}</td>
                 <td>
@@ -25,8 +25,8 @@
                   </span>
                 </td>
                 <td>
-                  <button type="button" class="btn btn-xs btn-info" ng-click="edit(key, elt)"><i class="fa fa-pencil-square-o"></i></button>
-                  <button type="button" class="btn btn-xs btn-danger" ng-click="remove(key)"><i class="fa fa-times"></i></button>
+                  <button type="button" class="btn btn-xs btn-info" ng-click="edit(elt)"><i class="fa fa-pencil-square-o"></i></button>
+                  <button type="button" class="btn btn-xs btn-danger" ng-click="remove(elt)"><i class="fa fa-times"></i></button>
                 </td>
               </tr>
             </tbody>
@@ -37,15 +37,15 @@
           <form ng-submit="save()">
             <div class="form-group">
               <label for="name">Nom</label>
-              <input id="name" type="text" class="form-control" ng-model="create.name" placeholder="Ex: pomme de terre" required>
+              <input id="name" type="text" class="form-control" ng-model="form.name" placeholder="Ex: pomme de terre" required>
             </div>
             <div class="form-group">
               <label for="category">Catégorie</label>
-              <select id="category" class="form-control" ng-model="create.category" ng-options="category for category in categories" required></select>
+              <select id="category" class="form-control" ng-model="form.category" ng-options="category for category in categories" required></select>
             </div>
             <div class="form-group">
               <label>Prix</label>
-              <div class="form-inline" ng-repeat="price in create.prices" style="margin-bottom: 5px;">
+              <div class="form-inline" ng-repeat="price in form.prices" style="margin-bottom: 5px;">
                 <div class="form-group">
                   <input type="number" step="any" class="form-control input-small" ng-model="price.value" placeholder="Ex: 1.99" required>
                 </div>
@@ -63,8 +63,8 @@
               <button type="button" class="btn btn-default btn-xs" ng-click="addPrice()">Ajouter un prix</button>
             </div>
             <a class="btn btn-default" ng-click="cancel()">Annuler</a>
-            <button type="submit" class="btn btn-primary" ng-if="!create.key">Créer</button>
-            <button type="submit" class="btn btn-success" ng-if="create.key">Enregistrer</button>
+            <button type="submit" class="btn btn-primary" ng-if="!form.id">Créer</button>
+            <button type="submit" class="btn btn-success" ng-if="form.id">Enregistrer</button>
           </form>
         </div>
       </div>
