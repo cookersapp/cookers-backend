@@ -4,37 +4,36 @@
       <h1 class="page-header">Plats <button type="button" class="btn btn-success pull-right" ui-sref="app.course.create"><i class="fa fa-plus"></i> Créer un plat</button></h1>
       <div class="list-group">
         <div class="list-group-item" ng-repeat="elt in elts">
-          <h4 class="list-group-item-heading pull-right">
-            <button type="button" class="btn btn-sm btn-info" ng-click="edit(elt)"><i class="fa fa-pencil-square-o"></i></button>
-            <button type="button" class="btn btn-sm btn-danger" ng-click="remove(elt)"><i class="fa fa-times"></i></button>
-          </h4>
-          <h4 class="list-group-item-heading">{{elt.name}} ({{elt.category}})</h4>
-          <div class="list-group-item-text">
-            <div class="row">
-              <div class="col-md-3">
-                <img ng-src="{{elt.images.original}}" style="width: 100%;" />
-              </div>
-              <div class="col-md-3">
-                <h5>Ingrédients :</h5>
-                <ul>
-                  <li ng-repeat="ingredient in elt.ingredients">{{ingredient.quantity | quantity}} {{ingredient.pre}} {{ingredient.food.name}} {{ingredient.post}}</li>
-                </ul>
-              </div>
-              <div class="col-md-3">
-                <h5>Instructions :</h5>
-                <ul>
-                  <li ng-repeat="instruction in elt.instructions">{{instruction.content}}</li>
-                </ul>
-              </div>
-              <div class="col-md-3">
-                <h5>Propriétés :</h5>
-                <ul>
-                  <li>Pour: {{elt.servings.value}} {{elt.servings.unit}}</li>
-                  <li>Prix: {{elt.price.value | number:2}} {{elt.price.unit}}</li>
-                  <li>Préparation: {{elt.time.preparation}} {{elt.time.unit}}</li>
-                  <li>Cuisson: {{elt.time.cooking}} {{elt.time.unit}}</li>
-                  <li>Avant de manger: {{elt.time.eat}} {{elt.time.unit}}</li>
-                </ul>
+          <div class="row">
+            <div class="col-md-3">
+              <img class="img-rounded" ng-src="{{elt.images.original}}" style="width: 100%;" />
+            </div>
+            <div class="col-md-9">
+              <h4 class="list-group-item-heading pull-right">
+                <button type="button" class="btn btn-sm btn-default" ng-click="edit(elt)"><i class="fa fa-eye"></i></button>
+                <button type="button" class="btn btn-sm btn-info" ng-click="edit(elt)"><i class="fa fa-pencil-square-o"></i></button>
+                <button type="button" class="btn btn-sm btn-danger" ng-click="remove(elt)"><i class="fa fa-times"></i></button>
+              </h4>
+              <h4 class="list-group-item-heading">{{elt.name}} ({{elt.category}})</h4>
+              <div class="list-group-item-text">
+                <div class="row">
+                  <div class="col-md-6">
+                    <ul>
+                      <li>{{elt.ingredients.length}} ingrédients</li>
+                      <li>{{elt.instructions.length}} instructions</li>
+                      <li>{{elt.price.value | number:2}} {{elt.price.unit}}</li>
+                    </ul>
+                  </div>
+                  <div class="col-md-6">
+                    <ul>
+                      <li>Pour {{elt.servings.value}} {{elt.servings.unit}}</li>
+                      <li>{{elt.time.preparation}} {{elt.time.unit}} de préparation</li>
+                      <li>{{elt.time.cooking}} {{elt.time.unit}} de cuisson</li>
+                      <li>{{elt.time.eat}} {{elt.time.unit}} avant de manger</li>
+                    </ul>
+                  </div>
+                </div>
+                Source: <a href="{{elt.source}}" target="_blank">{{elt.source}}</a>
               </div>
             </div>
           </div>
