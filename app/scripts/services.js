@@ -68,12 +68,14 @@ angular.module('firebaseAdminApp')
     if(course && course.servings){
       return {
         value: totalPrice/course.servings.value,
-        unit: currency+'/'+course.servings.unit
+        currency: currency,
+        unit: course.servings.unit
       };
     } else {
       return {
         value: totalPrice,
-        unit: currency
+        currency: currency,
+        unit: null
       };
     }
   }
