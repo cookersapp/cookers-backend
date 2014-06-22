@@ -37,6 +37,11 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage'])
     templateUrl: 'views/courseForm.html',
     controller: 'CourseCtrl'
   })
+  .state('app.course.detail', {
+    url: '/:id',
+    templateUrl: 'views/courseDetail.html',
+    controller: 'CourseCtrl'
+  })
   .state('app.course.edit', {
     url: '/:id/edit',
     templateUrl: 'views/courseForm.html',

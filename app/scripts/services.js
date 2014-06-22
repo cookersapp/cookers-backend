@@ -202,6 +202,11 @@ angular.module('firebaseAdminApp')
 
       var service = {
         getAll: function(){ return collection; },
+        get: function(id, callback){
+          firebaseRef.child(id).once('value', function(dataSnapshot){
+            callback(dataSnapshot.val());
+          });
+        },
         add: function(elt){
           var id = elt.id;
           if(!exist(collection, elt)){

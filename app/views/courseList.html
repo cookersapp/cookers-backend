@@ -6,11 +6,11 @@
         <div class="list-group-item" ng-repeat="elt in elts">
           <div class="row">
             <div class="col-md-3">
-              <img class="img-rounded" ng-src="{{elt.images.original}}" style="width: 100%;" />
+              <img class="img-responsive img-rounded" ng-src="{{elt.images.original}}" />
             </div>
             <div class="col-md-9">
               <h4 class="list-group-item-heading pull-right">
-                <button type="button" class="btn btn-sm btn-default" ng-click="edit(elt)"><i class="fa fa-eye"></i></button>
+                <a class="btn btn-sm btn-default" ui-sref="app.course.detail({id: elt.id})"><i class="fa fa-eye"></i></a>
                 <button type="button" class="btn btn-sm btn-info" ng-click="edit(elt)"><i class="fa fa-pencil-square-o"></i></button>
                 <button type="button" class="btn btn-sm btn-danger" ng-click="remove(elt)"><i class="fa fa-times"></i></button>
               </h4>

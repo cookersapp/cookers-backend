@@ -39,8 +39,15 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('CourseCtrl', function($scope, $state, foodDb, courseDb, dataList, priceCalculator, crudFactory){
+.controller('CourseCtrl', function($scope, $state, $stateParams, foodDb, courseDb, dataList, priceCalculator, crudFactory){
   'use strict';
+  $scope.course = {};
+  if($stateParams.id){
+    courseDb.get($stateParams.id, function(course){
+      $scope.course = course;
+    });
+  }
+
   var crud = crudFactory.create('course', courseDb, processCourse);
   $scope.elts = crud.elts;
   $scope.form = crud.form;
@@ -48,9 +55,14 @@ angular.module('firebaseAdminApp')
     crud.fnEdit(elt);
     $state.go('app.course.edit', {id: elt.id});
   };
-  $scope.cancel = function(){
+  $scope.cancel = function(elt){
+    var id = elt.id;
     crud.fnCancel();
-    $state.go('app.course.list');
+    if(id){
+      $state.go('app.course.detail', {id: id});
+    } else {
+      $state.go('app.course.list');
+    }
   };
   $scope.remove = crud.fnRemove;
   $scope.save = function(){

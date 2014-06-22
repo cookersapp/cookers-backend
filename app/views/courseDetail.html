@@ -1,0 +1,47 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 main">
+      <h1 class="page-header">
+        <a class="btn btn-default" ui-sref="app.course.list"><i class="fa fa-arrow-left"></i></a> {{course.name}} ({{course.category}})
+        <div class="pull-right">
+          <button type="button" class="btn btn-sm btn-info" ng-click="edit(course)"><i class="fa fa-pencil-square-o"></i></button>
+          <button type="button" class="btn btn-sm btn-danger" ng-click="remove(course)"><i class="fa fa-times"></i></button>
+        </div>
+      </h1>
+      <div class="row">
+        <div class="col-md-4">
+          Original :
+          <img class="img-responsive img-rounded" ng-src="{{course.images.original}}" />
+        </div>
+        <div class="col-md-4">
+          Paysage :
+          <img class="img-responsive img-rounded" ng-src="{{course.images.landing}}" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <h5>Ingrédients :</h5>
+          <ul>
+            <li ng-repeat="ingredient in course.ingredients">{{ingredient.quantity | quantity}} {{ingredient.pre}} {{ingredient.food.name}} {{ingredient.post}}</li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5>Instructions :</h5>
+          <ul>
+            <li ng-repeat="instruction in course.instructions">{{instruction.content}}</li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5>Propriétés :</h5>
+          <ul>
+            <li>{{course.price.value | number:2}} {{course.price.currency}}/{{course.price.unit}}</li>
+            <li>Pour {{course.servings.value}} {{course.servings.unit}}</li>
+            <li>{{course.time.preparation}} {{course.time.unit}} de préparation</li>
+            <li>{{course.time.cooking}} {{course.time.unit}} de cuisson</li>
+            <li>{{course.time.eat}} {{course.time.unit}} avant de manger</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
