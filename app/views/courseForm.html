@@ -10,11 +10,23 @@
               <input id="name" type="text" class="form-control" ng-model="form.name" placeholder="Ex: Tartare de saumon" required>
             </div>
             <div class="form-group">
-              <label>Image</label>
-              <media-crush-upload ng-model="form.images.landing"></media-crush-upload>
-              <p class="help-block">
-                Taille: 400x225 (16:9 format). Outils en ligne pour <a href="http://www.croppola.com/" target="_blanck">couper</a> et <a href="http://www.fixpicture.org/" target="_blanck">redimentionner</a> les images.
-              </p>
+              <label>Images</label>
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label>Original</label>
+                    <media-crush-upload ng-model="form.images.original"></media-crush-upload>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label>Paysage</label>
+                    <media-crush-upload ng-model="form.images.landing"></media-crush-upload>
+                    <p class="help-block">Taille: 400x225 (16:9 format)</p>
+                  </div>
+                </div>
+              </div>
+              <p class="help-block">Outils en ligne pour <a href="http://www.croppola.com/" target="_blanck">couper</a> et <a href="http://www.fixpicture.org/" target="_blanck">redimentionner</a> les images.</p>
             </div>
             <div class="form-group">
               <label for="category">Catégorie</label>
