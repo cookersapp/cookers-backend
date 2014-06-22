@@ -4,8 +4,11 @@
       <h1 class="page-header">Plats <button type="button" class="btn btn-success pull-right" ui-sref="app.course.create"><i class="fa fa-plus"></i> Créer un plat</button></h1>
       <div class="list-group">
         <div class="list-group-item" ng-repeat="elt in elts">
-          <h4 class="list-group-item-heading pull-right">{{elt.category}}</h4>
-          <h4 class="list-group-item-heading">{{elt.name}}</h4>
+          <h4 class="list-group-item-heading pull-right">
+            <button type="button" class="btn btn-sm btn-info" ng-click="edit(elt)"><i class="fa fa-pencil-square-o"></i></button>
+            <button type="button" class="btn btn-sm btn-danger" ng-click="remove(elt)"><i class="fa fa-times"></i></button>
+          </h4>
+          <h4 class="list-group-item-heading">{{elt.name}} ({{elt.category}})</h4>
           <div class="list-group-item-text">
             <div class="row">
               <div class="col-md-3">

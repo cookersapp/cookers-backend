@@ -40,24 +40,20 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('CourseCtrl', function($scope){
-  'use strict';
-
-})
-
-
-.controller('CourseListCtrl', function($scope, courseDb){
-  'use strict';
-  $scope.elts = courseDb.getAll();
-
-})
-
-
-.controller('CourseCreateCtrl', function($scope, $state, foodDb, courseDb, dataList, crudFactory){
+.controller('CourseCtrl', function($scope, $state, foodDb, courseDb, dataList, crudFactory){
   'use strict';
   var crud = crudFactory.create('course', courseDb, processCourse);
   $scope.elts = crud.elts;
   $scope.form = crud.form;
+  $scope.edit = function(elt){
+    crud.fnEdit(elt);
+    $state.go('app.course.edit', {id: elt.id});
+  };
+  $scope.cancel = function(){
+    crud.fnCancel();
+    $state.go('app.course.list');
+  };
+  $scope.remove = crud.fnRemove;
   $scope.save = function(){
     crud.fnSave();
     $state.go('app.course.list');
