@@ -22,7 +22,9 @@
                 <td>{{elt.category}}</td>
                 <td>
                   <span ng-repeat="price in elt.prices">
-                    <a href="{{price.source}}" title="{{price.added | date}}" target="source">{{price.value}} {{price.currency}}/{{price.unit}}</a>{{$last ? '' : ', '}}
+                    <a ng-if="isUrl(price.source)" href="{{price.source}}" target="_blank">{{price | price}}</a>
+                    <span ng-if="!isUrl(price.source)" title="{{price.source}}">{{price | price}}</span>
+                    {{$last ? '' : ', '}}
                   </span>
                 </td>
                 <td>

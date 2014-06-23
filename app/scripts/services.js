@@ -33,7 +33,9 @@ angular.module('firebaseAdminApp')
 .factory('priceCalculator', function(foodDb, unitConversion){
   'use strict';
   var foods = foodDb.getAll();
+  var currency = '€';
   var service = {
+    forIngredient: ingredientPrice,
     forCourse: coursePrice
   };
 
@@ -58,8 +60,14 @@ angular.module('firebaseAdminApp')
     }
   }
 
+  function ingredientPrice(ingredient){
+    return {
+      value: getPriceForQuantity(ingredient.quantity, ingredient.food.prices),
+      currency: currency
+    }
+  }
+
   function coursePrice(course){
-    var currency = '€';
     var totalPrice = 0;
     if(course && course.ingredients){
       for(var i in course.ingredients){
@@ -95,7 +103,7 @@ angular.module('firebaseAdminApp')
     generateIdFromText: function(collection, text){
       return generateId(collection, getSlug(text));
     },
-    isURL: function(text) {
+    isUrl: function(text) {
       return /^(https?):\/\/((?:[a-z0-9.-]|%[0-9A-F]{2}){3,})(?::(\d+))?((?:\/(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})*)*)(?:\?((?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*))?(?:#((?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*))?$/i.test(text);
     }
   };
@@ -132,6 +140,7 @@ angular.module('firebaseAdminApp')
           var ingredient = course.ingredients[i];
           var foodObj = _.find(foods, {id: ingredient.food.id});
           angular.copy(foodObj, ingredient.food);
+          ingredient.price = priceCalculator.forIngredient(ingredient);
         }
       }
       course.price = priceCalculator.forCourse(course);
@@ -141,6 +150,11 @@ angular.module('firebaseAdminApp')
       var meal = angular.copy(formMeal);
       var mealCourses = [meal.starter, meal.mainCourse, meal.desert, meal.wine];
       meal.difficulty = 0;
+      meal.price = {
+        value: 0,
+        currency: '€',
+        unit: 'personnes'
+      };
       for(var i in mealCourses){
         var course = mealCourses[i];
         if(course){
@@ -154,6 +168,9 @@ angular.module('firebaseAdminApp')
           if(course.difficulty && course.difficulty > meal.difficulty){
             meal.difficulty = course.difficulty;
           }
+          if(course.price && course.price.value){
+            meal.price.value += course.price.value;
+          }
         }
       }
       return meal;
@@ -161,6 +178,11 @@ angular.module('firebaseAdminApp')
     planning: function(formPlanning, meals){
       var planning = angular.copy(formPlanning);
       planning.meals = [];
+      planning.price = {
+        value: 0,
+        currency: '€',
+        unit: 'personnes'
+      };
       for(var i in planning.days){
         var dayMeals = [planning.days[i].lunch, planning.days[i].dinner];
         for(var j in dayMeals){
@@ -169,7 +191,10 @@ angular.module('firebaseAdminApp')
             var index = _.findIndex(planning.meals, {id: meal.recommended});
             if(index === -1){
               var m = _.find(meals, {id: meal.recommended});
-              planning.meals.push(m);
+              planning.meals.push(angular.copy(m));
+              planning.price.value += m.price.value;
+            } else {
+              planning.price.value += planning.meals[index].price.value;
             }
           }
         }

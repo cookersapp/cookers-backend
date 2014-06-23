@@ -3,11 +3,12 @@
     <div class="col-md-12 main">
       <h1 class="page-header">Plats <button type="button" class="btn btn-success pull-right" ui-sref="app.course.create"><i class="fa fa-plus"></i> Créer un plat</button></h1>
       <input type="text" class="form-control" placeholder="Search..." ng-model="search">
+      <br>
       <div class="list-group">
         <div class="list-group-item" ng-repeat="elt in elts | filter:search">
           <div class="row">
             <div class="col-md-3">
-              <img class="img-responsive img-rounded" ng-src="{{elt.images.original}}" />
+              <img class="img-responsive img-rounded" ng-src="{{elt.images.original}}">
             </div>
             <div class="col-md-9">
               <h4 class="list-group-item-heading pull-right">
@@ -22,12 +23,12 @@
                     <ul>
                       <li>{{elt.ingredients.length}} ingrédients</li>
                       <li>{{elt.instructions.length}} instructions</li>
-                      <li>{{elt.price.value | number:2}} {{elt.price.currency}}/{{elt.price.unit}}</li>
+                      <li>{{elt.price | price}}</li>
                     </ul>
                   </div>
                   <div class="col-md-6">
                     <ul>
-                      <li>Pour {{elt.servings.value}} {{elt.servings.unit}}</li>
+                      <li>Pour {{elt.servings | quantity}}</li>
                       <li>{{elt.time.preparation}} {{elt.time.unit}} de préparation</li>
                       <li>{{elt.time.cooking}} {{elt.time.unit}} de cuisson</li>
                       <li>{{elt.time.eat}} {{elt.time.unit}} avant de manger</li>

@@ -93,16 +93,18 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage'])
   ]}
 ])
 
-.run(function($rootScope, $location){
+.run(function($rootScope, $location, Utils){
   'use strict';
-  $rootScope.isActive = function (viewLocation) {
+  $rootScope.isActive = function(viewLocation){
     var regex = new RegExp('^'+viewLocation+'$', 'g');
     return regex.test($location.path());
   };
+  
+  $rootScope.isUrl = Utils.isUrl;
 
   $rootScope.safeApply = function(fn){
     var phase = this.$root ? this.$root.$$phase : this.$$phase;
-    if(phase === '$apply' || phase === '$digest') {
+    if(phase === '$apply' || phase === '$digest'){
       if(fn && (typeof(fn) === 'function')) {
         fn();
       }

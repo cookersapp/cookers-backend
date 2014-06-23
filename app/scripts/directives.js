@@ -11,7 +11,7 @@ angular.module('firebaseAdminApp')
     },
     link: function(scope, element, attr){
       scope.isLink = function(data){
-        return typeof data === 'string' && Utils.isURL(data);
+        return typeof data === 'string' && Utils.isUrl(data);
       };
     }
   }

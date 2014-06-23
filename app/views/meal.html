@@ -10,6 +10,7 @@
                 <th class="hide">Id</th>
                 <th>Nom</th>
                 <th>Plats</th>
+                <th>Prix</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -18,11 +19,12 @@
                 <td class="hide">{{elt.id}}</td>
                 <td>{{elt.name}}</td>
                 <td>
-                  <div ng-if="elt.starter && elt.starter.name">Entrée: {{elt.starter.name}}</div>
-                  <div ng-if="elt.mainCourse && elt.mainCourse.name">Plat: {{elt.mainCourse.name}}</div>
-                  <div ng-if="elt.desert && elt.desert.name">Dessert: {{elt.desert.name}}</div>
-                  <div ng-if="elt.wine && elt.wine.name">Vin: {{elt.wine.name}}</div>
+                  <div ng-if="elt.starter && elt.starter.name" title="{{elt.starter.price | price}}">Entrée: {{elt.starter.name}}</div>
+                  <div ng-if="elt.mainCourse && elt.mainCourse.name" title="{{elt.mainCourse.price | price}}">Plat: {{elt.mainCourse.name}}</div>
+                  <div ng-if="elt.desert && elt.desert.name" title="{{elt.desert.price | price}}">Dessert: {{elt.desert.name}}</div>
+                  <div ng-if="elt.wine && elt.wine.name" title="{{elt.wine.price | price}}">Vin: {{elt.wine.name}}</div>
                 </td>
+                <td>{{elt.price | price}}</td>
                 <td>
                   <button type="button" class="btn btn-xs btn-info" ng-click="edit(elt)"><i class="fa fa-pencil-square-o"></i></button>
                   <button type="button" class="btn btn-xs btn-danger" ng-click="remove(elt)"><i class="fa fa-times"></i></button>

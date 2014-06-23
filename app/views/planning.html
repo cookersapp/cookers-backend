@@ -9,6 +9,7 @@
               <tr>
                 <th class="hide">Id</th>
                 <th>Week</th>
+                <th>Prix</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -16,6 +17,7 @@
               <tr ng-repeat="elt in elts">
                 <td class="hide">{{elt.id}}</td>
                 <td>{{elt.week}}</td>
+                <td>{{elt.price | price}}</td>
                 <td>
                   <button type="button" class="btn btn-xs btn-info" ng-click="edit(elt)"><i class="fa fa-pencil-square-o"></i></button>
                   <button type="button" class="btn btn-xs btn-danger" ng-click="remove(elt)"><i class="fa fa-times"></i></button>
