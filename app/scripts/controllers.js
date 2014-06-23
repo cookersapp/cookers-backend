@@ -145,16 +145,12 @@ angular.module('firebaseAdminApp')
 
   function processMeal(meal){
     var result = angular.copy(meal);
-    updateCourse(result.starter);
-    updateCourse(result.mainCourse);
-    updateCourse(result.desert);
-    updateCourse(result.wine);
-    var difficulty = 0;
-    if(result.starter && result.starter.difficulty && result.starter.difficulty > difficulty){difficulty = result.starter.difficulty;}
-    if(result.mainCourse && result.mainCourse.difficulty && result.mainCourse.difficulty > difficulty){difficulty = result.mainCourse.difficulty;}
-    if(result.desert && result.desert.difficulty && result.desert.difficulty > difficulty){difficulty = result.desert.difficulty;}
-    if(result.wine && result.wine.difficulty && result.wine.difficulty > difficulty){difficulty = result.wine.difficulty;}
-    result.difficulty = difficulty;
+    var meals = [result.starter, result.mainCourse, result.desert, result.wine];
+    result.difficulty = 0;
+    for(var i in meals){
+      updateCourse(meals[i]);
+      if(meals[i] && meals[i].difficulty && meals[i].difficulty > result.difficulty){result.difficulty = meals[i].difficulty;}
+    }
     return result;
   }
   function updateCourse(course){
@@ -190,12 +186,12 @@ angular.module('firebaseAdminApp')
     var result = angular.copy(planning);
     result.meals = [];
     for(var i in result.days){
-      addMealIfNoExist(result.meals, result.days[i].lunch);
-      addMealIfNoExist(result.meals, result.days[i].dinner);
+      referenceMeal(result.meals, result.days[i].lunch);
+      referenceMeal(result.meals, result.days[i].dinner);
     }
     return result;
   }
-  function addMealIfNoExist(meals, meal){
+  function referenceMeal(meals, meal){
     if(meal && meal.recommended && meal.recommended.length > 0){
       var index = _.findIndex(meals, {id: meal.recommended});
       if(index === -1){
