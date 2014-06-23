@@ -51,10 +51,6 @@
               </select>
             </div>
             <div class="form-group">
-              <label>Image</label>
-              <media-crush-upload ng-model="form.images.original"></media-crush-upload>
-            </div>
-            <div class="form-group">
               <label for="brand">Marque</label>
               <input id="brand" type="text" class="form-control" ng-model="form.brand" placeholder="Ex: onno" required>
             </div>
@@ -97,6 +93,14 @@
                 <button type="button" class="btn btn-danger" ng-click="removePeremption($index)"><i class="fa fa-times"></i></button>
               </div>
               <button type="button" class="btn btn-default btn-xs" ng-click="addPeremption()">Ajouter un temps de péremption</button>
+            </div>
+            <div class="form-group">
+              <label>Image originale</label>
+              <media-crush-upload ng-model="form.images.original"></media-crush-upload>
+            </div>
+            <div class="form-group">
+              <label>Image 16:9</label>
+              <media-crush-upload ng-model="form.images.landing"></media-crush-upload>
             </div>
             <a class="btn btn-default" ng-click="cancel()">Annuler</a>
             <button type="submit" class="btn btn-primary" ng-if="!form.id">Créer</button>

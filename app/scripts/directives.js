@@ -1,5 +1,22 @@
 angular.module('firebaseAdminApp')
 
+.directive('source', function(Utils){
+  'use strict';
+  return {
+    restrict: 'E',
+    templateUrl: 'views/directives/source.html',
+    replace: true,
+    scope: {
+      data: '='
+    },
+    link: function(scope, element, attr){
+      scope.isLink = function(data){
+        return typeof data === 'string' && Utils.isURL(data);
+      };
+    }
+  }
+})
+
 .directive('mediaCrushUpload', function(){
   'use strict';
   return {
