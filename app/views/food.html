@@ -35,29 +35,36 @@
         </div>
 
         <div class="col-md-3">
-          <form ng-submit="save()">
+          <form name="food" ng-submit="save()">
             <div class="form-group">
               <label for="name">Nom</label>
-              <input id="name" type="text" class="form-control" ng-model="form.name" placeholder="Ex: pomme de terre" required>
+              <input id="name" name="name" type="text" class="form-control" ng-model="form.name" placeholder="Ex: pomme de terre" required>
             </div>
             <div class="form-group">
               <label for="category">Catégorie</label>
-              <select id="category" class="form-control" ng-model="form.category" ng-options="category for category in categories" required></select>
+              <select id="category" name="category" class="form-control" ng-model="form.category" ng-options="category for category in categories" required>
+                <option value="">--</option>
+              </select>
             </div>
             <div class="form-group">
               <label>Prix</label>
               <div class="form-inline" ng-repeat="price in form.prices" style="margin-bottom: 5px;">
                 <div class="form-group">
-                  <input type="number" step="any" class="form-control input-small" ng-model="price.value" placeholder="Ex: 1.99" required>
+                  <input id="price_value_{{$index}}" name="price_value_{{$index}}" type="number" step="any" class="form-control input-small" ng-model="price.value" placeholder="Ex: 1.99" required>
                 </div>
                 <div class="form-group">
-                  <select class="form-control" ng-model="price.currency" ng-options="currency for currency in currencies" required></select>
+                  <select id="price_currency_{{$index}}" name="price_currency_{{$index}}" class="form-control" ng-model="price.currency" ng-options="currency for currency in currencies" required>
+                    <option value="">--</option>
+                  </select>
                 </div>
                 <div class="form-group">
-                  / <select class="form-control" ng-model="price.unit" ng-options="unit for unit in units" required></select>
+                  /
+                  <select id="price_unit_{{$index}}" name="price_unit_{{$index}}" class="form-control" ng-model="price.unit" ng-options="unit for unit in units" required>
+                    <option value="">--</option>
+                  </select>
                 </div>
                 <div class="form-group">
-                  <input type="text" class="form-control" ng-model="price.source" placeholder="Ex: http://fd2-www.leclercdrive.fr/117701/courses/pgeWMEL009_Courses.aspx">
+                  <input id="price_source_{{$index}}" name="price_source_{{$index}}" type="text" class="form-control" ng-model="price.source" placeholder="Ex: http://fd2-www.leclercdrive.fr/117701/courses/pgeWMEL009_Courses.aspx">
                 </div>
                 <button type="button" class="btn btn-danger" ng-click="removeElt(form.prices, $index)"><i class="fa fa-times"></i></button>
               </div>

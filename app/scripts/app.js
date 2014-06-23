@@ -61,6 +61,11 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage'])
     url: '/planning',
     templateUrl: 'views/planning.html',
     controller: 'PlanningCtrl'
+  })
+  .state('app.batch', {
+    url: '/batch',
+    templateUrl: 'views/batch.html',
+    controller: 'BatchCtrl'
   });
 })
 

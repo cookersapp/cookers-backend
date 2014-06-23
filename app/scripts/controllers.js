@@ -12,7 +12,7 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('FoodCtrl', function($scope, foodDb, dataList, crudFactory){
+.controller('FoodCtrl', function($scope, foodDb, dataList, crudFactory, formProcess){
   'use strict';
   var initForm = {
     prices: []
@@ -31,13 +31,13 @@ angular.module('firebaseAdminApp')
   $scope.currencies = dataList.currencies;
   $scope.units = dataList.quantityUnits;
 
-  function processFood(food){
-    return angular.copy(food);
+  function processFood(form){
+    return formProcess.food(form);
   }
 })
 
 
-.controller('ProductCtrl', function($scope, productDb, foodDb, dataList, crudFactory){
+.controller('ProductCtrl', function($scope, productDb, foodDb, dataList, crudFactory, formProcess){
   'use strict';
   var initForm = {
     prices: [],
@@ -59,17 +59,13 @@ angular.module('firebaseAdminApp')
   $scope.currencies = dataList.currencies;
   $scope.units = dataList.quantityUnits;
 
-  function processProduct(product){
-    var result = angular.copy(product);
-    var foodObj = _.find($scope.foods, {id: result.food.id});
-    result.food.name = foodObj.name;
-    result.food.category = foodObj.category;
-    return result;
+  function processProduct(form){
+    return formProcess.product(form, $scope.foods);
   }
 })
 
 
-.controller('CourseCtrl', function($scope, $state, $stateParams, courseDb, foodDb, dataList, priceCalculator, crudFactory){
+.controller('CourseCtrl', function($scope, $state, $stateParams, courseDb, foodDb, dataList, crudFactory, formProcess){
   'use strict';
   var initForm = {
     ingredients: [],
@@ -107,18 +103,8 @@ angular.module('firebaseAdminApp')
   $scope.quantityUnits = dataList.quantityUnits;
   $scope.foodRoles = dataList.foodRoles;
 
-  function processCourse(course){
-    var result = angular.copy(course);
-    if(result.ingredients){
-      for(var i in result.ingredients){
-        var ingredient = result.ingredients[i];
-        var foodObj = _.find($scope.foods, {id: ingredient.food.id});
-        ingredient.food.name = foodObj.name;
-        ingredient.food.category = foodObj.category;
-      }
-    }
-    result.price = priceCalculator.forCourse(result);
-    return result;
+  function processCourse(form){
+    return formProcess.course(form, $scope.foods);
   }
 
   // for detail view :
@@ -131,7 +117,7 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('MealCtrl', function($scope, mealDb, courseDb, crudFactory){
+.controller('MealCtrl', function($scope, mealDb, courseDb, crudFactory, formProcess){
   'use strict';
   var crud = crudFactory.create('meal', {}, mealDb, processMeal);
   $scope.elts = crud.elts;
@@ -143,30 +129,13 @@ angular.module('firebaseAdminApp')
 
   $scope.courses = courseDb.getAll();
 
-  function processMeal(meal){
-    var result = angular.copy(meal);
-    var meals = [result.starter, result.mainCourse, result.desert, result.wine];
-    result.difficulty = 0;
-    for(var i in meals){
-      updateCourse(meals[i]);
-      if(meals[i] && meals[i].difficulty && meals[i].difficulty > result.difficulty){result.difficulty = meals[i].difficulty;}
-    }
-    return result;
-  }
-  function updateCourse(course){
-    if(course){
-      if(course.id && course.id.length > 0){
-        var c = _.find($scope.courses, {id: course.id});
-        angular.copy(c, course);
-      } else {
-        angular.copy({}, course);
-      }
-    }
+  function processMeal(form){
+    return formProcess.meal(form, $scope.courses);
   }
 })
 
 
-.controller('PlanningCtrl', function($scope, planningDb, mealDb, dataList, crudFactory){
+.controller('PlanningCtrl', function($scope, planningDb, mealDb, dataList, crudFactory, formProcess){
   'use strict';
   var initForm = createInitForm(dataList.days);
   var crud = crudFactory.create('planning', initForm, planningDb, processPlanning);
@@ -182,25 +151,10 @@ angular.module('firebaseAdminApp')
   $scope.meals = mealDb.getAll();
   $scope.days = dataList.days;
 
-  function processPlanning(planning){
-    var result = angular.copy(planning);
-    result.meals = [];
-    for(var i in result.days){
-      referenceMeal(result.meals, result.days[i].lunch);
-      referenceMeal(result.meals, result.days[i].dinner);
-    }
-    return result;
+  function processPlanning(form){
+    return formProcess.planning(form, $scope.meals);
   }
-  function referenceMeal(meals, meal){
-    if(meal && meal.recommended && meal.recommended.length > 0){
-      var index = _.findIndex(meals, {id: meal.recommended});
-      if(index === -1){
-        var m = _.find($scope.meals, {id: meal.recommended});
-        meals.push(m);
-      }
-    }
-  }
-  
+
   function createInitForm(days){
     var form = {
       days: []
@@ -210,4 +164,44 @@ angular.module('firebaseAdminApp')
     }
     return form;
   }
+})
+
+
+.controller('BatchCtrl', function($scope, foodDb, productDb, courseDb, mealDb, planningDb, formProcess){
+  'use strict';
+  var foods = foodDb.getAll();
+  var products = productDb.getAll();
+  var courses = courseDb.getAll();
+  var meals = mealDb.getAll();
+  var plannings = planningDb.getAll();
+
+  $scope.updatedenormalizedData = {
+    status: '',
+    launch: function(){
+      if(confirm('Recopier l\'ensemble des données ?')){
+        $scope.updatedenormalizedData.status = 'Lancement de la recopie de données...';
+        $scope.updatedenormalizedData.status = 'Copie des données pour les produits';
+        for(var i in products){
+          var product = formProcess.product(products[i], foods);
+          productDb.update(product);
+        }
+        $scope.updatedenormalizedData.status = 'Copie des données pour les plats';
+        for(var i in courses){
+          var course = formProcess.course(courses[i], foods);
+          courseDb.update(course);
+        }
+        $scope.updatedenormalizedData.status = 'Copie des données pour les repas';
+        for(var i in meals){
+          var meal = formProcess.meal(meals[i], courses);
+          mealDb.update(meal);
+        }
+        $scope.updatedenormalizedData.status = 'Copie des données pour les plannings';
+        for(var i in plannings){
+          var planning = formProcess.planning(plannings[i], meals);
+          planningDb.update(planning);
+        }
+        $scope.updatedenormalizedData.status = 'Données recopiées !';
+      }
+    }
+  };
 });

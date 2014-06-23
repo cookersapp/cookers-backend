@@ -31,37 +31,40 @@
         </div>
 
         <div class="col-md-3">
-          <form ng-submit="save()">
+          <form name="product" ng-submit="save()">
             <div class="form-group">
               <label for="barcode">Code barre</label>
-              <input id="barcode" type="text" class="form-control" ng-model="form.barcode" placeholder="Ex: 3250390017639" required>
+              <input id="barcode" name="barcode" type="text" class="form-control" ng-model="form.barcode" placeholder="Ex: 3250390017639" required>
             </div>
             <div class="form-group">
               <label for="shortname">Nom court</label>
-              <input id="shortname" type="text" class="form-control" ng-model="form.shortname" placeholder="Ex: chorizo" required>
+              <input id="shortname" name="shortname" type="text" class="form-control" ng-model="form.shortname" placeholder="Ex: chorizo" required>
             </div>
             <div class="form-group">
               <label for="name">Nom</label>
-              <input id="name" type="text" class="form-control" ng-model="form.name" placeholder="Ex: onno chorizo pp fort" required>
+              <input id="name" name="name" type="text" class="form-control" ng-model="form.name" placeholder="Ex: onno chorizo pp fort" required>
             </div>
             <div class="form-group">
               <label for="food">Aliment</label>
-              <select id="food" class="form-control" ng-model="form.food.id" required>
+              <select id="food" name="food" class="form-control" ng-model="form.food.id" required>
+                <option value="">--</option>
                 <option ng-repeat="food in foods" value="{{food.id}}" ng-selected="form.food.id === food.id">{{food.name}}</option>
               </select>
             </div>
             <div class="form-group">
               <label for="brand">Marque</label>
-              <input id="brand" type="text" class="form-control" ng-model="form.brand" placeholder="Ex: onno" required>
+              <input id="brand" name="brand" type="text" class="form-control" ng-model="form.brand" placeholder="Ex: onno" required>
             </div>
             <div class="form-group">
               <label>Quantité</label>
               <div class="form-inline">
                 <div class="form-group">
-                  <input type="number" step="any" class="form-control input-medium" ng-model="form.quantity.value" placeholder="Ex: 200" required>
+                  <input id="quantity_value" name="quantity_value" type="number" step="any" class="form-control input-medium" ng-model="form.quantity.value" placeholder="Ex: 200" required>
                 </div>
                 <div class="form-group">
-                  <select class="form-control" ng-model="form.quantity.unit" ng-options="unit for unit in units" required></select>
+                  <select id="quantity_unit" name="quantity_unit" class="form-control" ng-model="form.quantity.unit" ng-options="unit for unit in units" required>
+                    <option value="">--</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -69,13 +72,15 @@
               <label>Prix</label>
               <div class="form-inline" ng-repeat="price in form.prices" style="margin-bottom: 5px;">
                 <div class="form-group">
-                  <input type="number" step="any" class="form-control input-small" ng-model="price.value" placeholder="Ex: 1.99" required>
+                  <input id="price_value_{{$index}}" name="price_value_{{$index}}" type="number" step="any" class="form-control input-small" ng-model="price.value" placeholder="Ex: 1.99" required>
                 </div>
                 <div class="form-group">
-                  <select class="form-control" ng-model="price.currency" ng-options="currency for currency in currencies" required></select>
+                  <select id="price_currency_{{$index}}" name="price_currency_{{$index}}" class="form-control" ng-model="price.currency" ng-options="currency for currency in currencies" required>
+                    <option value="">--</option>
+                  </select>
                 </div>
                 <div class="form-group">
-                  <input type="text" class="form-control" ng-model="price.source" placeholder="Ex: Intermarché vitruve">
+                  <input id="price_source_{{$index}}" name="price_source_{{$index}}" type="text" class="form-control" ng-model="price.source" placeholder="Ex: Intermarché vitruve">
                 </div>
                 <button type="button" class="btn btn-danger" ng-click="removeElt(form.prices, $index)"><i class="fa fa-times"></i></button>
               </div>
@@ -85,7 +90,7 @@
               <label>Péremption</label>
               <div class="form-inline" ng-repeat="peremption in form.peremptions" style="margin-bottom: 5px;">
                 <div class="form-group">
-                  <input type="number" step="any" class="form-control input-small" ng-model="peremption.value" placeholder="Ex: 3" required>
+                  <input id="peremption_value_{{$index}}" name="peremption_value_{{$index}}" type="number" step="any" class="form-control input-small" ng-model="peremption.value" placeholder="Ex: 3" required>
                 </div>
                 <div class="form-group">
                   <p class="form-control-static" ng-init="peremption.unit='jour'">jours</p>

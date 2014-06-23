@@ -33,36 +33,36 @@
         </div>
 
         <div class="col-md-3">
-          <form ng-submit="save()" ng-if="!priceFor">
+          <form name="meal" ng-submit="save()">
             <div class="form-group">
               <label for="name">Nom</label>
-              <input id="name" type="text" class="form-control" ng-model="form.name" placeholder="Ex: pomme de terre" required>
+              <input id="name" name="name" type="text" class="form-control" ng-model="form.name" placeholder="Ex: pomme de terre" required>
             </div>
             <div class="form-group">
               <label for="starter">Entrée</label>
-              <select id="starter" class="form-control" ng-model="form.starter.id">
-                <option></option>
+              <select id="starter" name="starter" class="form-control" ng-model="form.starter.id">
+                <option value="">--</option>
                 <option ng-repeat="course in courses" value="{{course.id}}" ng-selected="form.starter.id === course.id">{{course.name}} ({{course.category}})</option>
               </select>
             </div>
             <div class="form-group">
               <label for="mainCourse">Plat</label>
-              <select id="mainCourse" class="form-control" ng-model="form.mainCourse.id">
-                <option></option>
+              <select id="mainCourse" name="mainCourse" class="form-control" ng-model="form.mainCourse.id">
+                <option value="">--</option>
                 <option ng-repeat="course in courses" value="{{course.id}}" ng-selected="form.mainCourse.id === course.id">{{course.name}} ({{course.category}})</option>
               </select>
             </div>
             <div class="form-group">
               <label for="desert">Dessert</label>
-              <select id="desert" class="form-control" ng-model="form.desert.id">
-                <option></option>
+              <select id="desert" name="desert" class="form-control" ng-model="form.desert.id">
+                <option value="">--</option>
                 <option ng-repeat="course in courses" value="{{course.id}}" ng-selected="form.desert.id === course.id">{{course.name}} ({{course.category}})</option>
               </select>
             </div>
             <div class="form-group">
               <label for="wine">Vin</label>
-              <select id="wine" class="form-control" ng-model="form.wine.id">
-                <option></option>
+              <select id="wine" name="wine" class="form-control" ng-model="form.wine.id">
+                <option value="">--</option>
                 <option ng-repeat="course in courses" value="{{course.id}}" ng-selected="form.wine.id === course.id">{{course.name}} ({{course.category}})</option>
               </select>
             </div>

@@ -113,6 +113,72 @@ angular.module('firebaseAdminApp')
   return service;
 })
 
+.factory('formProcess', function(priceCalculator){
+  'use strict';
+  return {
+    food: function(formFood){
+      return angular.copy(formFood);
+    },
+    product: function(formProduct, foods){
+      var product = angular.copy(formProduct);
+      var foodObj = _.find(foods, {id: product.food.id});
+      angular.copy(foodObj, product.food);
+      return product;
+    },
+    course: function(formCourse, foods){
+      var course = angular.copy(formCourse);
+      if(course.ingredients){
+        for(var i in course.ingredients){
+          var ingredient = course.ingredients[i];
+          var foodObj = _.find(foods, {id: ingredient.food.id});
+          angular.copy(foodObj, ingredient.food);
+        }
+      }
+      course.price = priceCalculator.forCourse(course);
+      return course;
+    },
+    meal: function(formMeal, courses){
+      var meal = angular.copy(formMeal);
+      var mealCourses = [meal.starter, meal.mainCourse, meal.desert, meal.wine];
+      meal.difficulty = 0;
+      for(var i in mealCourses){
+        var course = mealCourses[i];
+        if(course){
+          if(course.id && course.id.length > 0){
+            var c = _.find(courses, {id: course.id});
+            angular.copy(c, course);
+          } else {
+            angular.copy({}, course);
+          }
+
+          if(course.difficulty && course.difficulty > meal.difficulty){
+            meal.difficulty = course.difficulty;
+          }
+        }
+      }
+      return meal;
+    },
+    planning: function(formPlanning, meals){
+      var planning = angular.copy(formPlanning);
+      planning.meals = [];
+      for(var i in planning.days){
+        var dayMeals = [planning.days[i].lunch, planning.days[i].dinner];
+        for(var j in dayMeals){
+          var meal = dayMeals[j];
+          if(meal && meal.recommended && meal.recommended.length > 0){
+            var index = _.findIndex(planning.meals, {id: meal.recommended});
+            if(index === -1){
+              var m = _.find(meals, {id: meal.recommended});
+              planning.meals.push(m);
+            }
+          }
+        }
+      }
+      return planning;
+    }
+  };
+})
+
 .factory('formStorage', function($localStorage){
   'use strict';
   return {
