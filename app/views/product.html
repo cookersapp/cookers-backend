@@ -77,9 +77,9 @@
                 <div class="form-group">
                   <input type="text" class="form-control" ng-model="price.source" placeholder="Ex: Intermarché vitruve">
                 </div>
-                <button type="button" class="btn btn-danger" ng-click="removePrice($index)"><i class="fa fa-times"></i></button>
+                <button type="button" class="btn btn-danger" ng-click="removeElt(form.prices, $index)"><i class="fa fa-times"></i></button>
               </div>
-              <button type="button" class="btn btn-default btn-xs" ng-click="addPrice()">Ajouter un prix</button>
+              <button type="button" class="btn btn-default btn-xs" ng-click="addElt(form.prices)">Ajouter un prix</button>
             </div>
             <div class="form-group">
               <label>Péremption</label>
@@ -90,9 +90,9 @@
                 <div class="form-group">
                   <p class="form-control-static" ng-init="peremption.unit='jour'">jours</p>
                 </div>
-                <button type="button" class="btn btn-danger" ng-click="removePeremption($index)"><i class="fa fa-times"></i></button>
+                <button type="button" class="btn btn-danger" ng-click="removeElt(form.peremptions, $index)"><i class="fa fa-times"></i></button>
               </div>
-              <button type="button" class="btn btn-default btn-xs" ng-click="addPeremption()">Ajouter un temps de péremption</button>
+              <button type="button" class="btn btn-default btn-xs" ng-click="addElt(form.peremptions)">Ajouter un temps de péremption</button>
             </div>
             <div class="form-group">
               <label>Image originale</label>

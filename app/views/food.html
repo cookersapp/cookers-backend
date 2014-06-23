@@ -59,9 +59,9 @@
                 <div class="form-group">
                   <input type="text" class="form-control" ng-model="price.source" placeholder="Ex: http://fd2-www.leclercdrive.fr/117701/courses/pgeWMEL009_Courses.aspx">
                 </div>
-                <button type="button" class="btn btn-danger" ng-click="removePrice($index)"><i class="fa fa-times"></i></button>
+                <button type="button" class="btn btn-danger" ng-click="removeElt(form.prices, $index)"><i class="fa fa-times"></i></button>
               </div>
-              <button type="button" class="btn btn-default btn-xs" ng-click="addPrice()">Ajouter un prix</button>
+              <button type="button" class="btn btn-default btn-xs" ng-click="addElt(form.prices)">Ajouter un prix</button>
             </div>
             <a class="btn btn-default" ng-click="cancel()">Annuler</a>
             <button type="submit" class="btn btn-primary" ng-if="!form.id">Créer</button>

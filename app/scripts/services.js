@@ -116,13 +116,13 @@ angular.module('firebaseAdminApp')
 .factory('formStorage', function($localStorage){
   'use strict';
   return {
-    get: function(key){
+    get: function(key, value){
       if(!$localStorage.formStorage){$localStorage.formStorage = {};}
-      if(!$localStorage.formStorage[key]){$localStorage.formStorage[key] = {};}
+      if(!$localStorage.formStorage[key]){$localStorage.formStorage[key] = value ? value : {};}
       return $localStorage.formStorage[key];
     },
-    reset: function(key){
-      angular.copy({}, $localStorage.formStorage[key]);
+    reset: function(key, value){
+      angular.copy(value ? value : {}, $localStorage.formStorage[key]);
     }
   };
 })
@@ -130,9 +130,9 @@ angular.module('firebaseAdminApp')
 .factory('crudFactory', function(formStorage, Utils){
   'use strict';
   return {
-    create: function(name, db, processElt){
+    create: function(name, initForm, db, processElt){
       var elts = db.getAll();
-      var form = formStorage.get(name);
+      var form = formStorage.get(name, initForm);
 
       return {
         elts: elts,
@@ -141,7 +141,7 @@ angular.module('firebaseAdminApp')
           angular.copy(elt, form);
         },
         fnCancel: function(){
-          formStorage.reset(name);
+          formStorage.reset(name, initForm);
         },
         fnRemove: function(elt){
           if(confirm('Supprimer cet élément ?')){
@@ -158,7 +158,21 @@ angular.module('firebaseAdminApp')
             db.add(processElt(form));
           }
 
-          formStorage.reset(name);
+          formStorage.reset(name, initForm);
+        },
+        fnAddElt: function(list){
+          list.push({
+            added: Date.now()
+          });
+        },
+        fnRemoveElt: function(list, index){
+          list.splice(index, 1);
+        },
+        fnMoveDownElt: function(list, index){
+          if(index < list.length-1){ // do nothing on last element
+            var elt = list.splice(index, 1)[0];
+            list.splice(index+1, 0, elt);
+          }
         }
       };
     }

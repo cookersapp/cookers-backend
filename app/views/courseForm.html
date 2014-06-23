@@ -99,10 +99,10 @@
                 <div class="form-group">
                   <select class="form-control" ng-model="ingredient.role" ng-options="foodRole for foodRole in foodRoles" required></select>
                 </div>
-                <button type="button" class="btn btn-danger" ng-click="removeIngredient($index)"><i class="fa fa-times"></i></button>
-                <button type="button" class="btn btn-default" ng-click="moveDownIngredient($index)" ng-if="!$last"><i class="fa fa-arrow-down"></i></button>
+                <button type="button" class="btn btn-danger" ng-click="removeElt(form.ingredients, $index)"><i class="fa fa-times"></i></button>
+                <button type="button" class="btn btn-default" ng-click="moveDownElt(form.ingredients, $index)" ng-if="!$last"><i class="fa fa-arrow-down"></i></button>
               </div>
-              <button type="button" class="btn btn-default btn-xs" ng-click="addIngredient()">Ajouter un ingrédient</button>
+              <button type="button" class="btn btn-default btn-xs" ng-click="addElt(form.ingredients)">Ajouter un ingrédient</button>
             </div>
             <div class="form-group">
               <label>Instructions</label>
@@ -112,11 +112,11 @@
                     <textarea class="form-control" rows="3" ng-model="instruction.content" required></textarea>
                   </div>
                   <div class="col-md-1">
-                    <button type="button" class="btn btn-danger" ng-click="removeInstruction($index)"><i class="fa fa-times"></i></button>
+                    <button type="button" class="btn btn-danger" ng-click="removeElt(form.instructions, $index)"><i class="fa fa-times"></i></button>
                   </div>
                 </div>
               </div>
-              <button type="button" class="btn btn-default btn-xs" ng-click="addInstruction()">Ajouter une instruction</button>
+              <button type="button" class="btn btn-default btn-xs" ng-click="addElt(form.instructions)">Ajouter une instruction</button>
             </div>
             <div class="form-group">
               <label for="source">Source</label>

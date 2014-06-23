@@ -14,27 +14,22 @@ angular.module('firebaseAdminApp')
 
 .controller('FoodCtrl', function($scope, foodDb, dataList, crudFactory){
   'use strict';
-  var crud = crudFactory.create('food', foodDb, processFood);
+  var initForm = {
+    prices: []
+  };
+  var crud = crudFactory.create('food', initForm, foodDb, processFood);
   $scope.elts = crud.elts;
   $scope.form = crud.form;
   $scope.edit = crud.fnEdit;
   $scope.cancel = crud.fnCancel;
   $scope.remove = crud.fnRemove;
   $scope.save = crud.fnSave;
+  $scope.addElt = crud.fnAddElt;
+  $scope.removeElt = crud.fnRemoveElt;
 
   $scope.categories = dataList.foodCategories;
   $scope.currencies = dataList.currencies;
   $scope.units = dataList.quantityUnits;
-
-  $scope.addPrice = function(){
-    if(!$scope.form.prices){$scope.form.prices = [];}
-    $scope.form.prices.push({
-      added: Date.now()
-    });
-  };
-  $scope.removePrice = function(index){
-    $scope.form.prices.splice(index, 1);
-  };
 
   function processFood(food){
     return angular.copy(food);
@@ -44,7 +39,11 @@ angular.module('firebaseAdminApp')
 
 .controller('ProductCtrl', function($scope, productDb, foodDb, dataList, crudFactory){
   'use strict';
-  var crud = crudFactory.create('product', productDb, processProduct);
+  var initForm = {
+    prices: [],
+    peremptions: []
+  };
+  var crud = crudFactory.create('product', initForm, productDb, processProduct);
   $scope.elts = crud.elts;
   $scope.form = crud.form;
   $scope.edit = crud.fnEdit;
@@ -53,30 +52,12 @@ angular.module('firebaseAdminApp')
   $scope.save = function(){
     crud.fnSave($scope.form.barcode);
   };
-
+  $scope.addElt = crud.fnAddElt;
+  $scope.removeElt = crud.fnRemoveElt;
 
   $scope.foods = foodDb.getAll();
   $scope.currencies = dataList.currencies;
   $scope.units = dataList.quantityUnits;
-
-  $scope.addPrice = function(){
-    if(!$scope.form.prices){$scope.form.prices = [];}
-    $scope.form.prices.push({
-      added: Date.now()
-    });
-  };
-  $scope.removePrice = function(index){
-    $scope.form.prices.splice(index, 1);
-  };
-  $scope.addPeremption = function(){
-    if(!$scope.form.peremptions){$scope.form.peremptions = [];}
-    $scope.form.peremptions.push({
-      added: Date.now()
-    });
-  };
-  $scope.removePeremption = function(index){
-    $scope.form.peremptions.splice(index, 1);
-  };
 
   function processProduct(product){
     var result = angular.copy(product);
@@ -90,14 +71,11 @@ angular.module('firebaseAdminApp')
 
 .controller('CourseCtrl', function($scope, $state, $stateParams, courseDb, foodDb, dataList, priceCalculator, crudFactory){
   'use strict';
-  $scope.course = {};
-  if($stateParams.id){
-    courseDb.get($stateParams.id, function(course){
-      $scope.course = course;
-    });
-  }
-
-  var crud = crudFactory.create('course', courseDb, processCourse);
+  var initForm = {
+    ingredients: [],
+    instructions: []
+  };
+  var crud = crudFactory.create('course', initForm, courseDb, processCourse);
   $scope.elts = crud.elts;
   $scope.form = crud.form;
   $scope.edit = function(elt){
@@ -118,6 +96,9 @@ angular.module('firebaseAdminApp')
     crud.fnSave();
     $state.go('app.course.list');
   };
+  $scope.addElt = crud.fnAddElt;
+  $scope.removeElt = crud.fnRemoveElt;
+  $scope.moveDownElt = crud.fnMoveDownElt;
 
   $scope.foods = foodDb.getAll();
   $scope.categories = dataList.courseCategories;
@@ -125,27 +106,6 @@ angular.module('firebaseAdminApp')
   $scope.timeUnits = dataList.timeUnits;
   $scope.quantityUnits = dataList.quantityUnits;
   $scope.foodRoles = dataList.foodRoles;
-
-  $scope.addIngredient = function(){
-    if(!$scope.form.ingredients){$scope.form.ingredients = [];}
-    $scope.form.ingredients.push({});
-  };
-  $scope.removeIngredient = function(index){
-    $scope.form.ingredients.splice(index, 1);
-  };
-  $scope.moveDownIngredient = function(index){
-    if(index < $scope.form.ingredients.length-1){ // do nothing on last element
-      var elt = $scope.form.ingredients.splice(index, 1);
-      $scope.form.ingredients.splice(index+1, 0, elt[0]);
-    }
-  };
-  $scope.addInstruction = function(){
-    if(!$scope.form.instructions){$scope.form.instructions = [];}
-    $scope.form.instructions.push({});
-  };
-  $scope.removeInstruction = function(index){
-    $scope.form.instructions.splice(index, 1);
-  };
 
   function processCourse(course){
     var result = angular.copy(course);
@@ -160,12 +120,20 @@ angular.module('firebaseAdminApp')
     result.price = priceCalculator.forCourse(result);
     return result;
   }
+
+  // for detail view :
+  $scope.course = {};
+  if($stateParams.id){
+    courseDb.get($stateParams.id, function(course){
+      $scope.course = course;
+    });
+  }
 })
 
 
 .controller('MealCtrl', function($scope, mealDb, courseDb, crudFactory){
   'use strict';
-  var crud = crudFactory.create('meal', mealDb, processMeal);
+  var crud = crudFactory.create('meal', {}, mealDb, processMeal);
   $scope.elts = crud.elts;
   $scope.form = crud.form;
   $scope.edit = crud.fnEdit;
@@ -204,24 +172,19 @@ angular.module('firebaseAdminApp')
 
 .controller('PlanningCtrl', function($scope, planningDb, mealDb, dataList, crudFactory){
   'use strict';
-  var crud = crudFactory.create('planning', planningDb, processPlanning);
+  var initForm = createInitForm(dataList.days);
+  var crud = crudFactory.create('planning', initForm, planningDb, processPlanning);
   $scope.elts = crud.elts;
   $scope.form = crud.form;
   $scope.edit = crud.fnEdit;
-  $scope.cancel = function(){
-    crud.fnCancel();
-    createDaysIfNotExist($scope.form);
-  };
+  $scope.cancel = crud.fnCancel;
   $scope.remove = crud.fnRemove;
   $scope.save = function(){
-    $scope.form.key = $scope.form.week.toString();
-    crud.fnSave();
-    createDaysIfNotExist($scope.form);
+    crud.fnSave($scope.form.week.toString());
   };
 
   $scope.meals = mealDb.getAll();
   $scope.days = dataList.days;
-  createDaysIfNotExist($scope.form);
 
   function processPlanning(planning){
     var result = angular.copy(planning);
@@ -241,12 +204,14 @@ angular.module('firebaseAdminApp')
       }
     }
   }
-  function createDaysIfNotExist(elt){
-    if(!elt.days){
-      elt.days = [];
-      for(var i in $scope.days){
-        elt.days.push({name: $scope.days[i], lunch: {recommended: ''}, dinner: {recommended: ''}});
-      }
+  
+  function createInitForm(days){
+    var form = {
+      days: []
+    };
+    for(var i in days){
+      form.days.push({name: days[i], lunch: {recommended: ''}, dinner: {recommended: ''}});
     }
+    return form;
   }
 });
