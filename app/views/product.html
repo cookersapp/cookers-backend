@@ -1,0 +1,109 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 main">
+      <h1 class="page-header">Produits</h1>
+      <div class="row">
+        <div class="col-md-9">
+          <input type="text" class="form-control" placeholder="Search..." ng-model="search">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Code barre</th>
+                <th>Nom</th>
+                <th>Aliment</th>
+                <th>Quantité</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="elt in elts | filter:search">
+                <td>{{elt.barcode}}</td>
+                <td>{{elt.name}}</td>
+                <td>{{elt.food.name}}</td>
+                <td>{{elt.quantity | quantity}}</td>
+                <td>
+                  <button type="button" class="btn btn-xs btn-info" ng-click="edit(elt)"><i class="fa fa-pencil-square-o"></i></button>
+                  <button type="button" class="btn btn-xs btn-danger" ng-click="remove(elt)"><i class="fa fa-times"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="col-md-3">
+          <form ng-submit="save()">
+            <div class="form-group">
+              <label for="barcode">Code barre</label>
+              <input id="barcode" type="text" class="form-control" ng-model="form.barcode" placeholder="Ex: 3250390017639" required>
+            </div>
+            <div class="form-group">
+              <label for="shortname">Nom court</label>
+              <input id="shortname" type="text" class="form-control" ng-model="form.shortname" placeholder="Ex: chorizo" required>
+            </div>
+            <div class="form-group">
+              <label for="name">Nom</label>
+              <input id="name" type="text" class="form-control" ng-model="form.name" placeholder="Ex: onno chorizo pp fort" required>
+            </div>
+            <div class="form-group">
+              <label for="food">Aliment</label>
+              <select id="food" class="form-control" ng-model="form.food.id" required>
+                <option ng-repeat="food in foods" value="{{food.id}}" ng-selected="form.food.id === food.id">{{food.name}}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Image</label>
+              <media-crush-upload ng-model="form.images.original"></media-crush-upload>
+            </div>
+            <div class="form-group">
+              <label for="brand">Marque</label>
+              <input id="brand" type="text" class="form-control" ng-model="form.brand" placeholder="Ex: onno" required>
+            </div>
+            <div class="form-group">
+              <label>Quantité</label>
+              <div class="form-inline">
+                <div class="form-group">
+                  <input type="number" step="any" class="form-control input-medium" ng-model="form.quantity.value" placeholder="Ex: 200" required>
+                </div>
+                <div class="form-group">
+                  <select class="form-control" ng-model="form.quantity.unit" ng-options="unit for unit in units" required></select>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Prix</label>
+              <div class="form-inline" ng-repeat="price in form.prices" style="margin-bottom: 5px;">
+                <div class="form-group">
+                  <input type="number" step="any" class="form-control input-small" ng-model="price.value" placeholder="Ex: 1.99" required>
+                </div>
+                <div class="form-group">
+                  <select class="form-control" ng-model="price.currency" ng-options="currency for currency in currencies" required></select>
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" ng-model="price.source" placeholder="Ex: Intermarché vitruve">
+                </div>
+                <button type="button" class="btn btn-danger" ng-click="removePrice($index)"><i class="fa fa-times"></i></button>
+              </div>
+              <button type="button" class="btn btn-default btn-xs" ng-click="addPrice()">Ajouter un prix</button>
+            </div>
+            <div class="form-group">
+              <label>Péremption</label>
+              <div class="form-inline" ng-repeat="peremption in form.peremptions" style="margin-bottom: 5px;">
+                <div class="form-group">
+                  <input type="number" step="any" class="form-control input-small" ng-model="peremption.value" placeholder="Ex: 3" required>
+                </div>
+                <div class="form-group">
+                  <p class="form-control-static" ng-init="peremption.unit='jour'">jours</p>
+                </div>
+                <button type="button" class="btn btn-danger" ng-click="removePeremption($index)"><i class="fa fa-times"></i></button>
+              </div>
+              <button type="button" class="btn btn-default btn-xs" ng-click="addPeremption()">Ajouter un temps de péremption</button>
+            </div>
+            <a class="btn btn-default" ng-click="cancel()">Annuler</a>
+            <button type="submit" class="btn btn-primary" ng-if="!form.id">Créer</button>
+            <button type="submit" class="btn btn-success" ng-if="form.id">Enregistrer</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

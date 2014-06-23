@@ -6,6 +6,12 @@ angular.module('firebaseAdminApp')
   return firebaseCollection.service;
 })
 
+.factory('productDb', function(firebaseFactory){
+  'use strict';
+  var firebaseCollection = firebaseFactory.createCollection('product');
+  return firebaseCollection.service;
+})
+
 .factory('courseDb', function(firebaseFactory){
   'use strict';
   var firebaseCollection = firebaseFactory.createCollection('course');
@@ -139,12 +145,12 @@ angular.module('firebaseAdminApp')
             db.remove(elt);
           }
         },
-        fnSave: function(){
+        fnSave: function(textId){
           if(form.id){
             form.updated = Date.now();
             db.update(processElt(form));
           } else {
-            form.id = Utils.generateIdFromText(elts, form.name);
+            form.id = Utils.generateIdFromText(elts, textId ? textId : form.name);
             form.added = Date.now();
             db.add(processElt(form));
           }

@@ -2,8 +2,9 @@
   <div class="row">
     <div class="col-md-12 main">
       <h1 class="page-header">Plats <button type="button" class="btn btn-success pull-right" ui-sref="app.course.create"><i class="fa fa-plus"></i> Créer un plat</button></h1>
+      <input type="text" class="form-control" placeholder="Search..." ng-model="search">
       <div class="list-group">
-        <div class="list-group-item" ng-repeat="elt in elts">
+        <div class="list-group-item" ng-repeat="elt in elts | filter:search">
           <div class="row">
             <div class="col-md-3">
               <img class="img-responsive img-rounded" ng-src="{{elt.images.original}}" />

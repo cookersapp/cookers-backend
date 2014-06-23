@@ -21,6 +21,11 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage'])
     templateUrl: 'views/food.html',
     controller: 'FoodCtrl'
   })
+  .state('app.product', {
+    url: '/product',
+    templateUrl: 'views/product.html',
+    controller: 'ProductCtrl'
+  })
   .state('app.course', {
     url: '/course',
     abstract: true,

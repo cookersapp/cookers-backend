@@ -1,9 +1,10 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12 main">
-      <h1 class="page-header">Food</h1>
+      <h1 class="page-header">Aliments</h1>
       <div class="row">
         <div class="col-md-9">
+          <input type="text" class="form-control" placeholder="Search..." ng-model="search">
           <table class="table">
             <thead>
               <tr>
@@ -15,7 +16,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="elt in elts">
+              <tr ng-repeat="elt in elts | filter:search">
                 <td class="hide">{{elt.id}}</td>
                 <td>{{elt.name}}</td>
                 <td>{{elt.category}}</td>

@@ -5,6 +5,7 @@ angular.module('firebaseAdminApp')
 
 })
 
+
 .controller('HomeCtrl', function($scope){
   'use strict';
 
@@ -27,7 +28,9 @@ angular.module('firebaseAdminApp')
 
   $scope.addPrice = function(){
     if(!$scope.form.prices){$scope.form.prices = [];}
-    $scope.form.prices.push({});
+    $scope.form.prices.push({
+      added: Date.now()
+    });
   };
   $scope.removePrice = function(index){
     $scope.form.prices.splice(index, 1);
@@ -39,7 +42,53 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('CourseCtrl', function($scope, $state, $stateParams, foodDb, courseDb, dataList, priceCalculator, crudFactory){
+.controller('ProductCtrl', function($scope, productDb, foodDb, dataList, crudFactory){
+  'use strict';
+  var crud = crudFactory.create('product', productDb, processProduct);
+  $scope.elts = crud.elts;
+  $scope.form = crud.form;
+  $scope.edit = crud.fnEdit;
+  $scope.cancel = crud.fnCancel;
+  $scope.remove = crud.fnRemove;
+  $scope.save = function(){
+    crud.fnSave($scope.form.barcode);
+  };
+
+
+  $scope.foods = foodDb.getAll();
+  $scope.currencies = dataList.currencies;
+  $scope.units = dataList.quantityUnits;
+
+  $scope.addPrice = function(){
+    if(!$scope.form.prices){$scope.form.prices = [];}
+    $scope.form.prices.push({
+      added: Date.now()
+    });
+  };
+  $scope.removePrice = function(index){
+    $scope.form.prices.splice(index, 1);
+  };
+  $scope.addPeremption = function(){
+    if(!$scope.form.peremptions){$scope.form.peremptions = [];}
+    $scope.form.peremptions.push({
+      added: Date.now()
+    });
+  };
+  $scope.removePeremption = function(index){
+    $scope.form.peremptions.splice(index, 1);
+  };
+
+  function processProduct(product){
+    var result = angular.copy(product);
+    var foodObj = _.find($scope.foods, {id: result.food.id});
+    result.food.name = foodObj.name;
+    result.food.category = foodObj.category;
+    return result;
+  }
+})
+
+
+.controller('CourseCtrl', function($scope, $state, $stateParams, courseDb, foodDb, dataList, priceCalculator, crudFactory){
   'use strict';
   $scope.course = {};
   if($stateParams.id){
@@ -164,9 +213,8 @@ angular.module('firebaseAdminApp')
     createDaysIfNotExist($scope.form);
   };
   $scope.remove = crud.fnRemove;
-  $scope.save = crud.fnSave;
   $scope.save = function(){
-    $scope.form.name = $scope.form.week.toString();
+    $scope.form.key = $scope.form.week.toString();
     crud.fnSave();
     createDaysIfNotExist($scope.form);
   };
