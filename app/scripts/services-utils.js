@@ -38,8 +38,13 @@ angular.module('firebaseAdminApp')
   };
 })
 
-.factory('firebaseFactory', function($rootScope, $http, firebaseUrl){
+.factory('firebaseFactory', function($rootScope, $http, firebaseUrl, formStorage){
   'use strict';
+  var service = {
+    createCollection: createCollection,
+    createCrud: createCrud
+  };
+
   function findIndexWithId(array, id) {
     var index = -1, length = array ? array.length : 0;
     while(++index < length) {
@@ -66,126 +71,121 @@ angular.module('firebaseAdminApp')
     }
   }
 
-  return {
-    createCollection: function(name){
-      var collectionUrl = firebaseUrl+'/'+name;
-      var collectionRef = new Firebase(collectionUrl);
-      var collection = [];
+  function createCollection(name){
+    var collectionUrl = firebaseUrl+'/'+name;
+    var collectionRef = new Firebase(collectionUrl);
+    var collection = [];
 
-      collectionRef.on('child_added', function(childSnapshot, prevChildName) {
-        $rootScope.safeApply(function(){
-          collection.push(childSnapshot.val());
-        });
+    collectionRef.on('child_added', function(childSnapshot, prevChildName) {
+      $rootScope.safeApply(function(){
+        collection.push(childSnapshot.val());
       });
-      collectionRef.on('child_removed', function(oldChildSnapshot) {
-        $rootScope.safeApply(function(){
-          var index = findIndexWithId(collection, oldChildSnapshot.val().id);
-          collection.splice(index, 1);
-        });
+    });
+    collectionRef.on('child_removed', function(oldChildSnapshot) {
+      $rootScope.safeApply(function(){
+        var index = findIndexWithId(collection, oldChildSnapshot.val().id);
+        collection.splice(index, 1);
       });
-      collectionRef.on('child_changed', function(childSnapshot, prevChildName) {
-        $rootScope.safeApply(function(){
-          var index = findIndexWithId(collection, childSnapshot.val().id);
-          collection.splice(index, 1, childSnapshot.val());
-        });
+    });
+    collectionRef.on('child_changed', function(childSnapshot, prevChildName) {
+      $rootScope.safeApply(function(){
+        var index = findIndexWithId(collection, childSnapshot.val().id);
+        collection.splice(index, 1, childSnapshot.val());
       });
+    });
 
-      var service = {
-        sync: function(){ return collection; },
-        getAll: function(){
-          return $http.get(collectionUrl+'.json').then(function(result){
-            return objectToArray(result.data);
-          });
-        },
-        get: function(id){
-          return $http.get(collectionUrl+'/'+id+'.json').then(function(result){
-            return result.data;
-          });
-        },
-        add: function(elt){
-          var id = elt.id;
-          if(!exist(collection, elt)){
-            collectionRef.child(id).set(elt, onError);
-          } else {
-            window.alert('Element with id <'+id+'> already exists !', id);
-          }
-        },
-        remove: function(elt){
-          var id = elt.id;
-          if(exist(collection, elt)){
-            collectionRef.child(id).remove(onError);
-          } else {
-            window.alert('Element with id <'+id+'> don\'t exist !', id);
-          }
-        },
-        update: function(elt){
-          var id = elt.id;
-          if(exist(collection, elt)){
-            collectionRef.child(id).set(elt, onError);
-          } else {
-            window.alert('Element with id <'+id+'> don\'t exist !', id);
-          }
+    var service = {
+      sync: function(){ return collection; },
+      getAll: function(){
+        return $http.get(collectionUrl+'.json').then(function(result){
+          return objectToArray(result.data);
+        });
+      },
+      get: function(id){
+        return $http.get(collectionUrl+'/'+id+'.json').then(function(result){
+          return result.data;
+        });
+      },
+      add: function(elt){
+        var id = elt.id;
+        if(!exist(collection, elt)){
+          collectionRef.child(id).set(elt, onError);
+        } else {
+          window.alert('Element with id <'+id+'> already exists !', id);
         }
-      };
-
-      return {
-        name: name,
-        ref: collectionRef,
-        collection: collection,
-        service: service
-      };
-    }
-  };
-})
-
-.factory('crudFactory', function(formStorage, Utils){
-  'use strict';
-  return {
-    create: function(name, initForm, db, processElt){
-      var elts = db.sync();
-      var form = formStorage.get(name, initForm);
-
-      return {
-        elts: elts,
-        form: form,
-        fnEdit: function(elt){
-          angular.copy(elt, form);
-        },
-        fnCancel: function(){
-          formStorage.reset(name, initForm);
-        },
-        fnRemove: function(elt){
-          if(window.confirm('Supprimer cet élément ?')){
-            db.remove(elt);
-          }
-        },
-        fnSave: function(textId){
-          if(form.id){
-            form.updated = Date.now();
-            db.update(processElt(form));
-          } else {
-            form.id = Utils.generateIdFromText(elts, textId ? textId : form.name);
-            form.added = Date.now();
-            db.add(processElt(form));
-          }
-
-          formStorage.reset(name, initForm);
-        },
-        fnAddElt: function(list){
-          list.push({
-            added: Date.now()
-          });
-        },
-        fnRemoveElt: function(list, index){
-          list.splice(index, 1);
-        },
-        fnMoveDownElt: function(list, index){
-          if(index < list.length-1){ // do nothing on last element
-            var elt = list.splice(index, 1)[0];
-            list.splice(index+1, 0, elt);
-          }
+      },
+      remove: function(elt){
+        var id = elt.id;
+        if(exist(collection, elt)){
+          collectionRef.child(id).remove(onError);
+        } else {
+          window.alert('Element with id <'+id+'> don\'t exist !', id);
         }
-      };
-    }
-  };
+      },
+      update: function(elt){
+        var id = elt.id;
+        if(exist(collection, elt)){
+          collectionRef.child(id).set(elt, onError);
+        } else {
+          window.alert('Element with id <'+id+'> don\'t exist !', id);
+        }
+      }
+    };
+
+    return {
+      name: name,
+      ref: collectionRef,
+      collection: collection,
+      service: service
+    };
+  }
+
+  function createCrud(name, initForm, db, processElt){
+    var elts = db.sync();
+    var form = formStorage.get(name, initForm);
+
+    return {
+      elts: elts,
+      form: form,
+      fnEdit: function(elt){
+        angular.copy(elt, form);
+      },
+      fnCancel: function(){
+        formStorage.reset(name, initForm);
+      },
+      fnRemove: function(elt){
+        if(window.confirm('Supprimer cet élément ?')){
+          db.remove(elt);
+        }
+      },
+      fnSave: function(textId){
+        if(form.id){
+          form.updated = Date.now();
+          db.update(processElt(form));
+        } else {
+          form.id = Utils.generateIdFromText(elts, textId ? textId : form.name);
+          form.added = Date.now();
+          db.add(processElt(form));
+        }
+
+        formStorage.reset(name, initForm);
+      },
+      fnAddElt: function(list){
+        list.push({
+          added: Date.now()
+        });
+      },
+      fnRemoveElt: function(list, index){
+        list.splice(index, 1);
+      },
+      fnMoveDownElt: function(list, index){
+        if(index < list.length-1){ // do nothing on last element
+          var elt = list.splice(index, 1)[0];
+          list.splice(index+1, 0, elt);
+        }
+      }
+    };
+  }
+
+  return service;
 });

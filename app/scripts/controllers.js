@@ -1,12 +1,12 @@
 angular.module('firebaseAdminApp')
 
 
-.controller('FoodCtrl', function($scope, foodDb, dataList, crudFactory, formProcess){
+.controller('FoodCtrl', function($scope, foodDb, dataList, firebaseFactory, formProcess){
   'use strict';
   var initForm = {
     prices: []
   };
-  var crud = crudFactory.create('food', initForm, foodDb, processFood);
+  var crud = firebaseFactory.createCrud('food', initForm, foodDb, processFood);
   $scope.elts = crud.elts;
   $scope.form = crud.form;
   $scope.edit = crud.fnEdit;
@@ -26,13 +26,13 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('ProductCtrl', function($scope, productDb, foodDb, dataList, crudFactory, formProcess){
+.controller('ProductCtrl', function($scope, productDb, foodDb, dataList, firebaseFactory, formProcess){
   'use strict';
   var initForm = {
     prices: [],
     peremptions: []
   };
-  var crud = crudFactory.create('product', initForm, productDb, processProduct);
+  var crud = firebaseFactory.createCrud('product', initForm, productDb, processProduct);
   $scope.elts = crud.elts;
   $scope.form = crud.form;
   $scope.edit = crud.fnEdit;
@@ -54,13 +54,13 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('RecipeCtrl', function($scope, $state, $stateParams, recipeDb, foodDb, dataList, crudFactory, formProcess){
+.controller('RecipeCtrl', function($scope, $state, $stateParams, recipeDb, foodDb, dataList, firebaseFactory, formProcess){
   'use strict';
   var initForm = {
     ingredients: [],
     instructions: []
   };
-  var crud = crudFactory.create('recipe', initForm, recipeDb, processRecipe);
+  var crud = firebaseFactory.createCrud('recipe', initForm, recipeDb, processRecipe);
   $scope.elts = crud.elts;
   $scope.form = crud.form;
   $scope.edit = function(elt){
@@ -106,12 +106,12 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('WeekrecipesCtrl', function($scope, weekrecipeDb, recipeDb, crudFactory, formProcess){
+.controller('WeekrecipesCtrl', function($scope, weekrecipeDb, recipeDb, firebaseFactory, formProcess){
   'use strict';
   var initForm = {
     recipes: []
   };
-  var crud = crudFactory.create('weekrecipe', initForm, weekrecipeDb, processWeekrecipe);
+  var crud = firebaseFactory.createCrud('weekrecipe', initForm, weekrecipeDb, processWeekrecipe);
   $scope.elts = crud.elts;
   $scope.form = crud.form;
   $scope.edit = crud.fnEdit;
@@ -132,9 +132,9 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('MealCtrl', function($scope, mealDb, recipeDb, crudFactory, formProcess){
+.controller('MealCtrl', function($scope, mealDb, recipeDb, firebaseFactory, formProcess){
   'use strict';
-  var crud = crudFactory.create('meal', {}, mealDb, processMeal);
+  var crud = firebaseFactory.createCrud('meal', {}, mealDb, processMeal);
   $scope.elts = crud.elts;
   $scope.form = crud.form;
   $scope.edit = crud.fnEdit;
@@ -150,10 +150,10 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('PlanningCtrl', function($scope, planningDb, mealDb, dataList, crudFactory, formProcess){
+.controller('PlanningCtrl', function($scope, planningDb, mealDb, dataList, firebaseFactory, formProcess){
   'use strict';
   var initForm = createInitForm(dataList.days);
-  var crud = crudFactory.create('planning', initForm, planningDb, processPlanning);
+  var crud = firebaseFactory.createCrud('planning', initForm, planningDb, processPlanning);
   $scope.elts = crud.elts;
   $scope.form = crud.form;
   $scope.edit = crud.fnEdit;
