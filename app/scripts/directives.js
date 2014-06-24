@@ -3,7 +3,7 @@ angular.module('firebaseAdminApp')
 .directive('source', function(Utils){
   'use strict';
   return {
-    restrict: 'E',
+    restrict: 'EA',
     templateUrl: 'views/directives/source.html',
     replace: true,
     scope: {

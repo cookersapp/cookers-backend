@@ -3,44 +3,36 @@
     <div class="col-md-12 main">
       <h1 class="page-header">Recettes <button type="button" class="btn btn-success pull-right" ui-sref="app.recipe.create"><i class="fa fa-plus"></i> Créer une recette</button></h1>
       <input type="text" class="form-control" placeholder="Search..." ng-model="search">
-      <br>
-      <div class="list-group">
-        <div class="list-group-item" ng-repeat="elt in elts | filter:search">
-          <div class="row">
-            <div class="col-md-3">
-              <img class="img-responsive img-rounded" ng-src="{{elt.images.original}}">
-            </div>
-            <div class="col-md-9">
-              <h4 class="list-group-item-heading pull-right">
-                <a class="btn btn-sm btn-default" ui-sref="app.recipe.detail({id: elt.id})"><i class="fa fa-eye"></i></a>
-                <button type="button" class="btn btn-sm btn-info" ng-click="edit(elt)"><i class="fa fa-pencil-square-o"></i></button>
-                <button type="button" class="btn btn-sm btn-danger" ng-click="remove(elt)"><i class="fa fa-times"></i></button>
-              </h4>
-              <h4 class="list-group-item-heading">{{elt.name}} ({{elt.category}})</h4>
-              <div class="list-group-item-text">
-                <div class="row">
-                  <div class="col-md-6">
-                    <ul>
-                      <li>{{elt.ingredients.length}} ingrédients</li>
-                      <li>{{elt.instructions.length}} instructions</li>
-                      <li>{{elt.price | price}}</li>
-                    </ul>
-                  </div>
-                  <div class="col-md-6">
-                    <ul>
-                      <li>Pour {{elt.servings | quantity}}</li>
-                      <li>{{elt.time.preparation}} {{elt.time.unit}} de préparation</li>
-                      <li>{{elt.time.cooking}} {{elt.time.unit}} de cuisson</li>
-                      <li>{{elt.time.eat}} {{elt.time.unit}} avant de manger</li>
-                    </ul>
-                  </div>
-                </div>
-                Source: <source data="elt.source"></source>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="hide">Id</th>
+            <th>Nom</th>
+            <th>Catégorie</th>
+            <th>Prix</th>
+            <th>Pour manger</th>
+            <th>Source</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="elt in elts | filter:search">
+            <td class="hide">{{elt.id}}</td>
+            <td>{{elt.name}}</td>
+            <td>{{elt.category}}</td>
+            <td>{{elt.price | price}}</td>
+            <td>{{elt.time.eat}} {{elt.time.unit}}</td>
+            <td>
+              <div source data="elt.source"></div>
+            </td>
+            <td>
+              <a class="btn btn-xs btn-default" ui-sref="app.recipe.detail({id: elt.id})"><i class="fa fa-eye"></i></a>
+              <button type="button" class="btn btn-xs btn-info" ng-click="edit(elt)"><i class="fa fa-pencil-square-o"></i></button>
+              <button type="button" class="btn btn-xs btn-danger" ng-click="remove(elt)"><i class="fa fa-times"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
