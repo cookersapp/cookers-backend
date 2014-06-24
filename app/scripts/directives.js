@@ -14,7 +14,7 @@ angular.module('firebaseAdminApp')
         return typeof data === 'string' && Utils.isUrl(data);
       };
     }
-  }
+  };
 })
 
 .directive('mediaCrushUpload', function(){
@@ -60,7 +60,7 @@ angular.module('firebaseAdminApp')
         }
       }
     }
-  }
+  };
 })
 
 .directive('file', function(){
@@ -72,12 +72,15 @@ angular.module('firebaseAdminApp')
     replace: true,
     require: 'ngModel',
     link: function(scope, element, attr, ngModelCtrl){
-      var listener = function(){
+      element.bind('change', function(){
         safeApply(function(){
-          attr.multiple ? ngModelCtrl.$setViewValue(element[0].files) : ngModelCtrl.$setViewValue(element[0].files[0]);
+          if(attr.multiple){
+            ngModelCtrl.$setViewValue(element[0].files);
+          } else {
+            ngModelCtrl.$setViewValue(element[0].files[0]);
+          }
         });
-      }
-      element.bind('change', listener);
+      });
 
       function safeApply(fn){
         if(!scope.$$phase) {
@@ -87,5 +90,5 @@ angular.module('firebaseAdminApp')
         }
       }
     }
-  }
+  };
 });

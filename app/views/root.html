@@ -12,14 +12,18 @@
     <div class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
         <li ng-class="{active: isActive('/home')}"><a ui-sref="app.home">Accueil</a></li>
-        <li ng-class="{active: isActive('/food')}"><a ui-sref="app.food">Aliments</a></li>
-        <li ng-class="{active: isActive('/product')}"><a ui-sref="app.product">Produits</a></li>
-        <li ng-class="{active: isActive('/recipe.*')}"><a ui-sref="app.recipe.list">Recettes</a></li>
-        <li ng-class="{active: isActive('/weekrecipes')}"><a ui-sref="app.weekrecipes">Recettes de la semaine</a></li>
-        <li ng-class="{active: isActive('/meal')}" style="text-decoration:line-through;"><a ui-sref="app.meal">Repas</a></li>
-        <li ng-class="{active: isActive('/planning')}" style="text-decoration:line-through;"><a ui-sref="app.planning">Planning</a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
+        <li ng-class="{active: isActive('/(food)|(product)|(recipe.*)|(weekrecipes)|(meal)|(planning)')}" class="dropdown onHover">
+          <a class="dropdown-toggle" data-toggle="dropdown">Données <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li ng-class="{active: isActive('/food')}"><a ui-sref="app.food">Aliments</a></li>
+            <li ng-class="{active: isActive('/product')}"><a ui-sref="app.product">Produits</a></li>
+            <li ng-class="{active: isActive('/recipe.*')}"><a ui-sref="app.recipe.list">Recettes</a></li>
+            <li ng-class="{active: isActive('/weekrecipes')}"><a ui-sref="app.weekrecipes">Recettes de la semaine</a></li>
+            <li class="divider"></li>
+            <li ng-class="{active: isActive('/meal')}" style="text-decoration:line-through;"><a ui-sref="app.meal">Repas</a></li>
+            <li ng-class="{active: isActive('/planning')}" style="text-decoration:line-through;"><a ui-sref="app.planning">Planning</a></li>
+          </ul>
+        </li>
         <li ng-class="{active: isActive('/batch')}"><a ui-sref="app.batch">Batchs</a></li>
       </ul>
     </div>

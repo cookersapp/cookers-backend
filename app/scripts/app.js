@@ -9,12 +9,12 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage'])
     url: '',
     abstract: true,
     templateUrl: 'views/root.html',
-    controller: 'AppCtrl'
+    controller: 'EmptyCtrl'
   })
   .state('app.home', {
     url: '/home',
     templateUrl: 'views/home.html',
-    controller: 'HomeCtrl'
+    controller: 'EmptyCtrl'
   })
   .state('app.food', {
     url: '/food',
@@ -30,7 +30,7 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage'])
     url: '/recipe',
     abstract: true,
     template: '<ui-view></ui-view>',
-    controller: 'RecipeCtrl'
+    controller: 'EmptyCtrl'
   })
   .state('app.recipe.list', {
     url: '/list',

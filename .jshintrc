@@ -19,6 +19,11 @@
   "trailing": true,
   "smarttabs": true,
   "globals": {
-    "angular": false
+    "window": false,
+    "angular": false,
+    "Firebase": false,
+    "MediaCrush": false,
+    "getSlug": false,
+    "_": false
   }
 }

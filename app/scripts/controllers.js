@@ -1,16 +1,5 @@
 angular.module('firebaseAdminApp')
 
-.controller('AppCtrl', function($scope){
-  'use strict';
-
-})
-
-
-.controller('HomeCtrl', function($scope){
-  'use strict';
-
-})
-
 
 .controller('FoodCtrl', function($scope, foodDb, dataList, crudFactory, formProcess){
   'use strict';
@@ -55,7 +44,7 @@ angular.module('firebaseAdminApp')
   $scope.addElt = crud.fnAddElt;
   $scope.removeElt = crud.fnRemoveElt;
 
-  $scope.foods = foodDb.getAll();
+  $scope.foods = foodDb.sync();
   $scope.currencies = dataList.currencies;
   $scope.units = dataList.quantityUnits;
 
@@ -96,7 +85,7 @@ angular.module('firebaseAdminApp')
   $scope.removeElt = crud.fnRemoveElt;
   $scope.moveDownElt = crud.fnMoveDownElt;
 
-  $scope.foods = foodDb.getAll();
+  $scope.foods = foodDb.sync();
   $scope.categories = dataList.recipeCategories;
   $scope.servings = dataList.servingUnits;
   $scope.timeUnits = dataList.timeUnits;
@@ -110,7 +99,7 @@ angular.module('firebaseAdminApp')
   // for detail view :
   $scope.recipe = {};
   if($stateParams.id){
-    recipeDb.get($stateParams.id, function(recipe){
+    recipeDb.get($stateParams.id).then(function(recipe){
       $scope.recipe = recipe;
     });
   }
@@ -135,7 +124,7 @@ angular.module('firebaseAdminApp')
   $scope.removeElt = crud.fnRemoveElt;
   $scope.moveDownElt = crud.fnMoveDownElt;
 
-  $scope.recipes = recipeDb.getAll();
+  $scope.recipes = recipeDb.sync();
 
   function processWeekrecipe(form){
     return formProcess.weekrecipe(form, $scope.recipes);
@@ -153,7 +142,7 @@ angular.module('firebaseAdminApp')
   $scope.remove = crud.fnRemove;
   $scope.save = crud.fnSave;
 
-  $scope.recipes = recipeDb.getAll();
+  $scope.recipes = recipeDb.sync();
 
   function processMeal(form){
     return formProcess.meal(form, $scope.recipes);
@@ -174,7 +163,7 @@ angular.module('firebaseAdminApp')
     crud.fnSave($scope.form.week.toString());
   };
 
-  $scope.meals = mealDb.getAll();
+  $scope.meals = mealDb.sync();
   $scope.days = dataList.days;
 
   function processPlanning(form){
@@ -195,17 +184,17 @@ angular.module('firebaseAdminApp')
 
 .controller('BatchCtrl', function($scope, foodDb, productDb, recipeDb, weekrecipeDb, mealDb, planningDb, formProcess){
   'use strict';
-  var foods = foodDb.getAll();
-  var products = productDb.getAll();
-  var recipes = recipeDb.getAll();
-  var weekrecipes = weekrecipeDb.getAll();
-  var meals = mealDb.getAll();
-  var plannings = planningDb.getAll();
+  var foods = foodDb.sync();
+  var products = productDb.sync();
+  var recipes = recipeDb.sync();
+  var weekrecipes = weekrecipeDb.sync();
+  var meals = mealDb.sync();
+  var plannings = planningDb.sync();
 
   $scope.updatedenormalizedData = {
     status: '',
     launch: function(){
-      if(confirm('Recopier l\'ensemble des données ?')){
+      if(window.confirm('Recopier l\'ensemble des données ?')){
         $scope.updatedenormalizedData.status = 'Lancement de la recopie de données...';
         $scope.updatedenormalizedData.status = 'Copie des données pour les produits';
         for(var i in products){
@@ -213,27 +202,30 @@ angular.module('firebaseAdminApp')
           productDb.update(product);
         }
         $scope.updatedenormalizedData.status = 'Copie des données pour les recettes';
-        for(var i in recipes){
-          var recipe = formProcess.recipe(recipes[i], foods);
+        for(var j in recipes){
+          var recipe = formProcess.recipe(recipes[j], foods);
           recipeDb.update(recipe);
         }
         $scope.updatedenormalizedData.status = 'Copie des données pour les recettes de la semaine';
-        for(var i in weekrecipes){
-          var weekrecipe = formProcess.weekrecipe(weekrecipes[i], recipes);
+        for(var k in weekrecipes){
+          var weekrecipe = formProcess.weekrecipe(weekrecipes[k], recipes);
           weekrecipeDb.update(weekrecipe);
         }
         $scope.updatedenormalizedData.status = 'Copie des données pour les repas';
-        for(var i in meals){
-          var meal = formProcess.meal(meals[i], recipes);
+        for(var l in meals){
+          var meal = formProcess.meal(meals[l], recipes);
           mealDb.update(meal);
         }
         $scope.updatedenormalizedData.status = 'Copie des données pour les plannings';
-        for(var i in plannings){
-          var planning = formProcess.planning(plannings[i], meals);
+        for(var m in plannings){
+          var planning = formProcess.planning(plannings[m], meals);
           planningDb.update(planning);
         }
         $scope.updatedenormalizedData.status = 'Données recopiées !';
       }
     }
   };
-});
+})
+
+
+.controller('EmptyCtrl', function(){});

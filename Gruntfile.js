@@ -317,9 +317,9 @@ module.exports = function (grunt) {
         }]
       },
       fontawesome: {
-        expand: true, 
-        cwd: '<%= yeoman.app %>/bower_components/font-awesome/fonts/', 
-        src: ['**'], 
+        expand: true,
+        cwd: '<%= yeoman.app %>/bower_components/font-awesome/fonts/',
+        src: ['**'],
         dest: '<%= yeoman.dist %>/bower_components/font-awesome/fonts/'
       },
       styles: {
