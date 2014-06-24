@@ -57,6 +57,11 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage'])
     templateUrl: 'views/meal.html',
     controller: 'MealCtrl'
   })
+  .state('app.weekrecipes', {
+    url: '/weekrecipes',
+    templateUrl: 'views/weekrecipes.html',
+    controller: 'WeekrecipesCtrl'
+  })
   .state('app.planning', {
     url: '/planning',
     templateUrl: 'views/planning.html',

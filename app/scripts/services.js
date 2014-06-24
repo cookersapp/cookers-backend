@@ -18,6 +18,12 @@ angular.module('firebaseAdminApp')
   return firebaseCollection.service;
 })
 
+.factory('weekrecipeDb', function(firebaseFactory){
+  'use strict';
+  var firebaseCollection = firebaseFactory.createCollection('weekrecipes');
+  return firebaseCollection.service;
+})
+
 .factory('mealDb', function(firebaseFactory){
   'use strict';
   var firebaseCollection = firebaseFactory.createCollection('meals');
@@ -146,6 +152,21 @@ angular.module('firebaseAdminApp')
       recipe.price = priceCalculator.forRecipe(recipe);
       return recipe;
     },
+    weekrecipe: function(formWeekrecipe, recipes){
+      var weekrecipe = angular.copy(formWeekrecipe);
+      weekrecipe.price = {
+        value: 0,
+        currency: '€',
+        unit: 'personnes'
+      };
+      for(var i in weekrecipe.recipes){
+        var recipe = weekrecipe.recipes[i];
+        var r = _.find(recipes, {id: recipe.id});
+        angular.copy(r, recipe);
+        weekrecipe.price.value += recipe.price.value;
+      }
+      return weekrecipe;
+    },
     meal: function(formMeal, recipes){
       var meal = angular.copy(formMeal);
       var mealRecipes = [meal.starter, meal.mainCourse, meal.desert, meal.wine];
@@ -159,8 +180,8 @@ angular.module('firebaseAdminApp')
         var recipe = mealRecipes[i];
         if(recipe){
           if(recipe.id && recipe.id.length > 0){
-            var c = _.find(recipes, {id: recipe.id});
-            angular.copy(c, recipe);
+            var r = _.find(recipes, {id: recipe.id});
+            angular.copy(r, recipe);
           } else {
             angular.copy({}, recipe);
           }

@@ -117,6 +117,32 @@ angular.module('firebaseAdminApp')
 })
 
 
+.controller('WeekrecipesCtrl', function($scope, weekrecipeDb, recipeDb, crudFactory, formProcess){
+  'use strict';
+  var initForm = {
+    recipes: []
+  };
+  var crud = crudFactory.create('weekrecipe', initForm, weekrecipeDb, processWeekrecipe);
+  $scope.elts = crud.elts;
+  $scope.form = crud.form;
+  $scope.edit = crud.fnEdit;
+  $scope.cancel = crud.fnCancel;
+  $scope.remove = crud.fnRemove;
+  $scope.save = function(){
+    crud.fnSave($scope.form.week.toString());
+  };
+  $scope.addElt = crud.fnAddElt;
+  $scope.removeElt = crud.fnRemoveElt;
+  $scope.moveDownElt = crud.fnMoveDownElt;
+
+  $scope.recipes = recipeDb.getAll();
+
+  function processWeekrecipe(form){
+    return formProcess.weekrecipe(form, $scope.recipes);
+  }
+})
+
+
 .controller('MealCtrl', function($scope, mealDb, recipeDb, crudFactory, formProcess){
   'use strict';
   var crud = crudFactory.create('meal', {}, mealDb, processMeal);
@@ -167,11 +193,12 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('BatchCtrl', function($scope, foodDb, productDb, recipeDb, mealDb, planningDb, formProcess){
+.controller('BatchCtrl', function($scope, foodDb, productDb, recipeDb, weekrecipeDb, mealDb, planningDb, formProcess){
   'use strict';
   var foods = foodDb.getAll();
   var products = productDb.getAll();
   var recipes = recipeDb.getAll();
+  var weekrecipes = weekrecipeDb.getAll();
   var meals = mealDb.getAll();
   var plannings = planningDb.getAll();
 
@@ -189,6 +216,11 @@ angular.module('firebaseAdminApp')
         for(var i in recipes){
           var recipe = formProcess.recipe(recipes[i], foods);
           recipeDb.update(recipe);
+        }
+        $scope.updatedenormalizedData.status = 'Copie des données pour les recettes de la semaine';
+        for(var i in weekrecipes){
+          var weekrecipe = formProcess.weekrecipe(weekrecipes[i], recipes);
+          weekrecipeDb.update(weekrecipe);
         }
         $scope.updatedenormalizedData.status = 'Copie des données pour les repas';
         for(var i in meals){
