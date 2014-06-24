@@ -38,7 +38,7 @@ angular.module('firebaseAdminApp')
   };
 })
 
-.factory('firebaseFactory', function($rootScope, $http, firebaseUrl, formStorage){
+.factory('firebaseFactory', function($rootScope, $http, firebaseUrl, formStorage, Utils){
   'use strict';
   var service = {
     createCollection: createCollection,
