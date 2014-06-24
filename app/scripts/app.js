@@ -26,31 +26,31 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage'])
     templateUrl: 'views/product.html',
     controller: 'ProductCtrl'
   })
-  .state('app.course', {
-    url: '/course',
+  .state('app.recipe', {
+    url: '/recipe',
     abstract: true,
     template: '<ui-view></ui-view>',
-    controller: 'CourseCtrl'
+    controller: 'RecipeCtrl'
   })
-  .state('app.course.list', {
+  .state('app.recipe.list', {
     url: '/list',
-    templateUrl: 'views/courseList.html',
-    controller: 'CourseCtrl'
+    templateUrl: 'views/recipeList.html',
+    controller: 'RecipeCtrl'
   })
-  .state('app.course.create', {
+  .state('app.recipe.create', {
     url: '/create',
-    templateUrl: 'views/courseForm.html',
-    controller: 'CourseCtrl'
+    templateUrl: 'views/recipeForm.html',
+    controller: 'RecipeCtrl'
   })
-  .state('app.course.detail', {
+  .state('app.recipe.detail', {
     url: '/:id',
-    templateUrl: 'views/courseDetail.html',
-    controller: 'CourseCtrl'
+    templateUrl: 'views/recipeDetail.html',
+    controller: 'RecipeCtrl'
   })
-  .state('app.course.edit', {
+  .state('app.recipe.edit', {
     url: '/:id/edit',
-    templateUrl: 'views/courseForm.html',
-    controller: 'CourseCtrl'
+    templateUrl: 'views/recipeForm.html',
+    controller: 'RecipeCtrl'
   })
   .state('app.meal', {
     url: '/meal',
@@ -73,7 +73,7 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage'])
 
 .constant('dataList', {
   foodCategories:   ['Viandes & Poissons', 'Fruits & Légumes', 'Pains & Pâtisseries', 'Frais', 'Surgelés', 'Épicerie salée', 'Épicerie sucrée', 'Boissons', 'Bébé', 'Bio', 'Hygiène & Beauté', 'Entretien & Nettoyage', 'Animalerie', 'Bazar & Textile'],
-  courseCategories: ['Plat principal', 'Entrée', 'Dessert', 'Vin'],
+  recipeCategories: ['Plat principal', 'Entrée', 'Dessert', 'Vin'],
   currencies:       ['€'],
   servingUnits:     ['personnes'],
   timeUnits:        ['minutes', 'secondes'],

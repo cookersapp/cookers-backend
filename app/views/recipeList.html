@@ -1,7 +1,7 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12 main">
-      <h1 class="page-header">Plats <button type="button" class="btn btn-success pull-right" ui-sref="app.course.create"><i class="fa fa-plus"></i> Créer un plat</button></h1>
+      <h1 class="page-header">Recettes <button type="button" class="btn btn-success pull-right" ui-sref="app.recipe.create"><i class="fa fa-plus"></i> Créer une recette</button></h1>
       <input type="text" class="form-control" placeholder="Search..." ng-model="search">
       <br>
       <div class="list-group">
@@ -12,7 +12,7 @@
             </div>
             <div class="col-md-9">
               <h4 class="list-group-item-heading pull-right">
-                <a class="btn btn-sm btn-default" ui-sref="app.course.detail({id: elt.id})"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-sm btn-default" ui-sref="app.recipe.detail({id: elt.id})"><i class="fa fa-eye"></i></a>
                 <button type="button" class="btn btn-sm btn-info" ng-click="edit(elt)"><i class="fa fa-pencil-square-o"></i></button>
                 <button type="button" class="btn btn-sm btn-danger" ng-click="remove(elt)"><i class="fa fa-times"></i></button>
               </h4>

@@ -1,0 +1,47 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 main">
+      <h1 class="page-header">
+        <a class="btn btn-default" ui-sref="app.recipe.list"><i class="fa fa-arrow-left"></i></a> {{recipe.name}} ({{recipe.category}})
+        <div class="pull-right">
+          <button type="button" class="btn btn-sm btn-info" ng-click="edit(recipe)"><i class="fa fa-pencil-square-o"></i></button>
+          <button type="button" class="btn btn-sm btn-danger" ng-click="remove(recipe)"><i class="fa fa-times"></i></button>
+        </div>
+      </h1>
+      <div class="row">
+        <div class="col-md-4">
+          Original :
+          <img class="img-responsive img-rounded" ng-src="{{recipe.images.original}}" />
+        </div>
+        <div class="col-md-4">
+          Paysage :
+          <img class="img-responsive img-rounded" ng-src="{{recipe.images.landing}}" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <h5>Ingrédients :</h5>
+          <ul>
+            <li ng-repeat="ingredient in recipe.ingredients" title="{{ingredient.price | price}}">{{ingredient | ingredient}}</li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5>Instructions :</h5>
+          <ul>
+            <li ng-repeat="instruction in recipe.instructions">{{instruction.content}}</li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5>Propriétés :</h5>
+          <ul>
+            <li>{{recipe.price | price}}</li>
+            <li>Pour {{recipe.servings | quantity}}</li>
+            <li>{{recipe.time.preparation}} {{recipe.time.unit}} de préparation</li>
+            <li>{{recipe.time.cooking}} {{recipe.time.unit}} de cuisson</li>
+            <li>{{recipe.time.eat}} {{recipe.time.unit}} avant de manger</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

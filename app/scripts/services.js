@@ -2,31 +2,31 @@ angular.module('firebaseAdminApp')
 
 .factory('foodDb', function(firebaseFactory){
   'use strict';
-  var firebaseCollection = firebaseFactory.createCollection('food');
+  var firebaseCollection = firebaseFactory.createCollection('foods');
   return firebaseCollection.service;
 })
 
 .factory('productDb', function(firebaseFactory){
   'use strict';
-  var firebaseCollection = firebaseFactory.createCollection('product');
+  var firebaseCollection = firebaseFactory.createCollection('products');
   return firebaseCollection.service;
 })
 
-.factory('courseDb', function(firebaseFactory){
+.factory('recipeDb', function(firebaseFactory){
   'use strict';
-  var firebaseCollection = firebaseFactory.createCollection('course');
+  var firebaseCollection = firebaseFactory.createCollection('recipes');
   return firebaseCollection.service;
 })
 
 .factory('mealDb', function(firebaseFactory){
   'use strict';
-  var firebaseCollection = firebaseFactory.createCollection('meal');
+  var firebaseCollection = firebaseFactory.createCollection('meals');
   return firebaseCollection.service;
 })
 
 .factory('planningDb', function(firebaseFactory){
   'use strict';
-  var firebaseCollection = firebaseFactory.createCollection('planning');
+  var firebaseCollection = firebaseFactory.createCollection('plannings');
   return firebaseCollection.service;
 })
 
@@ -36,7 +36,7 @@ angular.module('firebaseAdminApp')
   var currency = '€';
   var service = {
     forIngredient: ingredientPrice,
-    forCourse: coursePrice
+    forRecipe: recipePrice
   };
 
   function getPriceForQuantity(quantity, prices){
@@ -67,11 +67,11 @@ angular.module('firebaseAdminApp')
     }
   }
 
-  function coursePrice(course){
+  function recipePrice(recipe){
     var totalPrice = 0;
-    if(course && course.ingredients){
-      for(var i in course.ingredients){
-        var ingredient = course.ingredients[i];
+    if(recipe && recipe.ingredients){
+      for(var i in recipe.ingredients){
+        var ingredient = recipe.ingredients[i];
         var food = _.find(foods, {id: ingredient.food.id});
         if(food){
           totalPrice += getPriceForQuantity(ingredient.quantity, food.prices);
@@ -79,11 +79,11 @@ angular.module('firebaseAdminApp')
       }
     }
 
-    if(course && course.servings){
+    if(recipe && recipe.servings){
       return {
-        value: totalPrice/course.servings.value,
+        value: totalPrice/recipe.servings.value,
         currency: currency,
-        unit: course.servings.unit
+        unit: recipe.servings.unit
       };
     } else {
       return {
@@ -133,43 +133,43 @@ angular.module('firebaseAdminApp')
       angular.copy(foodObj, product.food);
       return product;
     },
-    course: function(formCourse, foods){
-      var course = angular.copy(formCourse);
-      if(course.ingredients){
-        for(var i in course.ingredients){
-          var ingredient = course.ingredients[i];
+    recipe: function(formRecipe, foods){
+      var recipe = angular.copy(formRecipe);
+      if(recipe.ingredients){
+        for(var i in recipe.ingredients){
+          var ingredient = recipe.ingredients[i];
           var foodObj = _.find(foods, {id: ingredient.food.id});
           angular.copy(foodObj, ingredient.food);
           ingredient.price = priceCalculator.forIngredient(ingredient);
         }
       }
-      course.price = priceCalculator.forCourse(course);
-      return course;
+      recipe.price = priceCalculator.forRecipe(recipe);
+      return recipe;
     },
-    meal: function(formMeal, courses){
+    meal: function(formMeal, recipes){
       var meal = angular.copy(formMeal);
-      var mealCourses = [meal.starter, meal.mainCourse, meal.desert, meal.wine];
+      var mealRecipes = [meal.starter, meal.mainCourse, meal.desert, meal.wine];
       meal.difficulty = 0;
       meal.price = {
         value: 0,
         currency: '€',
         unit: 'personnes'
       };
-      for(var i in mealCourses){
-        var course = mealCourses[i];
-        if(course){
-          if(course.id && course.id.length > 0){
-            var c = _.find(courses, {id: course.id});
-            angular.copy(c, course);
+      for(var i in mealRecipes){
+        var recipe = mealRecipes[i];
+        if(recipe){
+          if(recipe.id && recipe.id.length > 0){
+            var c = _.find(recipes, {id: recipe.id});
+            angular.copy(c, recipe);
           } else {
-            angular.copy({}, course);
+            angular.copy({}, recipe);
           }
 
-          if(course.difficulty && course.difficulty > meal.difficulty){
-            meal.difficulty = course.difficulty;
+          if(recipe.difficulty && recipe.difficulty > meal.difficulty){
+            meal.difficulty = recipe.difficulty;
           }
-          if(course.price && course.price.value){
-            meal.price.value += course.price.value;
+          if(recipe.price && recipe.price.value){
+            meal.price.value += recipe.price.value;
           }
         }
       }

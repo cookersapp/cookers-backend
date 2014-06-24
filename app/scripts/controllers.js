@@ -65,59 +65,59 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('CourseCtrl', function($scope, $state, $stateParams, courseDb, foodDb, dataList, crudFactory, formProcess){
+.controller('RecipeCtrl', function($scope, $state, $stateParams, recipeDb, foodDb, dataList, crudFactory, formProcess){
   'use strict';
   var initForm = {
     ingredients: [],
     instructions: []
   };
-  var crud = crudFactory.create('course', initForm, courseDb, processCourse);
+  var crud = crudFactory.create('recipe', initForm, recipeDb, processRecipe);
   $scope.elts = crud.elts;
   $scope.form = crud.form;
   $scope.edit = function(elt){
     crud.fnEdit(elt);
-    $state.go('app.course.edit', {id: elt.id});
+    $state.go('app.recipe.edit', {id: elt.id});
   };
   $scope.cancel = function(elt){
     var id = elt.id;
     crud.fnCancel();
     if(id){
-      $state.go('app.course.detail', {id: id});
+      $state.go('app.recipe.detail', {id: id});
     } else {
-      $state.go('app.course.list');
+      $state.go('app.recipe.list');
     }
   };
   $scope.remove = crud.fnRemove;
   $scope.save = function(){
     crud.fnSave();
-    $state.go('app.course.list');
+    $state.go('app.recipe.list');
   };
   $scope.addElt = crud.fnAddElt;
   $scope.removeElt = crud.fnRemoveElt;
   $scope.moveDownElt = crud.fnMoveDownElt;
 
   $scope.foods = foodDb.getAll();
-  $scope.categories = dataList.courseCategories;
+  $scope.categories = dataList.recipeCategories;
   $scope.servings = dataList.servingUnits;
   $scope.timeUnits = dataList.timeUnits;
   $scope.quantityUnits = dataList.quantityUnits;
   $scope.foodRoles = dataList.foodRoles;
 
-  function processCourse(form){
-    return formProcess.course(form, $scope.foods);
+  function processRecipe(form){
+    return formProcess.recipe(form, $scope.foods);
   }
 
   // for detail view :
-  $scope.course = {};
+  $scope.recipe = {};
   if($stateParams.id){
-    courseDb.get($stateParams.id, function(course){
-      $scope.course = course;
+    recipeDb.get($stateParams.id, function(recipe){
+      $scope.recipe = recipe;
     });
   }
 })
 
 
-.controller('MealCtrl', function($scope, mealDb, courseDb, crudFactory, formProcess){
+.controller('MealCtrl', function($scope, mealDb, recipeDb, crudFactory, formProcess){
   'use strict';
   var crud = crudFactory.create('meal', {}, mealDb, processMeal);
   $scope.elts = crud.elts;
@@ -127,10 +127,10 @@ angular.module('firebaseAdminApp')
   $scope.remove = crud.fnRemove;
   $scope.save = crud.fnSave;
 
-  $scope.courses = courseDb.getAll();
+  $scope.recipes = recipeDb.getAll();
 
   function processMeal(form){
-    return formProcess.meal(form, $scope.courses);
+    return formProcess.meal(form, $scope.recipes);
   }
 })
 
@@ -167,11 +167,11 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('BatchCtrl', function($scope, foodDb, productDb, courseDb, mealDb, planningDb, formProcess){
+.controller('BatchCtrl', function($scope, foodDb, productDb, recipeDb, mealDb, planningDb, formProcess){
   'use strict';
   var foods = foodDb.getAll();
   var products = productDb.getAll();
-  var courses = courseDb.getAll();
+  var recipes = recipeDb.getAll();
   var meals = mealDb.getAll();
   var plannings = planningDb.getAll();
 
@@ -185,14 +185,14 @@ angular.module('firebaseAdminApp')
           var product = formProcess.product(products[i], foods);
           productDb.update(product);
         }
-        $scope.updatedenormalizedData.status = 'Copie des données pour les plats';
-        for(var i in courses){
-          var course = formProcess.course(courses[i], foods);
-          courseDb.update(course);
+        $scope.updatedenormalizedData.status = 'Copie des données pour les recettes';
+        for(var i in recipes){
+          var recipe = formProcess.recipe(recipes[i], foods);
+          recipeDb.update(recipe);
         }
         $scope.updatedenormalizedData.status = 'Copie des données pour les repas';
         for(var i in meals){
-          var meal = formProcess.meal(meals[i], courses);
+          var meal = formProcess.meal(meals[i], recipes);
           mealDb.update(meal);
         }
         $scope.updatedenormalizedData.status = 'Copie des données pour les plannings';
