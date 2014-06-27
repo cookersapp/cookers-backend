@@ -1,7 +1,7 @@
 angular.module('firebaseAdminApp')
 
 
-.controller('FoodCtrl', function($scope, foodDb, dataList, firebaseFactory, formProcess){
+.controller('FoodCtrl', function($scope, foodDb, dataList, firebaseFactory, formProcess, firebaseUrl){
   'use strict';
   var initForm = {
     prices: []
@@ -19,6 +19,10 @@ angular.module('firebaseAdminApp')
   $scope.categories = dataList.foodCategories;
   $scope.currencies = dataList.currencies;
   $scope.units = dataList.quantityUnits;
+  
+  $scope.restUrl = function(elt){
+    return firebaseUrl+'/foods/'+elt.id+'.json';
+  };
 
   function processFood(form){
     return formProcess.food(form);
@@ -26,7 +30,7 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('ProductCtrl', function($scope, productDb, foodDb, dataList, firebaseFactory, formProcess){
+.controller('ProductCtrl', function($scope, productDb, foodDb, dataList, firebaseFactory, formProcess, firebaseUrl){
   'use strict';
   var initForm = {
     prices: [],
@@ -47,6 +51,10 @@ angular.module('firebaseAdminApp')
   $scope.foods = foodDb.sync();
   $scope.currencies = dataList.currencies;
   $scope.units = dataList.quantityUnits;
+  
+  $scope.restUrl = function(elt){
+    return firebaseUrl+'/products/'+elt.id+'.json';
+  };
 
   function processProduct(form){
     return formProcess.product(form, $scope.foods);
@@ -54,7 +62,7 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('RecipeCtrl', function($scope, $state, $stateParams, recipeDb, foodDb, dataList, firebaseFactory, formProcess){
+.controller('RecipeCtrl', function($scope, $state, $stateParams, recipeDb, foodDb, dataList, firebaseFactory, formProcess, firebaseUrl){
   'use strict';
   var initForm = {
     ingredients: [],
@@ -91,6 +99,10 @@ angular.module('firebaseAdminApp')
   $scope.timeUnits = dataList.timeUnits;
   $scope.quantityUnits = dataList.quantityUnits;
   $scope.foodRoles = dataList.foodRoles;
+  
+  $scope.restUrl = function(elt){
+    return firebaseUrl+'/recipes/'+elt.id+'.json';
+  };
 
   function processRecipe(form){
     return formProcess.recipe(form, $scope.foods);
@@ -106,7 +118,7 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('WeekrecipesCtrl', function($scope, weekrecipeDb, recipeDb, firebaseFactory, formProcess){
+.controller('WeekrecipesCtrl', function($scope, weekrecipeDb, recipeDb, firebaseFactory, formProcess, firebaseUrl){
   'use strict';
   var initForm = {
     recipes: []
@@ -125,6 +137,10 @@ angular.module('firebaseAdminApp')
   $scope.moveDownElt = crud.fnMoveDownElt;
 
   $scope.recipes = recipeDb.sync();
+  
+  $scope.restUrl = function(elt){
+    return firebaseUrl+'/weekrecipes/'+elt.id+'.json';
+  };
 
   function processWeekrecipe(form){
     return formProcess.weekrecipe(form, $scope.recipes);

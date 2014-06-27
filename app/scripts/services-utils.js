@@ -149,6 +149,11 @@ angular.module('firebaseAdminApp')
       form: form,
       fnEdit: function(elt){
         angular.copy(elt, form);
+        for(var i in initForm){
+          if(!form[i]){
+            form[i] = initForm[i];
+          }
+        }
       },
       fnCancel: function(){
         formStorage.reset(name, initForm);

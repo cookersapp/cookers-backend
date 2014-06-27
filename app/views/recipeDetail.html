@@ -2,20 +2,25 @@
   <div class="row">
     <div class="col-md-12 main">
       <h1 class="page-header">
-        <a class="btn btn-default" ui-sref="app.recipe.list"><i class="fa fa-arrow-left"></i></a> {{recipe.name}} ({{recipe.category}})
         <div class="pull-right">
           <button type="button" class="btn btn-sm btn-info" ng-click="edit(recipe)"><i class="fa fa-pencil-square-o"></i></button>
           <button type="button" class="btn btn-sm btn-danger" ng-click="remove(recipe)"><i class="fa fa-times"></i></button>
+          <a class="btn btn-sm btn-default" href="{{restUrl(recipe)}}" target="_blank"><i class="fa fa-external-link"></i></a>
         </div>
+        <a class="btn btn-default" ui-sref="app.recipe.list"><i class="fa fa-arrow-left"></i></a> {{recipe.name}} ({{recipe.category}})
       </h1>
       <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-3">
           Original :
           <img class="img-responsive img-rounded" ng-src="{{recipe.images.original}}" />
         </div>
-        <div class="col-md-4">
-          Paysage :
+        <div class="col-md-3">
+          Paysage (400x225) :
           <img class="img-responsive img-rounded" ng-src="{{recipe.images.landing}}" />
+        </div>
+        <div class="col-md-3">
+          Portrait (384x524) :
+          <img class="img-responsive img-rounded" ng-src="{{recipe.images.portrait}}" />
         </div>
       </div>
       <div class="row">
