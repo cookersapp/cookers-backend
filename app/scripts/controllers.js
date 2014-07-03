@@ -19,7 +19,7 @@ angular.module('firebaseAdminApp')
   $scope.categories = dataList.foodCategories;
   $scope.currencies = dataList.currencies;
   $scope.units = dataList.quantityUnits;
-  
+
   $scope.restUrl = function(elt){
     return firebaseUrl+'/foods/'+elt.id+'.json';
   };
@@ -48,10 +48,10 @@ angular.module('firebaseAdminApp')
   $scope.addElt = crud.fnAddElt;
   $scope.removeElt = crud.fnRemoveElt;
 
-  $scope.foods = foodDb.sync();
+  $scope.foods = foodDb.collection;
   $scope.currencies = dataList.currencies;
   $scope.units = dataList.quantityUnits;
-  
+
   $scope.restUrl = function(elt){
     return firebaseUrl+'/products/'+elt.id+'.json';
   };
@@ -93,13 +93,13 @@ angular.module('firebaseAdminApp')
   $scope.removeElt = crud.fnRemoveElt;
   $scope.moveDownElt = crud.fnMoveDownElt;
 
-  $scope.foods = foodDb.sync();
+  $scope.foods = foodDb.collection;
   $scope.categories = dataList.recipeCategories;
   $scope.servings = dataList.servingUnits;
   $scope.timeUnits = dataList.timeUnits;
   $scope.quantityUnits = dataList.quantityUnits;
   $scope.foodRoles = dataList.foodRoles;
-  
+
   $scope.restUrl = function(elt){
     return firebaseUrl+'/recipes/'+elt.id+'.json';
   };
@@ -136,8 +136,8 @@ angular.module('firebaseAdminApp')
   $scope.removeElt = crud.fnRemoveElt;
   $scope.moveDownElt = crud.fnMoveDownElt;
 
-  $scope.recipes = recipeDb.sync();
-  
+  $scope.recipes = recipeDb.collection;
+
   $scope.restUrl = function(elt){
     return firebaseUrl+'/weekrecipes/'+elt.id+'.json';
   };
@@ -158,7 +158,7 @@ angular.module('firebaseAdminApp')
   $scope.remove = crud.fnRemove;
   $scope.save = crud.fnSave;
 
-  $scope.recipes = recipeDb.sync();
+  $scope.recipes = recipeDb.collection;
 
   function processMeal(form){
     return formProcess.meal(form, $scope.recipes);
@@ -179,7 +179,7 @@ angular.module('firebaseAdminApp')
     crud.fnSave($scope.form.week.toString());
   };
 
-  $scope.meals = mealDb.sync();
+  $scope.meals = mealDb.collection;
   $scope.days = dataList.days;
 
   function processPlanning(form){
@@ -200,12 +200,12 @@ angular.module('firebaseAdminApp')
 
 .controller('BatchCtrl', function($scope, foodDb, productDb, recipeDb, weekrecipeDb, mealDb, planningDb, formProcess){
   'use strict';
-  var foods = foodDb.sync();
-  var products = productDb.sync();
-  var recipes = recipeDb.sync();
-  var weekrecipes = weekrecipeDb.sync();
-  var meals = mealDb.sync();
-  var plannings = planningDb.sync();
+  var foods = foodDb.collection;
+  var products = productDb.collection;
+  var recipes = recipeDb.collection;
+  var weekrecipes = weekrecipeDb.collection;
+  var meals = mealDb.collection;
+  var plannings = planningDb.collection;
 
   $scope.updatedenormalizedData = {
     status: '',
@@ -240,6 +240,39 @@ angular.module('firebaseAdminApp')
         $scope.updatedenormalizedData.status = 'Données recopiées !';
       }
     }
+  };
+})
+
+
+.controller('UsersCtrl', function($scope, firebaseFactory){
+  'use strict';
+  var connectedUsersDb = firebaseFactory.createCollection('connected');
+  $scope.connectedUsers = connectedUsersDb.collection;
+  $scope.mapMarkers = connectedUsersDb.sync(function(user){
+    var ret = {};
+    if(user){
+      if(user.launchs && user.launchs.length > 0){
+        ret.time = user.launchs[0].timestamp;
+        if(user.launchs[0].coords){
+          ret.lat = user.launchs[0].coords.latitude;
+          ret.lng = user.launchs[0].coords.longitude;
+        }
+      }
+      if(user.profile){
+        ret.title = user.profile.mail;
+      }
+      if(user.device){
+        ret.message = user.device.platform+' '+user.device.version+', '+user.device.model;
+      }
+    }
+    return ret;
+  });
+
+  $scope.mapCenter = {
+    name: 'Paris',
+    lat: 48.855,
+    lng: 2.34,
+    zoom: 12
   };
 })
 

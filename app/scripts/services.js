@@ -2,43 +2,37 @@ angular.module('firebaseAdminApp')
 
 .factory('foodDb', function(firebaseFactory){
   'use strict';
-  var firebaseCollection = firebaseFactory.createCollection('foods');
-  return firebaseCollection.service;
+  return firebaseFactory.createCollection('foods', true);
 })
 
 .factory('productDb', function(firebaseFactory){
   'use strict';
-  var firebaseCollection = firebaseFactory.createCollection('products');
-  return firebaseCollection.service;
+  return firebaseFactory.createCollection('products', true);
 })
 
 .factory('recipeDb', function(firebaseFactory){
   'use strict';
-  var firebaseCollection = firebaseFactory.createCollection('recipes');
-  return firebaseCollection.service;
+  return firebaseFactory.createCollection('recipes', true);
 })
 
 .factory('weekrecipeDb', function(firebaseFactory){
   'use strict';
-  var firebaseCollection = firebaseFactory.createCollection('weekrecipes');
-  return firebaseCollection.service;
+  return firebaseFactory.createCollection('weekrecipes', true);
 })
 
 .factory('mealDb', function(firebaseFactory){
   'use strict';
-  var firebaseCollection = firebaseFactory.createCollection('meals');
-  return firebaseCollection.service;
+  return firebaseFactory.createCollection('meals', true);
 })
 
 .factory('planningDb', function(firebaseFactory){
   'use strict';
-  var firebaseCollection = firebaseFactory.createCollection('plannings');
-  return firebaseCollection.service;
+  return firebaseFactory.createCollection('plannings', true);
 })
 
 .factory('priceCalculator', function(foodDb, unitConversion){
   'use strict';
-  var foods = foodDb.sync();
+  var foods = foodDb.collection;
   var currency = '€';
   var service = {
     forIngredient: ingredientPrice,

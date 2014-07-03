@@ -1,4 +1,4 @@
-angular.module('firebaseAdminApp', ['ui.router', 'ngStorage'])
+angular.module('firebaseAdminApp', ['ui.router', 'ngStorage', 'leaflet-directive'])
 
 .config(function($stateProvider, $urlRouterProvider){
   'use strict';
@@ -66,6 +66,11 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage'])
     url: '/planning',
     templateUrl: 'views/planning.html',
     controller: 'PlanningCtrl'
+  })
+  .state('app.users', {
+    url: '/users',
+    templateUrl: 'views/users.html',
+    controller: 'UsersCtrl'
   })
   .state('app.batch', {
     url: '/batch',

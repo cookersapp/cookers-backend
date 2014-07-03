@@ -45,10 +45,17 @@ angular.module('firebaseAdminApp')
     createCrud: createCrud
   };
 
-  function findIndexWithId(array, id) {
+  function createElt(snapshot, useId){
+    var elt = snapshot.val();
+    if(!useId){
+      elt.$name = snapshot.name();
+    }
+    return elt;
+  }
+  function findIndex(array, elt, useId) {
     var index = -1, length = array ? array.length : 0;
     while(++index < length) {
-      if(array[index].id && array[index].id === id) {
+      if((useId && array[index].id && array[index].id === elt.id) || (!useId && array[index].$name && array[index].$name === elt.$name)) {
         return index;
       }
     }
@@ -61,8 +68,8 @@ angular.module('firebaseAdminApp')
     }
     return arr;
   }
-  function exist(collection, elt){
-    return findIndexWithId(collection, elt.id) > -1;
+  function exist(collection, elt, useId){
+    return findIndex(collection, elt, useId) > -1;
   }
   function onError(error){
     if(error){
@@ -71,31 +78,85 @@ angular.module('firebaseAdminApp')
     }
   }
 
-  function createCollection(name){
+  function createCollection(name, useId){
     var collectionUrl = firebaseUrl+'/'+name;
     var collectionRef = new Firebase(collectionUrl);
     var collection = [];
+    var syncs = [];
+    var addedCallbacks = [], removedCallbacks = [], updatedCallbacks = [];
 
     collectionRef.on('child_added', function(childSnapshot, prevChildName) {
       $rootScope.safeApply(function(){
-        collection.push(childSnapshot.val());
+        var newElt = createElt(childSnapshot, useId);
+        collection.push(newElt);
+        
+        // sync all collections
+        for(var i in syncs){
+          syncs[i].collection.push(syncs[i].builder(newElt));
+        }
+        
+        // dispatch events
+        for(var i in addedCallbacks){
+          addedCallbacks[i](newElt, 'added');
+        }
       });
     });
     collectionRef.on('child_removed', function(oldChildSnapshot) {
       $rootScope.safeApply(function(){
-        var index = findIndexWithId(collection, oldChildSnapshot.val().id);
+        var oldElt = createElt(oldChildSnapshot, useId);
+        var index = findIndex(collection, oldElt, useId);
         collection.splice(index, 1);
+        
+        // sync all collections
+        for(var i in syncs){
+          syncs[i].collection.splice(index, 1);
+        }
+        
+        // dispatch events
+        for(var i in removedCallbacks){
+          removedCallbacks[i](oldElt, 'removed');
+        }
       });
     });
     collectionRef.on('child_changed', function(childSnapshot, prevChildName) {
       $rootScope.safeApply(function(){
-        var index = findIndexWithId(collection, childSnapshot.val().id);
-        collection.splice(index, 1, childSnapshot.val());
+        var elt = createElt(childSnapshot, useId);
+        var index = findIndex(collection, elt, useId);
+        collection.splice(index, 1, elt);
+        
+        // sync all collections
+        for(var i in syncs){
+          syncs[i].collection.splice(index, 1, syncs[i].builder(elt));
+        }
+        
+        // dispatch events
+        for(var i in updatedCallbacks){
+          updatedCallbacks[i](elt, 'updated');
+        }
       });
     });
 
     var service = {
-      sync: function(){ return collection; },
+      name: name,
+      ref: collectionRef,
+      collection: collection,
+      sync: function(builder){
+        // Warn, some concurrencie issues may appear... :(
+        // It's the case if some event came when the reference collection is copied...
+        
+        if(!builder || typeof builder !== 'function'){
+          builder = function(elt){return elt;}
+        }
+        var arr = [];
+        for(var i in collection){
+          arr[i] = builder(collection[i]);
+        }
+        syncs.push({
+          collection: arr,
+          builder: builder
+        });
+        return arr;
+      },
       getAll: function(){
         return $http.get(collectionUrl+'.json').then(function(result){
           return objectToArray(result.data);
@@ -108,7 +169,7 @@ angular.module('firebaseAdminApp')
       },
       add: function(elt){
         var id = elt.id;
-        if(!exist(collection, elt)){
+        if(!exist(collection, elt, useId)){
           collectionRef.child(id).set(elt, onError);
         } else {
           window.alert('Element with id <'+id+'> already exists !', id);
@@ -116,7 +177,7 @@ angular.module('firebaseAdminApp')
       },
       remove: function(elt){
         var id = elt.id;
-        if(exist(collection, elt)){
+        if(exist(collection, elt, useId)){
           collectionRef.child(id).remove(onError);
         } else {
           window.alert('Element with id <'+id+'> don\'t exist !', id);
@@ -124,24 +185,27 @@ angular.module('firebaseAdminApp')
       },
       update: function(elt){
         var id = elt.id;
-        if(exist(collection, elt)){
+        if(exist(collection, elt, useId)){
           collectionRef.child(id).set(elt, onError);
         } else {
           window.alert('Element with id <'+id+'> don\'t exist !', id);
         }
+      },
+      onChildAdded: function(callback){addedCallbacks.push(callback);},
+      onChildRemoved: function(callback){removedCallbacks.push(callback);},
+      onChildUpdated: function(callback){updatedCallbacks.push(callback);},
+      onChange: function(callback){
+        addedCallbacks.push(callback);
+        removedCallbacks.push(callback);
+        updatedCallbacks.push(callback);
       }
     };
 
-    return {
-      name: name,
-      ref: collectionRef,
-      collection: collection,
-      service: service
-    };
+    return service;
   }
 
   function createCrud(name, initForm, db, processElt){
-    var elts = db.sync();
+    var elts = db.collection;
     var form = formStorage.get(name, initForm);
 
     return {
