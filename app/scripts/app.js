@@ -94,6 +94,12 @@ angular.module('firebaseAdminApp', ['ui.router', 'visor', 'ngCookies', 'ngStorag
     controller: 'UsersCtrl',
     restrict: authenticatedOnly
   })
+  .state('app.purchases', {
+    url: '/purchases',
+    templateUrl: 'views/purchases.html',
+    controller: 'PurchasesCtrl',
+    restrict: authenticatedOnly
+  })
   .state('app.batch', {
     url: '/batch',
     templateUrl: 'views/batch.html',

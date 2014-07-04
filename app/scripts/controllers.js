@@ -277,6 +277,42 @@ angular.module('firebaseAdminApp')
 })
 
 
+.controller('PurchasesCtrl', function($scope, $filter, firebaseFactory){
+  'use strict';
+  var purchaseDb = firebaseFactory.createCollection('logs/buy');
+  $scope.purchases = purchaseDb.sync(function(purchase){
+    var ret = {};
+    if(purchase){
+      ret.device = purchase.device;
+      ret.recipe = purchase.recipe;
+      ret.ingredient = purchase.ingredient;
+      ret.title = purchase.ingredient;
+      if(purchase.position){
+        ret.time = purchase.position.timestamp;
+        if(purchase.position.coords){
+          ret.lat = purchase.position.coords.latitude;
+          ret.lng = purchase.position.coords.longitude;
+        }
+      }
+    }
+    return ret;
+  });
+
+  $scope.mapCenter = {
+    name: 'Paris',
+    lat: 48.855,
+    lng: 2.34,
+    zoom: 12
+  };
+  $scope.mapCenter = {
+    name: 'Maison',
+    lat: 48.857131,
+    lng: 2.40417,
+    zoom: 19
+  };
+})
+
+
 .controller('LoginCtrl', function($rootScope, $scope){
   'use strict';
   $scope.login = function(login, pass){

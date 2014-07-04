@@ -1,0 +1,18 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 main">
+      <h1 class="page-header">Achats ({{purchases.length}})</h1>
+      <leaflet center="mapCenter" markers="purchases" width="1170px" height="650px"></leaflet>
+      <table class="table">
+        <thead>
+          <tr><th>Recette</th><th>Ingrédient</th><th>Date</th></tr>
+        </thead>
+        <tr ng-repeat="purchase in purchases">
+          <td>{{purchase.recipe}}</td>
+          <td>{{purchase.ingredient}}</td>
+          <td>{{purchase.time | date}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
