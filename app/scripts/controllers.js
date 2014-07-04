@@ -285,4 +285,10 @@ angular.module('firebaseAdminApp')
 })
 
 
+.controller('AccessDeniedCtrl', function($scope, $stateParams){
+  'use strict';
+  $scope.prevUrl = $stateParams.prevUrl;
+})
+
+
 .controller('EmptyCtrl', function(){});

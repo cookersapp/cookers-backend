@@ -2,7 +2,7 @@ angular.module('firebaseAdminApp', ['ui.router', 'visor', 'ngCookies', 'ngStorag
 
 .config(function($stateProvider, $urlRouterProvider, visorProvider, authenticatedOnly){
   'use strict';
-  visorProvider.authenticate = function($cookieStore, $q, $rootScope){
+  visorProvider.authenticate = ['$cookieStore', '$q', '$rootScope', function($cookieStore, $q, $rootScope){
     var user = $cookieStore.get('user');
     if(user){
       $rootScope.user = user;
@@ -10,10 +10,10 @@ angular.module('firebaseAdminApp', ['ui.router', 'visor', 'ngCookies', 'ngStorag
     } else {
       return $q.reject(null);
     }
-  };
-  visorProvider.doOnNotAuthorized = function($state, restrictedUrl){
+  }];
+  visorProvider.doOnNotAuthorized = ['$state', 'restrictedUrl', function($state, restrictedUrl){
     $state.go('app.access_denied', {prevUrl: restrictedUrl});
-  }
+  }];
 
   $stateProvider
   .state('app', {
@@ -110,9 +110,7 @@ angular.module('firebaseAdminApp', ['ui.router', 'visor', 'ngCookies', 'ngStorag
   .state('app.access_denied', {
     url:'/access_denied?prevUrl',
     templateUrl: 'views/auth/access_denied.html',
-    controller: function($scope, $stateParams){
-      $scope.prevUrl = $stateParams.prevUrl;
-    }
+    controller: 'AccessDeniedCtrl'
   });
 
   $urlRouterProvider.otherwise('/home');

@@ -96,8 +96,8 @@ angular.module('firebaseAdminApp')
         }
         
         // dispatch events
-        for(var i in addedCallbacks){
-          addedCallbacks[i](newElt, 'added');
+        for(var j in addedCallbacks){
+          addedCallbacks[j](newElt, 'added');
         }
       });
     });
@@ -113,8 +113,8 @@ angular.module('firebaseAdminApp')
         }
         
         // dispatch events
-        for(var i in removedCallbacks){
-          removedCallbacks[i](oldElt, 'removed');
+        for(var j in removedCallbacks){
+          removedCallbacks[j](oldElt, 'removed');
         }
       });
     });
@@ -130,8 +130,8 @@ angular.module('firebaseAdminApp')
         }
         
         // dispatch events
-        for(var i in updatedCallbacks){
-          updatedCallbacks[i](elt, 'updated');
+        for(var j in updatedCallbacks){
+          updatedCallbacks[j](elt, 'updated');
         }
       });
     });
@@ -145,7 +145,7 @@ angular.module('firebaseAdminApp')
         // It's the case if some event came when the reference collection is copied...
         
         if(!builder || typeof builder !== 'function'){
-          builder = function(elt){return elt;}
+          builder = function(elt){return elt;};
         }
         var arr = [];
         for(var i in collection){
