@@ -1,8 +1,19 @@
-angular.module('firebaseAdminApp', ['ui.router', 'ngStorage', 'leaflet-directive'])
+angular.module('firebaseAdminApp', ['ui.router', 'visor', 'ngCookies', 'ngStorage', 'leaflet-directive'])
 
-.config(function($stateProvider, $urlRouterProvider){
+.config(function($stateProvider, $urlRouterProvider, visorProvider, authenticatedOnly){
   'use strict';
-  $urlRouterProvider.otherwise('/home');
+  visorProvider.authenticate = function($cookieStore, $q, $rootScope){
+    var user = $cookieStore.get('user');
+    if(user){
+      $rootScope.user = user;
+      return $q.when(user);
+    } else {
+      return $q.reject(null);
+    }
+  };
+  visorProvider.doOnNotAuthorized = function($state, restrictedUrl){
+    $state.go('app.access_denied', {prevUrl: restrictedUrl});
+  }
 
   $stateProvider
   .state('app', {
@@ -19,64 +30,91 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage', 'leaflet-directive
   .state('app.food', {
     url: '/food',
     templateUrl: 'views/food.html',
-    controller: 'FoodCtrl'
+    controller: 'FoodCtrl',
+    restrict: authenticatedOnly
   })
   .state('app.product', {
     url: '/product',
     templateUrl: 'views/product.html',
-    controller: 'ProductCtrl'
+    controller: 'ProductCtrl',
+    restrict: authenticatedOnly
   })
   .state('app.recipe', {
     url: '/recipe',
     abstract: true,
     template: '<ui-view></ui-view>',
-    controller: 'EmptyCtrl'
+    controller: 'EmptyCtrl',
+    restrict: authenticatedOnly
   })
   .state('app.recipe.list', {
     url: '/list',
     templateUrl: 'views/recipeList.html',
-    controller: 'RecipeCtrl'
+    controller: 'RecipeCtrl',
+    restrict: authenticatedOnly
   })
   .state('app.recipe.create', {
     url: '/create',
     templateUrl: 'views/recipeForm.html',
-    controller: 'RecipeCtrl'
+    controller: 'RecipeCtrl',
+    restrict: authenticatedOnly
   })
   .state('app.recipe.detail', {
     url: '/:id',
     templateUrl: 'views/recipeDetail.html',
-    controller: 'RecipeCtrl'
+    controller: 'RecipeCtrl',
+    restrict: authenticatedOnly
   })
   .state('app.recipe.edit', {
     url: '/:id/edit',
     templateUrl: 'views/recipeForm.html',
-    controller: 'RecipeCtrl'
+    controller: 'RecipeCtrl',
+    restrict: authenticatedOnly
   })
   .state('app.meal', {
     url: '/meal',
     templateUrl: 'views/meal.html',
-    controller: 'MealCtrl'
+    controller: 'MealCtrl',
+    restrict: authenticatedOnly
   })
   .state('app.weekrecipes', {
     url: '/weekrecipes',
     templateUrl: 'views/weekrecipes.html',
-    controller: 'WeekrecipesCtrl'
+    controller: 'WeekrecipesCtrl',
+    restrict: authenticatedOnly
   })
   .state('app.planning', {
     url: '/planning',
     templateUrl: 'views/planning.html',
-    controller: 'PlanningCtrl'
+    controller: 'PlanningCtrl',
+    restrict: authenticatedOnly
   })
   .state('app.users', {
     url: '/users',
     templateUrl: 'views/users.html',
-    controller: 'UsersCtrl'
+    controller: 'UsersCtrl',
+    restrict: authenticatedOnly
   })
   .state('app.batch', {
     url: '/batch',
     templateUrl: 'views/batch.html',
-    controller: 'BatchCtrl'
+    controller: 'BatchCtrl',
+    restrict: authenticatedOnly
+  })
+
+  .state('app.login', {
+    url: '/login',
+    templateUrl: 'views/login.html',
+    restrict: function(user){ return user === undefined; }
+  })
+  .state('app.access_denied', {
+    url:'/access_denied?prevUrl',
+    templateUrl: 'views/access_denied.html',
+    controller: function($scope, $stateParams){
+      $scope.prevUrl = $stateParams.prevUrl;
+    }
   });
+
+  $urlRouterProvider.otherwise('/home');
 })
 
 .constant('firebaseUrl', 'https://crackling-fire-7710.firebaseio.com')
@@ -103,13 +141,31 @@ angular.module('firebaseAdminApp', ['ui.router', 'ngStorage', 'leaflet-directive
   ]}
 ])
 
-.run(function($rootScope, $location, Utils){
+.run(function($rootScope, $state, $location, $cookieStore, visor, Utils){
   'use strict';
   $rootScope.isActive = function(viewLocation){
     var regex = new RegExp('^'+viewLocation+'$', 'g');
     return regex.test($location.path());
   };
-  
+
+  $rootScope.login = function(login, pass){
+    var user = {login: login};
+    $cookieStore.put('user', user);
+    $rootScope.user = user;
+    visor.setAuthenticated(user);
+  };
+
+  $rootScope.logout = function(){
+    $cookieStore.remove('user');
+    $rootScope.user = undefined;
+    visor.setUnauthenticated();
+    $state.go('app.home');
+  };
+
+  $rootScope.isLogged = function(){
+    return !!$rootScope.user;
+  };
+
   $rootScope.isUrl = Utils.isUrl;
 
   $rootScope.safeApply = function(fn){
