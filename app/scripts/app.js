@@ -29,13 +29,13 @@ angular.module('firebaseAdminApp', ['ui.router', 'visor', 'ngCookies', 'ngStorag
   })
   .state('app.food', {
     url: '/food',
-    templateUrl: 'views/food.html',
+    templateUrl: 'views/data/food.html',
     controller: 'FoodCtrl',
     restrict: authenticatedOnly
   })
   .state('app.product', {
     url: '/product',
-    templateUrl: 'views/product.html',
+    templateUrl: 'views/data/product.html',
     controller: 'ProductCtrl',
     restrict: authenticatedOnly
   })
@@ -48,43 +48,43 @@ angular.module('firebaseAdminApp', ['ui.router', 'visor', 'ngCookies', 'ngStorag
   })
   .state('app.recipe.list', {
     url: '/list',
-    templateUrl: 'views/recipeList.html',
+    templateUrl: 'views/data/recipeList.html',
     controller: 'RecipeCtrl',
     restrict: authenticatedOnly
   })
   .state('app.recipe.create', {
     url: '/create',
-    templateUrl: 'views/recipeForm.html',
+    templateUrl: 'views/data/recipeForm.html',
     controller: 'RecipeCtrl',
     restrict: authenticatedOnly
   })
   .state('app.recipe.detail', {
     url: '/:id',
-    templateUrl: 'views/recipeDetail.html',
+    templateUrl: 'views/data/recipeDetail.html',
     controller: 'RecipeCtrl',
     restrict: authenticatedOnly
   })
   .state('app.recipe.edit', {
     url: '/:id/edit',
-    templateUrl: 'views/recipeForm.html',
+    templateUrl: 'views/data/recipeForm.html',
     controller: 'RecipeCtrl',
     restrict: authenticatedOnly
   })
   .state('app.meal', {
     url: '/meal',
-    templateUrl: 'views/meal.html',
+    templateUrl: 'views/data/meal.html',
     controller: 'MealCtrl',
     restrict: authenticatedOnly
   })
   .state('app.weekrecipes', {
     url: '/weekrecipes',
-    templateUrl: 'views/weekrecipes.html',
+    templateUrl: 'views/data/weekrecipes.html',
     controller: 'WeekrecipesCtrl',
     restrict: authenticatedOnly
   })
   .state('app.planning', {
     url: '/planning',
-    templateUrl: 'views/planning.html',
+    templateUrl: 'views/data/planning.html',
     controller: 'PlanningCtrl',
     restrict: authenticatedOnly
   })
@@ -103,12 +103,13 @@ angular.module('firebaseAdminApp', ['ui.router', 'visor', 'ngCookies', 'ngStorag
 
   .state('app.login', {
     url: '/login',
-    templateUrl: 'views/login.html',
+    templateUrl: 'views/auth/login.html',
+    controller: 'LoginCtrl',
     restrict: function(user){ return user === undefined; }
   })
   .state('app.access_denied', {
     url:'/access_denied?prevUrl',
-    templateUrl: 'views/access_denied.html',
+    templateUrl: 'views/auth/access_denied.html',
     controller: function($scope, $stateParams){
       $scope.prevUrl = $stateParams.prevUrl;
     }
@@ -141,29 +142,11 @@ angular.module('firebaseAdminApp', ['ui.router', 'visor', 'ngCookies', 'ngStorag
   ]}
 ])
 
-.run(function($rootScope, $state, $location, $cookieStore, visor, Utils){
+.run(function($rootScope, $state, $location, $cookieStore, visor, firebaseUrl, Utils){
   'use strict';
   $rootScope.isActive = function(viewLocation){
     var regex = new RegExp('^'+viewLocation+'$', 'g');
     return regex.test($location.path());
-  };
-
-  $rootScope.login = function(login, pass){
-    var user = {login: login};
-    $cookieStore.put('user', user);
-    $rootScope.user = user;
-    visor.setAuthenticated(user);
-  };
-
-  $rootScope.logout = function(){
-    $cookieStore.remove('user');
-    $rootScope.user = undefined;
-    visor.setUnauthenticated();
-    $state.go('app.home');
-  };
-
-  $rootScope.isLogged = function(){
-    return !!$rootScope.user;
   };
 
   $rootScope.isUrl = Utils.isUrl;
@@ -177,5 +160,32 @@ angular.module('firebaseAdminApp', ['ui.router', 'visor', 'ngCookies', 'ngStorag
     } else {
       this.$apply(fn);
     }
+  };
+
+  // auth
+  var firebaseRef = new Firebase(firebaseUrl);
+  $rootScope.auth = new FirebaseSimpleLogin(firebaseRef, function(error, user){
+    if(error){
+      $rootScope.safeApply(function(){
+        $rootScope.loginError = error.message.replace('FirebaseSimpleLogin: ', '');
+      });
+    } else if(user){
+      $cookieStore.put('user', user);
+      $rootScope.user = user;
+      visor.setAuthenticated(user);
+    } else {
+      $cookieStore.remove('user');
+      $rootScope.user = undefined;
+      visor.setUnauthenticated();
+      $state.go('app.home');
+    }
+  });
+
+  $rootScope.logout = function(){
+    $rootScope.auth.logout();
+  };
+
+  $rootScope.isLogged = function(){
+    return !!$rootScope.user;
   };
 });

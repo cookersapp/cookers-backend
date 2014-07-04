@@ -277,4 +277,12 @@ angular.module('firebaseAdminApp')
 })
 
 
+.controller('LoginCtrl', function($rootScope, $scope){
+  'use strict';
+  $scope.login = function(login, pass){
+    $rootScope.auth.login('password', {email: login, password: pass});
+  };
+})
+
+
 .controller('EmptyCtrl', function(){});
