@@ -170,7 +170,13 @@ angular.module('firebaseAdminApp')
       add: function(elt){
         var id = elt.id;
         if(!exist(collection, elt, useId)){
-          collectionRef.child(id).set(elt, onError);
+          if(id){
+            collectionRef.child(id).set(elt, onError);
+          } else {
+            var msgRef = collectionRef.push();
+            elt.id = msgRef.name();
+            msgRef.set(elt);
+          }
         } else {
           window.alert('Element with id <'+id+'> already exists !', id);
         }
@@ -186,6 +192,7 @@ angular.module('firebaseAdminApp')
       update: function(elt){
         var id = elt.id;
         if(exist(collection, elt, useId)){
+          delete elt.$name;
           collectionRef.child(id).set(elt, onError);
         } else {
           window.alert('Element with id <'+id+'> don\'t exist !', id);

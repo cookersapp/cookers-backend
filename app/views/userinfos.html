@@ -1,0 +1,73 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 main">
+      <h1 class="page-header">User info</h1>
+      <div class="row">
+        <div class="col-md-8">
+          <table class="table">
+            <thead>
+              <tr>
+                <th class="hide">Id</th>
+                <th>Message</th>
+                <th>prod</th>
+                <th>created</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="elt in elts">
+                <td class="hide">{{elt.id}}</td>
+                <td>
+                  <div class="alert alert-{{elt.type}}" style="max-width: 384px;">
+                    <span ng-bind-html="trust(elt.content)"></span>
+                  </div>
+                </td>
+                <td>{{elt.isProd}}</td>
+                <td>{{elt.added | date}}</td>
+                <td>
+                  <button type="button" class="btn btn-xs btn-info" ng-click="edit(elt)"><i class="fa fa-pencil-square-o"></i></button>
+                  <button type="button" class="btn btn-xs btn-danger" ng-click="remove(elt)"><i class="fa fa-times"></i></button>
+                  <a class="btn btn-xs btn-default" href="{{restUrl(elt)}}" target="_blank"><i class="fa fa-external-link"></i></a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="col-md-4">
+          <form name="food" ng-submit="save()">
+            <div class="form-group">
+              <label for="category">Type</label>
+              <select id="type" name="type" class="form-control" ng-model="form.type" ng-options="type for type in infoTypes" required>
+                <option value="">--</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="content">Content</label>
+              <textarea id="content" name="content" class="form-control" rows="5" ng-model="form.content" placeholder="Ex:bonjour :)" required></textarea>
+              <p class="help-block">Do not use link outside app !!!</p>
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="isProd" ng-model="form.isProd"> send in prod
+              </label>
+            </div>
+
+            <div class="form-group" ng-if="form.content">
+              <label>Preview</label>
+              <div class="form-control-static">
+                <div class="alert alert-{{form.type}}">
+                  <button type="button" class="close">&times;</button>
+                  <span ng-bind-html="trust(form.content)"></span>
+                </div>
+              </div>
+            </div>
+
+            <a class="btn btn-default" ng-click="cancel()">Annuler</a>
+            <button type="submit" class="btn btn-primary" ng-if="!form.id">Créer</button>
+            <button type="submit" class="btn btn-success" ng-if="form.id">Enregistrer</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

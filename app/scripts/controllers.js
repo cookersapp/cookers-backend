@@ -277,6 +277,44 @@ angular.module('firebaseAdminApp')
 })
 
 
+.controller('UserinfosCtrl', function($scope, $sce, userinfoDb, firebaseFactory, firebaseUrl){
+  'use strict';
+
+  var info = {
+    type: 'info',
+    content: 'Cette application est une version beta (encore en développement). Nous faisons le maximum pour vous proposer la meilleure expérience possible et nous espérons que vous serez indulgent en cas de problème.<br>Par ailleurs, nous sommes preneur de toute <a href="#/app/feedback">remarque ou idée</a>.<br><b>Bon appétit ! ;)</b>',
+    created: Date.now(),
+    isProd: true
+  };
+
+
+  var crud = firebaseFactory.createCrud('userinfo', {}, userinfoDb, processUserinfo);
+  $scope.elts = crud.elts;
+  $scope.form = crud.form;
+  $scope.edit = crud.fnEdit;
+  $scope.cancel = crud.fnCancel;
+  $scope.remove = crud.fnRemove;
+  $scope.save = crud.fnSave;
+
+  $scope.infoTypes = ['default', 'success', 'info', 'warning', 'danger'];
+  /*$scope.$watch('form.content', function(newVal){
+    $scope.trustedContent = $sce.trustAsHtml(newVal);
+  });*/
+
+  $scope.restUrl = function(elt){
+    return firebaseUrl+'/userinfos/'+elt.id+'.json';
+  };
+  $scope.trust = function(html){
+    return $sce.trustAsHtml(html);
+  };
+
+  function processUserinfo(form){
+    var ret = angular.copy(form);
+    return ret;
+  }
+})
+
+
 .controller('PurchasesCtrl', function($scope, $filter, firebaseFactory){
   'use strict';
   var purchaseDb = firebaseFactory.createCollection('logs/buy');
@@ -303,12 +341,6 @@ angular.module('firebaseAdminApp')
     lat: 48.855,
     lng: 2.34,
     zoom: 12
-  };
-  $scope.mapCenter = {
-    name: 'Maison',
-    lat: 48.857131,
-    lng: 2.40417,
-    zoom: 19
   };
 })
 
