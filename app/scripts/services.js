@@ -30,9 +30,9 @@ angular.module('firebaseAdminApp')
   return firebaseFactory.createCollection('plannings', true);
 })
 
-.factory('userinfoDb', function(firebaseFactory){
+.factory('globalmessageDb', function(firebaseFactory){
   'use strict';
-  return firebaseFactory.createCollection('userinfos', false);
+  return firebaseFactory.createCollection('globalmessages', false);
 })
 
 .factory('priceCalculator', function(foodDb, unitConversion){

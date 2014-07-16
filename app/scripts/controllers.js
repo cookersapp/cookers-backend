@@ -277,18 +277,14 @@ angular.module('firebaseAdminApp')
 })
 
 
-.controller('UserinfosCtrl', function($scope, $sce, userinfoDb, firebaseFactory, firebaseUrl){
+.controller('GlobalMessagesCtrl', function($scope, $sce, globalmessageDb, firebaseFactory, firebaseUrl){
   'use strict';
-
-  var info = {
-    type: 'info',
-    content: 'Cette application est une version beta (encore en développement). Nous faisons le maximum pour vous proposer la meilleure expérience possible et nous espérons que vous serez indulgent en cas de problème.<br>Par ailleurs, nous sommes preneur de toute <a href="#/app/feedback">remarque ou idée</a>.<br><b>Bon appétit ! ;)</b>',
-    created: Date.now(),
-    isProd: true
+  var defaultMessage = {
+    shouldDisplay: 'function shouldDisplayFn(message, user){\n  return true;\n}\nshouldDisplayFn(message, user);',
+    exec: 'function exec(message, user){\n  \n}\nexec(message, user);'
   };
 
-
-  var crud = firebaseFactory.createCrud('userinfo', {}, userinfoDb, processUserinfo);
+  var crud = firebaseFactory.createCrud('globalmessage', defaultMessage, globalmessageDb, processGlobalMessage);
   $scope.elts = crud.elts;
   $scope.form = crud.form;
   $scope.edit = crud.fnEdit;
@@ -296,19 +292,18 @@ angular.module('firebaseAdminApp')
   $scope.remove = crud.fnRemove;
   $scope.save = crud.fnSave;
 
-  $scope.infoTypes = ['default', 'success', 'info', 'warning', 'danger'];
-  /*$scope.$watch('form.content', function(newVal){
-    $scope.trustedContent = $sce.trustAsHtml(newVal);
-  });*/
+  $scope.messageTypes = ['standard', 'sticky', 'exec'];
+  $scope.displayTypes = ['default', 'success', 'info', 'warning', 'danger'];
+  $scope.appVersions = ['0.1.0', '0.1.1', '0.1.2', '0.1.3'];
 
   $scope.restUrl = function(elt){
-    return firebaseUrl+'/userinfos/'+elt.id+'.json';
+    return firebaseUrl+'/globalmessages/'+elt.id+'.json';
   };
   $scope.trust = function(html){
     return $sce.trustAsHtml(html);
   };
 
-  function processUserinfo(form){
+  function processGlobalMessage(form){
     var ret = angular.copy(form);
     return ret;
   }

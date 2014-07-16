@@ -94,10 +94,10 @@ angular.module('firebaseAdminApp', ['ui.router', 'visor', 'ngCookies', 'ngStorag
     controller: 'UsersCtrl',
     restrict: authenticatedOnly
   })
-  .state('app.userinfos', {
-    url: '/userinfos',
-    templateUrl: 'views/userinfos.html',
-    controller: 'UserinfosCtrl',
+  .state('app.globalmessages', {
+    url: '/globalmessages',
+    templateUrl: 'views/globalmessages.html',
+    controller: 'GlobalMessagesCtrl',
     restrict: authenticatedOnly
   })
   .state('app.purchases', {
