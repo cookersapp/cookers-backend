@@ -240,7 +240,7 @@ angular.module('firebaseAdminApp')
           db.update(processElt(form));
         } else {
           form.id = Utils.generateIdFromText(elts, textId ? textId : form.name);
-          form.added = Date.now();
+          form.created = Date.now();
           db.add(processElt(form));
         }
 
@@ -248,7 +248,7 @@ angular.module('firebaseAdminApp')
       },
       fnAddElt: function(list){
         list.push({
-          added: Date.now()
+          created: Date.now()
         });
       },
       fnRemoveElt: function(list, index){

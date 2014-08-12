@@ -11,4 +11,12 @@ This app is accessible here : https://crackling-fire-7710.firebaseapp.com/
 
 ## TODO
 
-- Securing app
+- Bugs
+    - quand on modifie un aliment pour ajouter un prix, le prix reste quand on enregistre l'aliment
+    - les images uploadées ne s'affichent pas lorsque l'application est déployée
+
+## Site de cuisine sympas
+
+- http://www.lacuisinedenathalie.com/
+- http://clickcookandtaste.overblog.com/
+- http://cestmamanquilafait.com/
