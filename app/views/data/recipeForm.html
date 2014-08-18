@@ -9,7 +9,7 @@
               <label for="name">Nom</label>
               <input id="name" name="name" type="text" class="form-control" ng-model="form.name" placeholder="Ex: tartare de saumon" required>
             </div>
-            <div class="form-group" ng-init="form.images = {};">
+            <div class="form-group" ng-init="form.images = form.images ? form.images : {};">
               <label>Images</label>
               <div class="row">
                 <div class="col-md-3">
@@ -48,7 +48,7 @@
                 <option value="">--</option>
               </select>
             </div>
-            <div class="form-group" ng-init="form.servings = {};">
+            <div class="form-group" ng-init="form.servings = form.servings ? form.servings : {};">
               <label for="servings_value">Pour</label>
               <div class="row">
                 <div class="col-md-6">
@@ -61,11 +61,7 @@
                 </div>
               </div>
             </div>
-            <div class="form-group">
-              <label for="difficulty">Difficulté (note sur 10)</label>
-              <input id="difficulty" name="difficulty" type="number" step="any" class="form-control" ng-model="form.difficulty" placeholder="Ex: 3" required>
-            </div>
-            <div class="form-group" ng-init="form.time = {};">
+            <div class="form-group" ng-init="form.time = form.time ? form.time : {};">
               <label for="time">Temps</label>
               <div class="row">
                 <div class="col-md-3">
@@ -145,17 +141,63 @@
             </div>
             <div class="form-group">
               <label>Instructions</label>
-              <div class="form-group" ng-repeat="instruction in form.instructions">
+              <div class="form-group" ng-repeat="instruction in form.instructions" style="margin-bottom: 15px;">
                 <div class="row">
-                  <div class="col-md-11">
-                    <textarea id="instruction_{{$index}}" name="instruction_{{$index}}" class="form-control" rows="3" ng-model="instruction.content" required></textarea>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" ng-model="instruction.title" placeholder="Titre" required>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-5">
+                    <textarea id="instruction_{{$index}}_summary" name="instruction_{{$index}}_summary" class="form-control" rows="3" ng-model="instruction.summary" placeholder="Résumé" required></textarea>
+                  </div>
+                  <div class="col-md-5">
+                    <textarea id="instruction_{{$index}}_content" name="instruction_{{$index}}_content" class="form-control" rows="3" ng-model="instruction.content" placeholder="Instructions" required></textarea>
+                  </div>
+                  <div class="col-md-1">
+                    <button type="button" class="btn" ng-click="addElt(instruction.timers, {steps:[]})"><i class="fa fa-plus"></i> <i class="fa fa-clock-o"></i></button>
                   </div>
                   <div class="col-md-1">
                     <button type="button" class="btn btn-danger" ng-click="removeElt(form.instructions, $index)"><i class="fa fa-times"></i></button>
                   </div>
                 </div>
+                <div class="row" ng-repeat="timer in instruction.timers">
+                  <div class="col-md-12">
+                    <div class="row">
+                      <div class="col-md-1">
+                        <label>Timer {{$index+1}}</label>
+                      </div>
+                      <div class="col-md-3">
+                        <input type="text" class="form-control" ng-model="timer.color" placeholder="couleur (blue, red, yellow, green or orange)" required>
+                      </div>
+                      <div class="col-md-3">
+                        <input type="text" class="form-control" ng-model="timer.label" placeholder="titre (Ex: sors les frites de l'huile)">
+                      </div>
+                      <div class="col-md-3">
+                        <input ng-if="timer.steps.length === 0" type="number" class="form-control" ng-model="timer.seconds" placeholder="temps (en secondes)">
+                      </div>
+                      <div class="col-md-1">
+                        <button type="button" class="btn" ng-click="addElt(timer.steps)"><i class="fa fa-plus"></i> <i class="fa fa-tag"></i></button>
+                      </div>
+                      <div class="col-md-1">
+                        <button type="button" class="btn btn-danger" ng-click="removeElt(instruction.timers, $index)"><i class="fa fa-times"></i></button>
+                      </div>
+                    </div>
+                    <div class="row" ng-repeat="step in timer.steps">
+                      <div class="col-md-3 col-md-offset-2">
+                        <input type="text" class="form-control" ng-model="step.label" placeholder="étape (Ex: sors les frites de l'huile)" required>
+                      </div>
+                      <div class="col-md-3">
+                        <input type="number" class="form-control" ng-model="step.time" placeholder="temps (en secondes)" required>
+                      </div>
+                      <div class="col-md-1">
+                        <button type="button" class="btn btn-danger" ng-click="removeElt(timer.steps, $index)"><i class="fa fa-times"></i></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <button type="button" class="btn btn-default btn-xs" ng-click="addElt(form.instructions)">Ajouter une instruction</button>
+              <button type="button" class="btn btn-default btn-xs" ng-click="addElt(form.instructions, {timers:[]})">Ajouter une instruction</button>
             </div>
             <div class="form-group">
               <label for="source">Source</label>

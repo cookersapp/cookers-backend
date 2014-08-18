@@ -36,9 +36,7 @@
         </div>
         <div class="col-md-4">
           <h5>Instructions :</h5>
-          <ul>
-            <li ng-repeat="instruction in recipe.instructions">{{instruction.content}}</li>
-          </ul>
+          <div ng-repeat="instruction in recipe.instructions" ng-bind-html="trustHtml(instruction.content)" style="border-bottom: 1px solid #ccc; padding: 10px 0px;"></div>
         </div>
         <div class="col-md-4">
           <h5>Propriétés :</h5>

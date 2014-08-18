@@ -152,7 +152,7 @@ angular.module('firebaseAdminApp', ['ui.router', 'visor', 'ngCookies', 'ngStorag
   ]}
 ])
 
-.run(function($rootScope, $state, $location, $cookieStore, visor, firebaseUrl, Utils){
+.run(function($rootScope, $state, $sce, $location, $cookieStore, visor, firebaseUrl, Utils){
   'use strict';
   $rootScope.isActive = function(viewLocation){
     var regex = new RegExp('^'+viewLocation+'$', 'g');
@@ -197,5 +197,9 @@ angular.module('firebaseAdminApp', ['ui.router', 'visor', 'ngCookies', 'ngStorag
 
   $rootScope.isLogged = function(){
     return !!$rootScope.user;
+  };
+
+  $rootScope.trustHtml = function(html){
+    return $sce.trustAsHtml(html);
   };
 });

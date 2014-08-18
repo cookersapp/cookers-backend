@@ -246,10 +246,11 @@ angular.module('firebaseAdminApp')
 
         formStorage.reset(name, initForm);
       },
-      fnAddElt: function(list){
-        list.push({
-          created: Date.now()
-        });
+      fnAddElt: function(list, elt){
+        if(!elt){elt = {};}
+        else {elt = angular.copy(elt);}
+        elt.created = Date.now();
+        list.push(elt);
       },
       fnRemoveElt: function(list, index){
         list.splice(index, 1);
