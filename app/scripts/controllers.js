@@ -91,6 +91,7 @@ angular.module('firebaseAdminApp')
     $state.go('app.recipe.list');
   };
   $scope.addElt = crud.fnAddElt;
+  $scope.addEltSafe = crud.fnAddEltSafe;
   $scope.removeElt = crud.fnRemoveElt;
   $scope.moveDownElt = crud.fnMoveDownElt;
 
@@ -116,6 +117,16 @@ angular.module('firebaseAdminApp')
       $scope.recipe = recipe;
     });
   }
+
+  // for preview screen
+  $scope.timerDuration = function(timer){
+    if(timer && timer.steps && timer.steps.length > 0){
+      var lastStep = timer.steps[timer.steps.length-1];
+      return lastStep.time ? lastStep.time : 0;
+    } else {
+      return timer && timer.seconds ? timer.seconds : 0;
+    }
+  };
 })
 
 

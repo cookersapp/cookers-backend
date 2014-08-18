@@ -1,6 +1,6 @@
 angular.module('firebaseAdminApp')
 
-.factory('Utils', function(){
+.factory('Utils', function($interval){
   'use strict';
   var service = {
     generateIdFromText: function(collection, text){
@@ -8,7 +8,9 @@ angular.module('firebaseAdminApp')
     },
     isUrl: function(text) {
       return (/^(https?):\/\/((?:[a-z0-9.-]|%[0-9A-F]{2}){3,})(?::(\d+))?((?:\/(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})*)*)(?:\?((?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*))?(?:#((?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*))?$/i).test(text);
-    }
+    },
+    clock: addClock,
+    cancelClock: removeClock
   };
 
   function generateId(collection, slug, index){
@@ -18,6 +20,32 @@ angular.module('firebaseAdminApp')
       return generateId(collection, slug, index ? index+1 : 2);
     } else {
       return id;
+    }
+  }
+
+  var clockElts = [];
+  var clockTimer = null;
+  function addClock(fn){
+    if(clockElts.length === 0){ startClock(); }
+    return clockElts.push(fn) - 1;
+  }
+  function removeClock(index){
+    if(0 <= index && index < clockElts.length){clockElts.splice(index, 1);}
+    if(clockElts.length === 0){ stopClock(); }
+  }
+  function startClock(){
+    if(clockTimer === null){
+      clockTimer = $interval(function(){
+        for(var i in clockElts){
+          clockElts[i]();
+        }
+      }, 1000);
+    }
+  }
+  function stopClock(){
+    if(clockTimer !== null){
+      $interval.cancel(clockTimer);
+      clockTimer = null;
     }
   }
 
@@ -89,12 +117,12 @@ angular.module('firebaseAdminApp')
       $rootScope.safeApply(function(){
         var newElt = createElt(childSnapshot, useId);
         collection.push(newElt);
-        
+
         // sync all collections
         for(var i in syncs){
           syncs[i].collection.push(syncs[i].builder(newElt));
         }
-        
+
         // dispatch events
         for(var j in addedCallbacks){
           addedCallbacks[j](newElt, 'added');
@@ -106,12 +134,12 @@ angular.module('firebaseAdminApp')
         var oldElt = createElt(oldChildSnapshot, useId);
         var index = findIndex(collection, oldElt, useId);
         collection.splice(index, 1);
-        
+
         // sync all collections
         for(var i in syncs){
           syncs[i].collection.splice(index, 1);
         }
-        
+
         // dispatch events
         for(var j in removedCallbacks){
           removedCallbacks[j](oldElt, 'removed');
@@ -123,12 +151,12 @@ angular.module('firebaseAdminApp')
         var elt = createElt(childSnapshot, useId);
         var index = findIndex(collection, elt, useId);
         collection.splice(index, 1, elt);
-        
+
         // sync all collections
         for(var i in syncs){
           syncs[i].collection.splice(index, 1, syncs[i].builder(elt));
         }
-        
+
         // dispatch events
         for(var j in updatedCallbacks){
           updatedCallbacks[j](elt, 'updated');
@@ -143,7 +171,7 @@ angular.module('firebaseAdminApp')
       sync: function(builder){
         // Warn, some concurrencie issues may appear... :(
         // It's the case if some event came when the reference collection is copied...
-        
+
         if(!builder || typeof builder !== 'function'){
           builder = function(elt){return elt;};
         }
@@ -215,52 +243,65 @@ angular.module('firebaseAdminApp')
     var elts = db.collection;
     var form = formStorage.get(name, initForm);
 
+    function fnEdit(elt){
+      angular.copy(elt, form);
+      for(var i in initForm){
+        if(!form[i]){
+          form[i] = initForm[i];
+        }
+      }
+    }
+    function fnCancel(){
+      formStorage.reset(name, initForm);
+    }
+    function fnRemove(elt){
+      if(window.confirm('Supprimer cet élément ?')){
+        db.remove(elt);
+      }
+    }
+    function fnSave(textId){
+      if(form.id){
+        form.updated = Date.now();
+        db.update(processElt(form));
+      } else {
+        form.id = Utils.generateIdFromText(elts, textId ? textId : form.name);
+        form.created = Date.now();
+        db.add(processElt(form));
+      }
+
+      formStorage.reset(name, initForm);
+    }
+    function fnAddElt(list, elt){
+      if(!elt){elt = {};}
+      else {elt = angular.copy(elt);}
+      elt.created = Date.now();
+      list.push(elt);
+    }
+    function fnAddEltSafe(obj, attr, elt){
+      if(!Array.isArray(obj[attr])){obj[attr] = [];}
+      fnAddElt(obj[attr], elt);
+    }
+    function fnRemoveElt(list, index){
+      list.splice(index, 1);
+    }
+    function fnMoveDownElt(list, index){
+      if(index < list.length-1){ // do nothing on last element
+        var elt = list.splice(index, 1)[0];
+        list.splice(index+1, 0, elt);
+      }
+    }
+
     return {
       elts: elts,
       form: form,
-      fnEdit: function(elt){
-        angular.copy(elt, form);
-        for(var i in initForm){
-          if(!form[i]){
-            form[i] = initForm[i];
-          }
-        }
-      },
-      fnCancel: function(){
-        formStorage.reset(name, initForm);
-      },
-      fnRemove: function(elt){
-        if(window.confirm('Supprimer cet élément ?')){
-          db.remove(elt);
-        }
-      },
-      fnSave: function(textId){
-        if(form.id){
-          form.updated = Date.now();
-          db.update(processElt(form));
-        } else {
-          form.id = Utils.generateIdFromText(elts, textId ? textId : form.name);
-          form.created = Date.now();
-          db.add(processElt(form));
-        }
-
-        formStorage.reset(name, initForm);
-      },
-      fnAddElt: function(list, elt){
-        if(!elt){elt = {};}
-        else {elt = angular.copy(elt);}
-        elt.created = Date.now();
-        list.push(elt);
-      },
-      fnRemoveElt: function(list, index){
-        list.splice(index, 1);
-      },
-      fnMoveDownElt: function(list, index){
-        if(index < list.length-1){ // do nothing on last element
-          var elt = list.splice(index, 1)[0];
-          list.splice(index+1, 0, elt);
-        }
-      }
+      fnEdit: fnEdit,
+      fnCancel: fnCancel,
+      fnRemove: fnRemove,
+      fnSave: fnSave,
+      fnAddElt: fnAddElt,
+      fnAddEltSafe: fnAddEltSafe,
+      fnRemoveElt: fnRemoveElt,
+      fnMoveDownElt: fnMoveDownElt
     };
   }
 

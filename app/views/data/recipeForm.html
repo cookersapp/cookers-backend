@@ -93,20 +93,6 @@
               </div>
             </div>
             <div class="form-group">
-              <label>Ustensiles</label>
-              <div class="form-group" ng-repeat="tool in form.tools">
-                <div class="row">
-                  <div class="col-md-3">
-                    <input id="tool_{{$index}}" name="tool_{{$index}}" type="text" class="form-control" ng-model="tool.name" placeholder="Ex: casserole" required>
-                  </div>
-                  <div class="col-md-1">
-                    <button type="button" class="btn btn-danger" ng-click="removeElt(form.tools, $index)"><i class="fa fa-times"></i></button>
-                  </div>
-                </div>
-              </div>
-              <button type="button" class="btn btn-default btn-xs" ng-click="addElt(form.tools)">Ajouter un ustensile</button>
-            </div>
-            <div class="form-group">
               <label>Ingrédients</label>
               <div class="form-inline" ng-repeat="ingredient in form.ingredients">
                 <div class="form-group">
@@ -137,67 +123,134 @@
                 <button type="button" class="btn btn-danger" ng-click="removeElt(form.ingredients, $index)"><i class="fa fa-times"></i></button>
                 <button type="button" class="btn btn-default" ng-click="moveDownElt(form.ingredients, $index)" ng-if="!$last"><i class="fa fa-arrow-down"></i></button>
               </div>
-              <button type="button" class="btn btn-default btn-xs" ng-click="addElt(form.ingredients)">Ajouter un ingrédient</button>
+              <button type="button" class="btn btn-default btn-xs" ng-click="addEltSafe(form, 'ingredients')">Ajouter un ingrédient</button>
             </div>
             <div class="form-group">
-              <label>Instructions</label>
-              <div class="form-group" ng-repeat="instruction in form.instructions" style="margin-bottom: 15px;">
+              <label>Ustensiles</label>
+              <div class="form-group" ng-repeat="tool in form.tools">
                 <div class="row">
-                  <div class="col-md-10">
-                    <input type="text" class="form-control" ng-model="instruction.title" placeholder="Titre" required>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-5">
-                    <textarea id="instruction_{{$index}}_summary" name="instruction_{{$index}}_summary" class="form-control" rows="3" ng-model="instruction.summary" placeholder="Résumé" required></textarea>
-                  </div>
-                  <div class="col-md-5">
-                    <textarea id="instruction_{{$index}}_content" name="instruction_{{$index}}_content" class="form-control" rows="3" ng-model="instruction.content" placeholder="Instructions" required></textarea>
+                  <div class="col-md-3">
+                    <input id="tool_{{$index}}" name="tool_{{$index}}" type="text" class="form-control" ng-model="tool.name" placeholder="Ex: casserole" required>
                   </div>
                   <div class="col-md-1">
-                    <button type="button" class="btn" ng-click="addElt(instruction.timers, {steps:[]})"><i class="fa fa-plus"></i> <i class="fa fa-clock-o"></i></button>
-                  </div>
-                  <div class="col-md-1">
-                    <button type="button" class="btn btn-danger" ng-click="removeElt(form.instructions, $index)"><i class="fa fa-times"></i></button>
+                    <button type="button" class="btn btn-danger" ng-click="removeElt(form.tools, $index)"><i class="fa fa-times"></i></button>
                   </div>
                 </div>
-                <div class="row" ng-repeat="timer in instruction.timers">
-                  <div class="col-md-12">
+              </div>
+              <button type="button" class="btn btn-default btn-xs" ng-click="addEltSafe(form, 'tools')">Ajouter un ustensile</button>
+            </div>
+            <div class="row">
+              <div class="col-md-7">
+                <div class="form-group">
+                  <label>Instructions</label>
+                  <div class="form-group" ng-repeat="instruction in form.instructions" style="margin-bottom: 15px;">
                     <div class="row">
-                      <div class="col-md-1">
-                        <label>Timer {{$index+1}}</label>
-                      </div>
-                      <div class="col-md-3">
-                        <input type="text" class="form-control" ng-model="timer.color" placeholder="couleur (blue, red, yellow, green or orange)" required>
-                      </div>
-                      <div class="col-md-3">
-                        <input type="text" class="form-control" ng-model="timer.label" placeholder="titre (Ex: sors les frites de l'huile)">
-                      </div>
-                      <div class="col-md-3">
-                        <input ng-if="timer.steps.length === 0" type="number" class="form-control" ng-model="timer.seconds" placeholder="temps (en secondes)">
+                      <div class="col-md-10">
+                        <input type="text" class="form-control" ng-model="instruction.title" placeholder="Titre">
                       </div>
                       <div class="col-md-1">
-                        <button type="button" class="btn" ng-click="addElt(timer.steps)"><i class="fa fa-plus"></i> <i class="fa fa-tag"></i></button>
+                        <button type="button" class="btn" ng-click="addEltSafe(instruction, 'timers')"><i class="fa fa-plus"></i> <i class="fa fa-clock-o"></i></button>
                       </div>
                       <div class="col-md-1">
-                        <button type="button" class="btn btn-danger" ng-click="removeElt(instruction.timers, $index)"><i class="fa fa-times"></i></button>
+                        <button type="button" class="btn btn-danger" ng-click="removeElt(form.instructions, $index)"><i class="fa fa-times"></i></button>
                       </div>
                     </div>
-                    <div class="row" ng-repeat="step in timer.steps">
-                      <div class="col-md-3 col-md-offset-2">
-                        <input type="text" class="form-control" ng-model="step.label" placeholder="étape (Ex: sors les frites de l'huile)" required>
+                    <div class="row">
+                      <div class="col-md-10">
+                        <textarea id="instruction_{{$index}}_summary" name="instruction_{{$index}}_summary" class="form-control" rows="3" ng-model="instruction.summary" placeholder="Résumé" required></textarea>
                       </div>
-                      <div class="col-md-3">
-                        <input type="number" class="form-control" ng-model="step.time" placeholder="temps (en secondes)" required>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-10">
+                        <textarea id="instruction_{{$index}}_content" name="instruction_{{$index}}_content" class="form-control" rows="5" ng-model="instruction.content" placeholder="Instructions" required></textarea>
                       </div>
-                      <div class="col-md-1">
-                        <button type="button" class="btn btn-danger" ng-click="removeElt(timer.steps, $index)"><i class="fa fa-times"></i></button>
+                    </div>
+                    <div class="row" ng-repeat="timer in instruction.timers">
+                      <div class="col-md-12">
+                        <div class="row">
+                          <div class="col-md-2">
+                            <label>Timer {{$index+1}}</label>
+                          </div>
+                          <div class="col-md-4">
+                            <input type="text" class="form-control" ng-model="timer.color" placeholder="couleur (blue, red, yellow, green or orange)" required>
+                          </div>
+                          <div class="col-md-4">
+                            <input type="text" class="form-control" ng-model="timer.label" placeholder="titre (Ex: sors les frites de l'huile)">
+                          </div>
+                          <div class="col-md-1">
+                            <button type="button" class="btn" ng-click="addEltSafe(timer, 'steps')"><i class="fa fa-plus"></i> <i class="fa fa-tag"></i></button>
+                          </div>
+                          <div class="col-md-1">
+                            <button type="button" class="btn btn-danger" ng-click="removeElt(instruction.timers, $index)"><i class="fa fa-times"></i></button>
+                          </div>
+                        </div>
+                        <div class="row" ng-if="!(timer.steps.length > 0)">
+                          <div class="col-md-4 col-md-offset-2">
+                            <input type="number" class="form-control" ng-model="timer.seconds" placeholder="temps (en secondes)">
+                          </div>
+                        </div>
+                        <div class="row" ng-repeat="step in timer.steps" ng-if="timer.steps.length > 0">
+                          <div class="col-md-3 col-md-offset-2">
+                            <input type="text" class="form-control" ng-model="step.label" placeholder="étape (Ex: sors les frites de l'huile)" required>
+                          </div>
+                          <div class="col-md-3">
+                            <input type="number" class="form-control" ng-model="step.time" placeholder="temps (en secondes)" required>
+                          </div>
+                          <div class="col-md-1">
+                            <button type="button" class="btn btn-danger" ng-click="removeElt(timer.steps, $index)"><i class="fa fa-times"></i></button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-default btn-xs" ng-click="addEltSafe(form, 'instructions')">Ajouter une instruction</button>
+                </div>
+              </div>
+              <div class="col-md-5">
+                <h3>Cuisine recette :</h3>
+                <div class="phone-demo ionic">
+                  <div class="screen">
+                    <div class="cook-screen">
+                      <div class="cooking">
+                        <h2 class="title">Préparation</h2>
+                        <div ng-repeat="instruction in form.instructions">
+                          <div class="step card">
+                            <h3 ng-if="instruction.title">{{instruction.title}}</h3>
+                            <div ng-bind-html="trustHtml(instruction.content)"></div>
+                          </div>
+                          <div class="timers" ng-if="instruction.timers">
+                            <!--<cook-timer ng-repeat="timer in instruction.timers" data="timer"></cook-timer>-->
+                            <div class="timer {{timer.color}}" ng-repeat="timer in instruction.timers">
+                              <div class="label">{{timer.label}}</div>
+                              <div class="time">{{timerDuration(timer) | duration}}</div>
+                              <ul class="steps">
+                                <li class="step" ng-repeat="step in timer.steps">
+                                  <div class="date">{{step.time | duration}}</div>
+                                  <div class="circle"></div>
+                                  <div class="label">{{step.label}}</div>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <h3>Détails recette :</h3>
+                <div class="phone-demo ionic">
+                  <div class="screen">
+                    <div class="cook-screen">
+                      <div class="cooking">
+                        <h2 class="title">Etapes</h2>
+                        <div ng-repeat="instruction in form.instructions">
+                          <div class="step card" ng-bind-html="trustHtml(instruction.summary)"></div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <button type="button" class="btn btn-default btn-xs" ng-click="addElt(form.instructions, {timers:[]})">Ajouter une instruction</button>
             </div>
             <div class="form-group">
               <label for="source">Source</label>

@@ -31,7 +31,7 @@
         <div class="col-md-4">
           <h5>Ingrédients :</h5>
           <ul>
-            <li ng-repeat="ingredient in recipe.ingredients" title="{{ingredient.price | price}}">{{ingredient | ingredient}}</li>
+            <li ng-repeat="ingredient in recipe.ingredients" ng-class="{'bg-danger': ingredient.price.value === 0}">{{ingredient | ingredient}} ({{ingredient.price | price}})</li>
           </ul>
         </div>
         <div class="col-md-4">
