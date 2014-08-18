@@ -97,6 +97,20 @@
               </div>
             </div>
             <div class="form-group">
+              <label>Ustensiles</label>
+              <div class="form-group" ng-repeat="tool in form.tools">
+                <div class="row">
+                  <div class="col-md-3">
+                    <input id="tool_{{$index}}" name="tool_{{$index}}" type="text" class="form-control" ng-model="tool.name" placeholder="Ex: casserole" required>
+                  </div>
+                  <div class="col-md-1">
+                    <button type="button" class="btn btn-danger" ng-click="removeElt(form.tools, $index)"><i class="fa fa-times"></i></button>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="btn btn-default btn-xs" ng-click="addElt(form.tools)">Ajouter un ustensile</button>
+            </div>
+            <div class="form-group">
               <label>Ingrédients</label>
               <div class="form-inline" ng-repeat="ingredient in form.ingredients">
                 <div class="form-group">

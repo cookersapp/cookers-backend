@@ -65,6 +65,7 @@ angular.module('firebaseAdminApp')
 .controller('RecipeCtrl', function($scope, $state, $stateParams, recipeDb, foodDb, dataList, firebaseFactory, formProcess, firebaseUrl){
   'use strict';
   var initForm = {
+    tools: [],
     ingredients: [],
     instructions: []
   };
