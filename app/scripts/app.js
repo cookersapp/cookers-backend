@@ -182,11 +182,11 @@ angular.module('firebaseAdminApp', ['ui.router', 'visor', 'ngCookies', 'ngStorag
     } else if(user){
       $cookieStore.put('user', user);
       $rootScope.user = user;
-      //visor.setAuthenticated(user);
+      visor.setAuthenticated(user);
     } else {
       $cookieStore.remove('user');
       $rootScope.user = undefined;
-      //visor.setUnauthenticated();
+      visor.setUnauthenticated();
       $state.go('app.home');
     }
   });

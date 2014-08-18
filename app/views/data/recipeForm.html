@@ -243,7 +243,8 @@
                       <div class="cooking">
                         <h2 class="title">Etapes</h2>
                         <div ng-repeat="instruction in form.instructions">
-                          <div class="step card" ng-bind-html="trustHtml(instruction.summary)"></div>
+                          <div class="step card" ng-if="instruction.summary" ng-bind-html="trustHtml(instruction.summary)"></div>
+                          <div class="step card" ng-if="!instruction.summary" ng-bind-html="trustHtml(instruction.content)"></div>
                         </div>
                       </div>
                     </div>
