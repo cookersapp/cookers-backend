@@ -215,13 +215,12 @@
                         <h2 class="title">Préparation</h2>
                         <div ng-repeat="instruction in form.instructions">
                           <div class="step card">
-                            <h3 ng-if="instruction.title">{{instruction.title}}</h3>
+                            <h3 ng-if="instruction.title" ng-bind-html="trustHtml(instruction.title)"></h3>
                             <div ng-bind-html="trustHtml(instruction.content)"></div>
                           </div>
                           <div class="timers" ng-if="instruction.timers">
-                            <!--<cook-timer ng-repeat="timer in instruction.timers" data="timer"></cook-timer>-->
                             <div class="timer {{timer.color}}" ng-repeat="timer in instruction.timers">
-                              <div class="label">{{timer.label}}</div>
+                              <div class="label" ng-if="timer.label" ng-bind-html="trustHtml(timer.label)"></div>
                               <div class="time">{{timerDuration(timer) | duration}}</div>
                               <ul class="steps">
                                 <li class="step" ng-repeat="step in timer.steps">

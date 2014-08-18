@@ -123,6 +123,10 @@
           ul, ol {
             list-style-position: inside;
             margin: 5px;
+            padding: 0px;
+            li {
+              padding: 5px 0px;
+            }
           }
           ul { list-style-type: circle; }
           ol { list-style-type: decimal; }
