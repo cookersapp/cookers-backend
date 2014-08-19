@@ -306,7 +306,7 @@ angular.module('firebaseAdminApp')
 
   $scope.messageTypes = ['standard', 'sticky', 'exec'];
   $scope.displayTypes = ['default', 'success', 'info', 'warning', 'danger'];
-  $scope.appVersions = ['0.1.0', '0.1.1', '0.1.2', '0.1.3'];
+  $scope.appVersions = ['0.1.0', '0.2.0', '~0.2.0', '0.3.0', '~0.3.0', '0.4.0', '~0.4.0'];
 
   $scope.restUrl = function(elt){
     return firebaseUrl+'/globalmessages/'+elt.id+'.json';
