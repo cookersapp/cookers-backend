@@ -1,9 +1,8 @@
 'use strict';
 
-// Dashboard from https://github.com/Ehesp/Responsive-Dashboard
-angular.module('app', ['ui.bootstrap', 'ui.router', 'ngCookies'])
+angular.module('app', ['ui.router', 'ngStorage', 'ui.bootstrap'])
 
-.config(function($stateProvider, $urlRouterProvider){
+.config(function($stateProvider, $urlRouterProvider, $provide){
   // For unmatched routes
   $urlRouterProvider.otherwise('/');
 
@@ -11,102 +10,92 @@ angular.module('app', ['ui.bootstrap', 'ui.router', 'ngCookies'])
   $stateProvider
   .state('index', {
     url: '/',
-    templateUrl: 'views/dashboard.html'
+    templateUrl: 'views/dashboard.html',
+    controller: 'AlertsCtrl'
   })
   .state('tables', {
     url: '/tables',
     templateUrl: 'views/tables.html'
   });
+
+  // catch exceptions
+  $provide.decorator('$exceptionHandler', ['$delegate', function($delegate){
+    return function(exception, cause){
+      $delegate(exception, cause);
+
+      var data = {
+        type: 'angular',
+        url: window.location.hash,
+        localtime: Date.now()
+      };
+      if(cause)               { data.cause    = cause;              }
+      if(exception){
+        if(exception.message) { data.message  = exception.message;  }
+        if(exception.name)    { data.name     = exception.name;     }
+        if(exception.stack)   { data.stack    = exception.stack;    }
+      }
+
+      console.log('exception', data);
+      window.alert('Error: '+data.message);
+    };
+  }]);
+  window.onerror = function(message, url, line, col, error){
+    var stopPropagation = false;
+    var data = {
+      type: 'javascript',
+      url: window.location.hash,
+      localtime: Date.now()
+    };
+    if(message)       { data.message      = message;      }
+    if(url)           { data.fileName     = url;          }
+    if(line)          { data.lineNumber   = line;         }
+    if(col)           { data.columnNumber = col;          }
+    if(error){
+      if(error.name)  { data.name         = error.name;   }
+      if(error.stack) { data.stack        = error.stack;  }
+    }
+
+    console.log('exception', data);
+    window.alert('Error: '+data.message);
+    return stopPropagation;
+  };
 })
 
-.controller('MasterCtrl', function($scope, $cookieStore){
-  var mobileView = 992;
+.run(function($rootScope, $sce, $localStorage, $window){
+  // init
+  if(!$localStorage.state){$localStorage.state = {};}
+  $rootScope.state = $localStorage.state;
 
-  $scope.getWidth = function(){ return window.innerWidth; };
-
-  $scope.toggleSidebar = function(){
-    $scope.toggle = !$scope.toggle;
-    $cookieStore.put('toggle', $scope.toggle);
+  $rootScope.toggleSidebar = function(){
+    $rootScope.state.toggle = !$rootScope.state.toggle;
   };
 
-  $scope.$watch($scope.getWidth, function(newValue){
+  var mobileView = 992;
+  $rootScope.$watch(function(){ return $window.innerWidth; }, function(newValue){
     if(newValue >= mobileView){
-      if(angular.isDefined($cookieStore.get('toggle'))){
-        if($cookieStore.get('toggle') === false){
-          $scope.toggle = false;
-        } else {
-          $scope.toggle = true;
-        }
-      } else {
-        $scope.toggle = true;
+      if ($rootScope.state.toggle === undefined){
+        $rootScope.state.toggle = true;
       }
     } else {
-      $scope.toggle = false;
+      $rootScope.state.toggle = false;
     }
   });
 
-  window.onresize = function(){ $scope.$apply(); };
-})
-
-.controller('AlertsCtrl', function($scope){
-  $scope.alerts = [
-    {type: 'success', msg: 'Thanks for visiting! Feel free to create pull requests to improve the dashboard!'},
-    {type: 'danger', msg: 'Found a bug? Create an issue with as many details as you can.'}
-  ];
-
-  $scope.addAlert = function(){
-    $scope.alerts.push({msg: 'Another alert!'});
+  $window.onresize = function(){ $rootScope.$apply(); };
+  
+  // utils
+  $rootScope.safeApply = function(fn){
+    var phase = this.$root ? this.$root.$$phase : this.$$phase;
+    if(phase === '$apply' || phase === '$digest'){
+      if(fn && (typeof(fn) === 'function')) {
+        fn();
+      }
+    } else {
+      this.$apply(fn);
+    }
   };
 
-  $scope.closeAlert = function(index){
-    $scope.alerts.splice(index, 1);
+  $rootScope.trustHtml = function(html){
+    return $sce.trustAsHtml(html);
   };
-})
-
-.directive('rdWidget', function(){
-  var directive = {
-    transclude: true,
-    template: '<div class="widget" ng-transclude></div>',
-    restrict: 'EA'
-  };
-  return directive;
-})
-
-.directive('rdWidgetHeader', function(){
-  var directive = {
-    requires: '^rdWidget',
-    scope: {
-      title: '@',
-      icon: '@'
-    },
-    transclude: true,
-    template: '<div class="widget-header"> <i class="fa" ng-class="icon"></i> {{title}} <div class="pull-right" ng-transclude></div></div>',
-    restrict: 'E'
-  };
-  return directive;
-})
-
-.directive('rdWidgetBody', function(){
-  var directive = {
-    requires: '^rdWidget',
-    scope: {
-      loading: '@?'
-    },
-    transclude: true,
-    template: '<div class="widget-body"><rd-loading ng-show="loading"></rd-loading><div ng-hide="loading" class="widget-content" ng-transclude></div></div>',
-    restrict: 'E'
-  };
-  return directive;
-})
-
-/**
- * Loading Directive
- * @see http://tobiasahlin.com/spinkit/
- */
-.directive('rdLoading', function (){
-  var directive = {
-    restrict: 'AE',
-    template: '<div class="loading"><div class="double-bounce1"></div><div class="double-bounce2"></div></div>'
-  };
-  return directive;
 });

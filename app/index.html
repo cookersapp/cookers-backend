@@ -1,18 +1,17 @@
 <!doctype html>
 <!-- Dashboard from https://github.com/Ehesp/Responsive-Dashboard -->
-<html lang="en" ng-app="app">
+<html lang="en">
   <head>
     <title>Cookers admin</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
 
     <!-- build:css styles/vendor.css -->
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.css" />
     <!-- endbower -->
     <!-- endbuild -->
-    
+
     <!-- build:css({.tmp,app}) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
@@ -41,22 +40,22 @@
     <script src="bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/popover.js"></script>
     <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-    <script src="bower_components/firebase/firebase.js"></script>
-    <script src="bower_components/firebase-simple-login/firebase-simple-login.js"></script>
     <script src="bower_components/ngstorage/ngStorage.js"></script>
     <script src="bower_components/moment/moment.js"></script>
     <script src="bower_components/moment-duration-format/lib/moment-duration-format.js"></script>
     <script src="bower_components/lodash/dist/lodash.compat.js"></script>
-    <script src="bower_components/speakingurl/speakingurl.min.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
+    <script src="scripts/directives.js"></script>
+    <script src="scripts/filters.js"></script>
+    <script src="scripts/controllers.js"></script>
     <!-- endbuild -->
   </head>
-  <body ng-controller="MasterCtrl">
-    <div id="page-wrapper" ng-class="{'active': toggle}" ng-cloak>
+  <body ng-app="app">
+    <div id="page-wrapper" ng-class="{'active': state.toggle}" ng-cloak>
 
       <!-- Sidebar -->
       <div id="sidebar-wrapper">
@@ -68,23 +67,17 @@
             </a>
           </li>
           <li class="sidebar-title"><span>NAVIGATION</span></li>
-          <li class="sidebar-list"><a href="#">Dashboard <span class="menu-icon fa fa-tachometer"></span></a></li>
-          <li class="sidebar-list"><a href="#/tables">Tables <span class="menu-icon fa fa-table"></span></a></li>
+          <li class="sidebar-list"><a ui-sref="index">Dashboard <span class="menu-icon fa fa-tachometer"></span></a></li>
+          <li class="sidebar-list"><a ui-sref="tables">Tables <span class="menu-icon fa fa-table"></span></a></li>
           <li class="sidebar-list"><a href="#">Servers <span class="menu-icon fa fa-tasks"></span></a></li>
           <li class="sidebar-list"><a href="#">Settings <span class="menu-icon fa fa-cogs"></span></a></li>
           <li class="sidebar-title separator"><span>QUICK LINKS</span></li>
-          <li class="sidebar-list"><a href="#" target="_blank">Forums <span class="menu-icon fa fa-external-link"></span></a></li>
+          <li class="sidebar-list"><a href="#">Forums <span class="menu-icon fa fa-external-link"></span></a></li>
         </ul>
         <div class="sidebar-footer">
-          <div class="col-xs-4">
-            <a href="https://github.com/Ehesp/Responsive-Dashboard" target="_blank">Github</a>
-          </div>
-          <div class="col-xs-4">
-            <a href="#" target="_blank">About</a>
-          </div>
-          <div class="col-xs-4">
-            <a href="#">Support</a>
-          </div>
+          <div class="col-xs-4"><a href="#">Github</a></div>
+          <div class="col-xs-4"><a href="#">About</a></div>
+          <div class="col-xs-4"><a href="#">Support</a></div>
         </div>
       </div><!-- End Sidebar -->
 
@@ -124,7 +117,7 @@
           </div><!-- End Header Bar -->
 
           <!-- Main Content -->
-          <section data-ui-view></section>
+          <ui-view></ui-view>
         </div><!-- End Page Content -->
       </div><!-- End Content Wrapper -->
     </div><!-- End Page Wrapper -->
