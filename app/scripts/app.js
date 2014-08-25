@@ -2,31 +2,16 @@
 
 angular.module('app', ['ui.router', 'ngStorage', 'ui.bootstrap'])
 
-.config(function($stateProvider, $urlRouterProvider, $provide){
-  // For unmatched routes
-  $urlRouterProvider.otherwise('/');
+.config(function($stateProvider, $urlRouterProvider, $provide, debug){
+  Logger.setDebug(debug);
 
-  // Application routes
-  $stateProvider
-  .state('index', {
-    url: '/',
-    templateUrl: 'views/dashboard.html',
-    controller: 'AlertsCtrl'
-  })
-  .state('tables', {
-    url: '/tables',
-    templateUrl: 'views/tables.html'
-  });
-
-  // catch exceptions
+  // catch exceptions in angular
   $provide.decorator('$exceptionHandler', ['$delegate', function($delegate){
     return function(exception, cause){
       $delegate(exception, cause);
 
       var data = {
-        type: 'angular',
-        url: window.location.hash,
-        localtime: Date.now()
+        type: 'angular'
       };
       if(cause)               { data.cause    = cause;              }
       if(exception){
@@ -35,31 +20,32 @@ angular.module('app', ['ui.router', 'ngStorage', 'ui.bootstrap'])
         if(exception.stack)   { data.stack    = exception.stack;    }
       }
 
-      console.log('exception', data);
-      window.alert('Error: '+data.message);
+      Logger.track('exception', data);
     };
   }]);
-  window.onerror = function(message, url, line, col, error){
-    var stopPropagation = false;
-    var data = {
-      type: 'javascript',
-      url: window.location.hash,
-      localtime: Date.now()
-    };
-    if(message)       { data.message      = message;      }
-    if(url)           { data.fileName     = url;          }
-    if(line)          { data.lineNumber   = line;         }
-    if(col)           { data.columnNumber = col;          }
-    if(error){
-      if(error.name)  { data.name         = error.name;   }
-      if(error.stack) { data.stack        = error.stack;  }
-    }
 
-    console.log('exception', data);
-    window.alert('Error: '+data.message);
-    return stopPropagation;
-  };
+
+  // For unmatched routes
+  $urlRouterProvider.otherwise('/');
+
+  // Application routes
+  $stateProvider
+  .state('home', {
+    url: '/',
+    templateUrl: 'views/home.html'
+  })
+  .state('dashboard', {
+    url: '/dashboard',
+    templateUrl: 'views/dashboard.html',
+    controller: 'AlertsCtrl'
+  })
+  .state('tables', {
+    url: '/tables',
+    templateUrl: 'views/tables.html'
+  });
 })
+
+.constant('debug', true)
 
 .run(function($rootScope, $sce, $localStorage, $window){
   // init
@@ -82,7 +68,7 @@ angular.module('app', ['ui.router', 'ngStorage', 'ui.bootstrap'])
   });
 
   $window.onresize = function(){ $rootScope.$apply(); };
-  
+
   // utils
   $rootScope.safeApply = function(fn){
     var phase = this.$root ? this.$root.$$phase : this.$$phase;
