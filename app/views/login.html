@@ -11,7 +11,13 @@
           <label for="passwordInput">Password</label>
           <input type="password" name="password" id="passwordInput" class="form-control" ng-model="credentials.password" placeholder="Password" required>
         </div>
-        <button type="submit" class="btn btn-sm btn-default">Sign in</button>
+        <div class="form-group has-error" ng-if="credentials.error">
+          <span class="help-block">{{credentials.error}}</span>
+        </div>
+        <button type="submit" class="btn btn-sm btn-default" ng-disabled="credentials.loading">
+          <i class="fa fa-spinner fa-spin" ng-if="credentials.loading"></i>
+          Sign in
+        </button>
       </form>
     </div>
   </div>

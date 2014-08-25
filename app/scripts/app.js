@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'ui.bootstrap'])
+angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'ui.bootstrap', 'firebase'])
 
 .config(function($stateProvider, $urlRouterProvider, $httpProvider, $provide, debug){
   Logger.setDebug(debug);
@@ -91,6 +91,7 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'ui.bootstrap'])
 })
 
 .constant('debug', true)
+.constant('firebaseUrl', 'https://crackling-fire-7710.firebaseio.com')
 
 .run(function($rootScope, $sce, $state, $localStorage, $window, AuthSrv){
   // init

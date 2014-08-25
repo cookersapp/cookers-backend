@@ -5,14 +5,20 @@ angular.module('app')
 .controller('LoginCtrl', function ($scope, $state, AuthSrv){
   $scope.credentials = {
     email: '',
-    password: ''
+    password: '',
+    loading: false,
+    error: ''
   };
 
   $scope.login = function(){
+    $scope.credentials.loading = true;
     AuthSrv.login($scope.credentials).then(function(user){
+      $scope.credentials.loading = false;
       $state.go('user.home');
     }, function(error){
-      Logger.track('error', 'Failed login with '+$scope.credentials.email+': '+error.message);
+      $scope.credentials.password = '';
+      $scope.credentials.loading = false;
+      $scope.credentials.error = error.message;
     });
   };
 })
