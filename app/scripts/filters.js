@@ -8,7 +8,7 @@ angular.module('app')
   };
 })
 
-.filter('duration', function($filter){
+.filter('duration', function(){
   return function(seconds, humanize){
     if(seconds || seconds === 0){
       if(humanize){

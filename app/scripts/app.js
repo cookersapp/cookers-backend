@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('app', ['ui.router', 'ngStorage', 'ui.bootstrap'])
+angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'ui.bootstrap'])
 
-.config(function($stateProvider, $urlRouterProvider, $provide, debug){
+.config(function($stateProvider, $urlRouterProvider, $httpProvider, $provide, debug){
   Logger.setDebug(debug);
 
   // catch exceptions in angular
@@ -25,29 +25,74 @@ angular.module('app', ['ui.router', 'ngStorage', 'ui.bootstrap'])
   }]);
 
 
-  // For unmatched routes
-  $urlRouterProvider.otherwise('/');
+  var access = routingConfig.accessLevels;
 
-  // Application routes
+  // Public routes
   $stateProvider
-  .state('home', {
+  .state('public', {
+    abstract: true,
+    template: '<ui-view/>',
+    data: {
+      access: access.public
+    }
+  });
+
+  // Anonymous routes
+  $stateProvider
+  .state('anon', {
+    abstract: true,
+    template: '<ui-view/>',
+    data: {
+      access: access.anon
+    }
+  })
+  .state('anon.login', {
+    url: '/login',
+    templateUrl: 'views/login.html',
+    controller: 'LoginCtrl'
+  });
+
+  // Regular user routes
+  $stateProvider
+  .state('user', {
+    abstract: true,
+    templateUrl: 'views/layout.html',
+    controller: 'MainCtrl',
+    data: {
+      access: access.user
+    }
+  })
+  .state('user.home', {
     url: '/',
     templateUrl: 'views/home.html'
   })
-  .state('dashboard', {
+  .state('user.dashboard', {
     url: '/dashboard',
     templateUrl: 'views/dashboard.html',
-    controller: 'AlertsCtrl'
+    controller: 'DashboardCtrl'
   })
-  .state('tables', {
+  .state('user.tables', {
     url: '/tables',
     templateUrl: 'views/tables.html'
+  });
+
+  $urlRouterProvider.otherwise('/');
+
+  $httpProvider.interceptors.push(function($q, $location){
+    return {
+      'responseError': function(response){
+        if(response.status === 401 || response.status === 403){
+          $location.path('/login');
+        }
+        return $q.reject(response);
+      }
+    };
   });
 })
 
 .constant('debug', true)
 
-.run(function($rootScope, $sce, $localStorage, $window){
+.run(function($rootScope, $sce, $state, $localStorage, $window, AuthSrv){
   // init
   if(!$localStorage.state){$localStorage.state = {};}
   $rootScope.state = $localStorage.state;
@@ -69,11 +114,31 @@ angular.module('app', ['ui.router', 'ngStorage', 'ui.bootstrap'])
 
   $window.onresize = function(){ $rootScope.$apply(); };
 
+  // Controls if user is authentified
+  $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+    if(!(toState && toState.data && toState.data.access)){
+      Logger.track('error', 'Access undefined for state <'+toState.name+'>');
+      event.preventDefault();
+    } else if(!AuthSrv.isAuthorized(toState.data.access)){
+      Logger.track('error', 'Seems like you\'re not allowed to access to <'+toState.name+'> state...');
+      event.preventDefault();
+
+      if(fromState.url === '^'){
+        if(AuthSrv.isLoggedIn()){
+          $state.go('user.home');
+        } else {
+          $rootScope.error = null;
+          $state.go('anon.login');
+        }
+      }
+    }
+  });
+
   // utils
   $rootScope.safeApply = function(fn){
     var phase = this.$root ? this.$root.$$phase : this.$$phase;
     if(phase === '$apply' || phase === '$digest'){
-      if(fn && (typeof(fn) === 'function')) {
+      if(fn && (typeof(fn) === 'function')){
         fn();
       }
     } else {
