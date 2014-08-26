@@ -1,4 +1,8 @@
 .phone-demo {
+  display: inline-block;
+  &.affix {
+    top: 5px;
+  }
   .commands {
     text-align: center;
     margin-bottom: 20px;
@@ -7,7 +11,6 @@
     background-image: url(../images/nexus4_real.png);
     width: 428px;
     height: 830px;
-    margin: auto;
     padding: 119px 22px 143px 22px;
     iframe {
       border: none;

@@ -2,6 +2,27 @@
 
 angular.module('app')
 
+/*
+ * Load bootstrap affix plugin
+ *  Plugin find elements on onload but angular markup is set after :(
+ */
+.directive('ngAffix', function(){
+  return {
+    restrict: 'A',
+    link: function(scope, element, attr){
+      var $spy = $(element);
+      var data = $spy.data();
+
+      data.offset = data.offset || {};
+
+      if(attr.offsetBottom) { data.offset.bottom = attr.offsetBottom; }
+      if(attr.offsetTop)    { data.offset.top    = attr.offsetTop;    }
+
+      $spy.affix(data);
+    }
+  }
+})
+
 .directive('source', function(Utils){
   return {
     restrict: 'A',
