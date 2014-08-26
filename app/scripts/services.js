@@ -12,13 +12,15 @@ angular.module('app')
   };
 
   function getData(result){
-    return result.data;
+    return result.data !== 'null' ? result.data : null;
   }
 
   function getDataArray(result){
     var arr = [];
-    for(var i in result.data){
-      arr.push(result.data[i]);
+    if(result && result.data && typeof result.data === 'object'){
+      for(var i in result.data){
+        arr.push(result.data[i]);
+      }
     }
     return arr;
   }
@@ -217,11 +219,6 @@ angular.module('app')
     return defer.promise;
   }
 
-  function getUrl(id){
-    if(id)  { return collectionUrl+'/'+id+'.json';  }
-    else    { return collectionUrl+'.json';         }
-  }
-
   function process(formRecipe, foods){
     var recipe = angular.copy(formRecipe);
     if(!recipe.id){recipe.id = Utils.createUuid();}
@@ -243,6 +240,11 @@ angular.module('app')
     }
     recipe.price = Calculator.recipePrice(recipe);
     return recipe;
+  }
+
+  function getUrl(id){
+    if(id)  { return collectionUrl+'/'+id+'.json';  }
+    else    { return collectionUrl+'.json';         }
   }
 
   return service;
@@ -270,6 +272,66 @@ angular.module('app')
   function getUrl(id){
     if(id)  { return firebaseUrl+'/foods/'+id+'.json';  }
     else    { return firebaseUrl+'/foods.json';         }
+  }
+
+  return service;
+})
+
+.factory('SelectionsSrv', function($q, $http, firebaseUrl, Utils){
+  var service = {
+    cache: [],
+    getAll: getAll,
+    get: get,
+    save: save,
+    process: process,
+    getUrl: getUrl
+  };
+  var name = 'weekrecipes';
+  var collectionUrl = firebaseUrl+'/'+name;
+  var collectionRef = new Firebase(collectionUrl);
+
+  function getAll(){
+    return $http.get(getUrl()).then(Utils.getDataArray).then(function(selections){
+      service.cache = selections;
+      return selections;
+    });
+  }
+
+  function get(id){
+    return $http.get(getUrl(id)).then(Utils.getData);
+  }
+
+  function save(selection){
+    var defer = $q.defer();
+    if(selection && selection.id){
+      collectionRef.child(selection.id).set(selection, function(error){
+        if(error){
+          console.log('Error', error);
+          defer.reject(error);
+        } else {
+          defer.resolve();
+        }
+      });
+    } else {
+      defer.reject({
+        message: 'Wrong argument !',
+        selection: selection
+      });
+    }
+    return defer.promise;
+  }
+
+  function process(formSelection){
+    var selection = angular.copy(formSelection);
+    if(!selection.created){selection.created = Date.now();}
+    selection.updated = Date.now();
+    selection.id = selection.week.toString();
+    return selection;
+  }
+
+  function getUrl(id){
+    if(id)  { return collectionUrl+'/'+id+'.json';  }
+    else    { return collectionUrl+'.json';         }
   }
 
   return service;

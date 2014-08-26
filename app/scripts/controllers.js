@@ -108,14 +108,17 @@ angular.module('app')
 })
 
 
-.controller('RecipeCtrl', function($rootScope, $scope, $state, $stateParams, RecipeSrv){
+.controller('RecipeCtrl', function($rootScope, $scope, $state, $stateParams, RecipeSrv, SelectionsSrv){
   var recipeId = $stateParams.recipeId;
 
   $scope.status = {
     loading: true,
+    adding: false,
     error: null
   };
   $scope.recipe = null;
+  $scope.weekNumber = moment().week();
+  $scope.nextSelections = [];
   RecipeSrv.get(recipeId).then(function(recipe){
     $rootScope.config.header.title = recipe.name;
     $rootScope.config.header.levels = [
@@ -130,6 +133,44 @@ angular.module('app')
     $scope.status.loading = false;
     $scope.status.error = err.statusText ? err.statusText : 'Unable to load recipe <'+recipeId+'> :(';
   });
+  SelectionsSrv.get($scope.weekNumber+1).then(function(selection){ $scope.nextSelections[1] = selection; });
+  SelectionsSrv.get($scope.weekNumber+2).then(function(selection){ $scope.nextSelections[2] = selection; });
+  SelectionsSrv.get($scope.weekNumber+3).then(function(selection){ $scope.nextSelections[3] = selection; });
+
+  $scope.existInSelection = function(selection){
+    if($scope.recipe && $scope.recipe.id && selection && selection.recipes && selection.recipes.length > 0){
+      return _.find(selection.recipes, {id: $scope.recipe.id}) !== undefined;
+    } else {
+      return false;
+    }
+  };
+  $scope.addRecipeToSelection = function(weekOffset){
+    var selection = $scope.nextSelections[weekOffset];
+    if($scope.recipe && $scope.recipe.id){
+      $scope.status.adding = true;
+      if(!$scope.existInSelection(selection)){
+        if(!selection){selection = {week: $scope.weekNumber+weekOffset, recipes: []};}
+        if(!selection.recipes || !Array.isArray(selection.recipes)){selection.recipes = [];}
+        selection.recipes.push($scope.recipe);
+        var s = SelectionsSrv.process(selection);
+        SelectionsSrv.save(s).then(function(){
+          SelectionsSrv.get($scope.weekNumber+weekOffset).then(function(selection){
+            $scope.nextSelections[weekOffset] = selection;
+            $scope.status.adding = false;
+          });
+        });
+      } else {
+        _.remove(selection.recipes, {id: $scope.recipe.id});
+        var s = SelectionsSrv.process(selection);
+        SelectionsSrv.save(s).then(function(){
+          SelectionsSrv.get($scope.weekNumber+weekOffset).then(function(selection){
+            $scope.nextSelections[weekOffset] = selection;
+            $scope.status.adding = false;
+          });
+        });
+      }
+    }
+  };
 
   $scope.remove = function(){
     if($scope.recipe && $scope.recipe.id && window.confirm('Supprimer cette recette ?')){

@@ -14,9 +14,19 @@
       <a class="pull-left">
         <img class="media-object" ng-src="{{recipe.images.thumbnail}}">
       </a>
-      <div class="media-body">
+      <div class="media-body" style="min-height: 200px;">
         <h2 class="media-heading">
           <span class="pull-right">
+            <div class="btn-group">
+              <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" ng-disabled="status.adding">
+                <i class="fa fa-spinner fa-spin" ng-if="status.adding"></i> Ajouter à la sélection <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                <li ng-class="{active: existInSelection(nextSelections[1])}"><a ng-click="addRecipeToSelection(1)">Semaine prochaine (<span ng-if="nextSelections[1] && nextSelections[1].recipes">{{nextSelections[1].recipes.length}} recettes</span><span ng-if="!(nextSelections[1] && nextSelections[1].recipes)">vide</span>)</a></li>
+                <li ng-class="{active: existInSelection(nextSelections[2])}"><a ng-click="addRecipeToSelection(2)">Semaine suivante (<span ng-if="nextSelections[2] && nextSelections[2].recipes">{{nextSelections[2].recipes.length}} recettes</span><span ng-if="!(nextSelections[2] && nextSelections[2].recipes)">vide</span>)</a></li>
+                <li ng-class="{active: existInSelection(nextSelections[3])}"><a ng-click="addRecipeToSelection(3)">Semaine d'après (<span ng-if="nextSelections[3] && nextSelections[3].recipes">{{nextSelections[3].recipes.length}} recettes</span><span ng-if="!(nextSelections[3] && nextSelections[3].recipes)">vide</span>)</a></li>
+              </ul>
+            </div>
             <a class="btn btn-sm btn-default" href="{{restUrl(recipe)}}" target="_blank"><i class="fa fa-external-link"></i></a>
             <a class="btn btn-sm btn-info" ui-sref="user.data.recipeedit({recipeId: recipe.id})"><i class="fa fa-pencil-square-o"></i></a>
             <a class="btn btn-sm btn-danger" ng-click="remove()"><i class="fa fa-times"></i></a>
