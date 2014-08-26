@@ -1,0 +1,18 @@
+.phone-demo {
+  .commands {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .phone {
+    background-image: url(../images/nexus4_real.png);
+    width: 428px;
+    height: 830px;
+    margin: auto;
+    padding: 119px 22px 143px 22px;
+    iframe {
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}

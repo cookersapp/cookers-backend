@@ -105,6 +105,17 @@
     </div>
   </div>
   <div class="col-md-5">
-
+    <div class="phone-demo" ng-init="phoneView='recipe';">
+      <div class="commands">
+        <div class="btn-group">
+          <button type="button" class="btn btn-default" ng-click="phoneView='recipe';" ng-class="{active: phoneView === 'recipe'}">Recette</button>
+          <button type="button" class="btn btn-default" ng-click="phoneView='cook';" ng-class="{active: phoneView === 'cook'}">Cuisine</button>
+        </div>
+      </div>
+      <div class="phone">
+        <iframe ng-src="{{'ionicApp/#/app/recipe/'+recipe.id}}" ng-if="phoneView === 'recipe'"></iframe>
+        <iframe ng-src="{{'ionicApp/#/app/cook/none/'+recipe.id}}" ng-if="phoneView === 'cook'"></iframe>
+      </div>
+    </div>
   </div>
 </div>

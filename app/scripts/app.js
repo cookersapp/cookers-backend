@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'ui.bootstrap', 'firebase'])
+angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'firebase', 'ui.bootstrap'])
 
 .config(function($stateProvider, $urlRouterProvider, $httpProvider, $provide, debug){
   Logger.setDebug(debug);
