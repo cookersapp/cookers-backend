@@ -85,10 +85,20 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'ui.bootstrap', 'f
     templateUrl: 'views/data/recipes.html',
     controller: 'RecipesCtrl'
   })
+  .state('user.data.recipecreate', {
+    url: '/recipes/create',
+    templateUrl: 'views/data/recipe-edit.html',
+    controller: 'RecipeEditCtrl'
+  })
   .state('user.data.recipe', {
     url: '/recipes/:recipeId',
     templateUrl: 'views/data/recipe.html',
     controller: 'RecipeCtrl'
+  })
+  .state('user.data.recipeedit', {
+    url: '/recipes/:recipeId/edit',
+    templateUrl: 'views/data/recipe-edit.html',
+    controller: 'RecipeEditCtrl'
   });
 
   $urlRouterProvider.otherwise('/');
@@ -107,6 +117,21 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'ui.bootstrap', 'f
 
 .constant('debug', true)
 .constant('firebaseUrl', 'https://crackling-fire-7710.firebaseio.com')
+
+.constant('dataList', {
+  recipeCategories: ['Plat principal', 'Entrée', 'Dessert', 'Vin'],
+  servingUnits:     ['personnes'],
+  timeUnits:        ['minutes', 'secondes'],
+  quantityUnits:    ['pièce', 'g', 'kg', 'cl', 'litre'],
+  ingredientRoles:  ['essentiel', 'facultatif', 'assaisonnement', 'accompagnement'],
+  instructionTitles:['Allons-y gaiement !', 'C\'est parti !', 'En avant guingamp !', 'Cassons la croûte !'],
+  timerColors:      ['blue', 'red', 'yellow', 'green', 'orange'],
+  
+  
+  foodCategories:   ['Viandes & Poissons', 'Fruits & Légumes', 'Pains & Pâtisseries', 'Frais', 'Surgelés', 'Épicerie salée', 'Épicerie sucrée', 'Boissons', 'Bébé', 'Bio', 'Hygiène & Beauté', 'Entretien & Nettoyage', 'Animalerie', 'Bazar & Textile'],
+  currencies:       ['€'],
+  days:             ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+})
 
 .run(function($rootScope, $sce, $state, $location, $localStorage, $window, AuthSrv){
   // init

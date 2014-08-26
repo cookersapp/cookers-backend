@@ -37,3 +37,8 @@ ul, ol {
   text-overflow: ellipsis;
   overflow: hidden;
 }
+
+/* Form */
+.input-small { max-width: 80px; }
+.input-medium { max-width: 120px; }
+.form-group .form-group { margin-bottom: 0px; }

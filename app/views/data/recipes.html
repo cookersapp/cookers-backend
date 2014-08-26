@@ -6,7 +6,7 @@
       </div>
     </form>
   </div>
-  <div class="col-md-6">
+  <div class="col-md-3">
     Trier par :
     <a ng-click="sortRecipes('name')" class="sort" ng-class="{active: sort.order === 'name'}">
       <i class="fa fa-sort-asc asc" ng-if="!sort.desc"></i>
@@ -19,8 +19,22 @@
       <i class="fa fa-sort none"></i> mise à jour
     </a>
   </div>
+  <div class="col-md-3">
+    <button type="button" class="btn btn-success pull-right" ui-sref="user.data.recipecreate"><i class="fa fa-plus"></i> Créer une recette</button>
+  </div>
 </div>
-<div class="row">
+
+<div class="row" ng-if="status.loading && !(recipes && recipes.length)">
+  <div class="col-md-12">
+    <rd-loading></rd-loading>
+  </div>
+</div>
+<div class="row" ng-if="status.error">
+  <div class="col-md-12">
+    <div class="alert alert-danger" role="alert"><strong>Error!</strong> {{status.error}}</div>
+  </div>
+</div>
+<div class="row" ng-if="recipes && recipes.length">
   <div class="col-md-3" ng-repeat="recipe in recipes | filter:search">
     <div class="media media-recipe item" ui-sref="user.data.recipe({recipeId: recipe.id})">
       <a class="pull-left" ui-sref="user.data.recipe({recipeId: recipe.id})">
@@ -28,7 +42,9 @@
       </a>
       <div class="media-body">
         <h4 class="media-heading"><span class="pull-right">{{recipe.updated ? recipe.updated : recipe.created | date}}</span>{{recipe.name}}</h4>
-        <p>TODO: custom comment</p>
+        <p ng-if="recipe.privateNotes">
+          Private note: {{recipe.privateNotes}}
+        </p>
       </div>
     </div>
   </div>

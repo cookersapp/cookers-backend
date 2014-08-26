@@ -4,10 +4,11 @@ angular.module('app')
 
 .factory('Utils', function($http, firebaseUrl){
   var service = {
+    createUuid: createUuid,
+    isUrl: isUrl,
     sort: sort,
     getData: getData,
-    getDataArray: getDataArray,
-    isUrl: isUrl
+    getDataArray: getDataArray
   };
 
   function getData(result){
@@ -22,6 +23,11 @@ angular.module('app')
     return arr;
   }
 
+  function createUuid(){
+    function S4(){ return (((1+Math.random())*0x10000)|0).toString(16).substring(1); }
+    return (S4() + S4() + '-' + S4() + '-4' + S4().substr(0,3) + '-' + S4() + '-' + S4() + S4() + S4()).toLowerCase();
+  }
+
   function isUrl(text) {
     return (/^(https?):\/\/((?:[a-z0-9.-]|%[0-9A-F]{2}){3,})(?::(\d+))?((?:\/(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})*)*)(?:\?((?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*))?(?:#((?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*))?$/i).test(text);
   }
@@ -30,7 +36,7 @@ angular.module('app')
     if(arr && Array.isArray(arr)){
       if(params.order === 'updated'){arr.sort(_updatedSort);}
       else if(params.order === 'name'){arr.sort(_nameSort);}
-      
+
       if(params.desc){arr.reverse();}
     }
   }
@@ -49,13 +55,116 @@ angular.module('app')
   return service;
 })
 
-.factory('RecipeSrv', function($http, firebaseUrl, Utils){
+.factory('Calculator', function(){
+  var service = {
+    ingredientPrice: ingredientPrice,
+    recipePrice: recipePrice
+  };
+
+  var unitConversion = [
+    {ref: 'g', convert: [
+      {unit: 'g', factor: 1},
+      {unit: 'kg', factor: 1000}
+    ]},
+    {ref: 'ml', convert: [
+      {unit: 'cl', factor: 10},
+      {unit: 'litre', factor: 1000}
+    ]}
+  ];
+
+  function ingredientPrice(ingredient, food){
+    var price = _getPriceForQuantity(food.prices, ingredient.quantity);
+    if(price === null){
+      console.warn('Unable to get price for ingredient', ingredient);
+      console.warn('And food', food);
+      console.warn('With conversion rules', unitConversion);
+      alert('Unable to get price for '+ingredient.food.name+' :(');
+      return {value: 0, currency: '?'};
+    } else {
+      return price;
+    }
+  }
+
+  function recipePrice(recipe){
+    var totalPrice = 0, recipeCurrency = '€';
+    // sum ingredient prices
+    if(recipe && recipe.ingredients){
+      for(var i in recipe.ingredients){
+        var ingredient = recipe.ingredients[i];
+        if(ingredient.price){
+          if(recipeCurrency !== ingredient.price.currency){
+            console.warn('Ingredient currency ('+ingredient.food.name+' / '+ingredient.price.currency+') does not match with recipe currency ('+recipe.name+' / '+recipeCurrency+')', recipe);
+            alert('Currency mismatch between recipe ('+recipe.name+' / '+recipeCurrency+') and ingredient ('+ingredient.food.name+' / '+ingredient.price.currency+')');
+          } else {
+            totalPrice += ingredient.price.value;
+          }
+        } else {
+          console.warn('Ingredient '+ingredient.food.name+' of recipe '+recipe.name+' does not has price !', recipe);
+          alert('Ingredient '+ingredient.food.name+' of recipe '+recipe.name+' does not has price !');
+        }
+      }
+    }
+
+    if(recipe && recipe.servings){
+      return {
+        value: totalPrice/recipe.servings.value,
+        currency: recipeCurrency,
+        unit: recipe.servings.unit
+      };
+    } else {
+      console.warn('Recipe '+recipe.name+' does not have servings !!!', recipe);
+      alert('Recipe '+recipe.name+' does not have servings !!!');
+      return {
+        value: totalPrice,
+        currency: recipeCurrency,
+        unit: null
+      };
+    }
+  }
+
+  function _getPriceForQuantity(prices, quantity){
+    var price = _.find(prices, {unit: quantity.unit});
+    if(price){
+      return {
+        currency: price.currency,
+        value: price.value * quantity.value
+      }
+    } else {
+      // TODO : add conversion rules to food objects (for pièce for example)
+      for(var i in unitConversion){
+        var src = _.find(unitConversion[i].convert, {unit: quantity.unit});
+        if(src){
+          for(var j in prices){
+            var dest = _.find(unitConversion[i].convert, {unit: prices[j].unit});
+            if(dest){
+              return {
+                currency: prices[j].currency,
+                value: prices[j].value * quantity.value * (src.factor / dest.factor)
+              }
+            }
+          }
+        }
+      }
+      return null;
+    }
+  }
+
+  return service;
+})
+
+.factory('RecipeSrv', function($q, $http, firebaseUrl, Calculator, Utils){
   var service = {
     cache: [],
     getAll: getAll,
     get: get,
+    save: save,
+    remove: remove,
+    process: process,
     getUrl: getUrl
   };
+  var name = 'recipes';
+  var collectionUrl = firebaseUrl+'/'+name;
+  var collectionRef = new Firebase(collectionUrl);
 
   function getAll(){
     return $http.get(getUrl()).then(Utils.getDataArray).then(function(recipes){
@@ -68,9 +177,99 @@ angular.module('app')
     return $http.get(getUrl(id)).then(Utils.getData);
   }
 
+  function save(recipe){
+    var defer = $q.defer();
+    if(recipe && recipe.id){
+      collectionRef.child(recipe.id).set(recipe, function(error){
+        if(error){
+          console.log('Error', error);
+          defer.reject(error);
+        } else {
+          defer.resolve();
+        }
+      });
+    } else {
+      defer.reject({
+        message: 'Wrong argument !',
+        recipe: recipe
+      });
+    }
+    return defer.promise;
+  }
+
+  function remove(recipe){
+    var defer = $q.defer();
+    if(recipe && recipe.id){
+      collectionRef.child(recipe.id).remove(function(error){
+        if(error){
+          console.log('Error', error);
+          defer.reject(error);
+        } else {
+          defer.resolve();
+        }
+      });
+    } else {
+      defer.reject({
+        message: 'Wrong argument !',
+        recipe: recipe
+      });
+    }
+    return defer.promise;
+  }
+
   function getUrl(id){
-    if(id)  { return firebaseUrl+'/recipes/'+id+'.json';  }
-    else    { return firebaseUrl+'/recipes.json';         }
+    if(id)  { return collectionUrl+'/'+id+'.json';  }
+    else    { return collectionUrl+'.json';         }
+  }
+
+  function process(formRecipe, foods){
+    var recipe = angular.copy(formRecipe);
+    if(!recipe.id){recipe.id = Utils.createUuid();}
+    if(!recipe.created){recipe.created = Date.now();}
+    recipe.updated = Date.now();
+    recipe.name = recipe.name ? recipe.name.toLowerCase() : '';
+    recipe.slug = getSlug(recipe.name);
+    delete recipe.difficulty;
+    if(recipe.ingredients){
+      for(var i in recipe.ingredients){
+        var ingredient = recipe.ingredients[i];
+        var foodObj = _.find(foods, {id: ingredient.food.id});
+        angular.copy(foodObj, ingredient.food);
+        ingredient.price = Calculator.ingredientPrice(ingredient, foodObj);
+        delete ingredient.food.created;
+        delete ingredient.food.updated;
+        delete ingredient.food.prices;
+      }
+    }
+    recipe.price = Calculator.recipePrice(recipe);
+    return recipe;
+  }
+
+  return service;
+})
+
+.factory('FoodSrv', function($http, firebaseUrl, Utils){
+  var service = {
+    cache: [],
+    getAll: getAll,
+    get: get,
+    getUrl: getUrl
+  };
+
+  function getAll(){
+    return $http.get(getUrl()).then(Utils.getDataArray).then(function(foods){
+      service.cache = foods;
+      return foods;
+    });
+  }
+
+  function get(id){
+    return $http.get(getUrl(id)).then(Utils.getData);
+  }
+
+  function getUrl(id){
+    if(id)  { return firebaseUrl+'/foods/'+id+'.json';  }
+    else    { return firebaseUrl+'/foods.json';         }
   }
 
   return service;

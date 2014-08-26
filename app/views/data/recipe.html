@@ -1,13 +1,25 @@
+<div class="row" ng-if="status.loading && !(recipe)">
+  <div class="col-md-12">
+    <rd-loading></rd-loading>
+  </div>
+</div>
+<div class="row" ng-if="status.error">
+  <div class="col-md-12">
+    <div class="alert alert-danger" role="alert"><strong>Error!</strong> {{status.error}}</div>
+  </div>
+</div>
 <div class="row" ng-if="recipe">
   <div class="col-md-7">
     <div class="media media-recipe">
-      <a class="pull-left" href="#">
+      <a class="pull-left">
         <img class="media-object" ng-src="{{recipe.images.thumbnail}}">
       </a>
       <div class="media-body">
         <h2 class="media-heading">
           <span class="pull-right">
             <a class="btn btn-sm btn-default" href="{{restUrl(recipe)}}" target="_blank"><i class="fa fa-external-link"></i></a>
+            <a class="btn btn-sm btn-info" ui-sref="user.data.recipeedit({recipeId: recipe.id})"><i class="fa fa-pencil-square-o"></i></a>
+            <a class="btn btn-sm btn-danger" ng-click="remove()"><i class="fa fa-times"></i></a>
           </span>
           {{recipe.name}}
         </h2>
@@ -30,7 +42,7 @@
     </div>
 
     <div class="media media-recipe">
-      <a class="pull-left" href="#">
+      <a class="pull-left">
         <img class="media-object" ng-src="{{recipe.images.portrait}}">
       </a>
       <div class="media-body">
@@ -72,6 +84,13 @@
           </div>
         </div>
         <img ng-src="{{recipe.images.landing}}" class="center">
+      </div>
+    </div>
+
+    <div class="media media-recipe">
+      <div class="media-body">
+        <h4 class="center">Image originale :</h4>
+        <img ng-src="{{recipe.images.original}}" class="center">
       </div>
     </div>
   </div>
