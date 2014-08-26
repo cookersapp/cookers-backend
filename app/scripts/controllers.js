@@ -110,6 +110,9 @@ angular.module('app')
 
 .controller('RecipeCtrl', function($rootScope, $scope, $state, $stateParams, RecipeSrv, SelectionsSrv){
   var recipeId = $stateParams.recipeId;
+  
+  // remove phone cache
+  if(localStorage){localStorage.removeItem('ngStorage-data');}
 
   $scope.status = {
     loading: true,
@@ -266,6 +269,16 @@ angular.module('app')
       $scope.status.error = 'Unable to save recipe <'+recipe.id+'> (code: '+err+')';
       $scope.status.saving = false;
     });
+  };
+
+  // for phone preview
+  $scope.timerDuration = function(timer){
+    if(timer && timer.steps && timer.steps.length > 0){
+      var lastStep = timer.steps[timer.steps.length-1];
+      return lastStep.time ? lastStep.time : 0;
+    } else {
+      return timer && timer.seconds ? timer.seconds : 0;
+    }
   };
 
 

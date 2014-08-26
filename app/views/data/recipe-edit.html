@@ -255,6 +255,53 @@
     </form>
   </div>
   <div class="col-md-5">
-    <pre>{{form | json}}</pre>
+    <div class="phone-demo" ng-init="phoneView='recipe';" ng-affix offset-top="60">
+      <div class="commands">
+        <div class="btn-group">
+          <button type="button" class="btn btn-default" ng-click="phoneView='recipe';" ng-class="{active: phoneView === 'recipe'}">Recette</button>
+          <button type="button" class="btn btn-default" ng-click="phoneView='cook';" ng-class="{active: phoneView === 'cook'}">Cuisine</button>
+        </div>
+      </div>
+      <div class="phone ionic">
+        <div class="screen" ng-if="phoneView === 'recipe'">
+          <div class="cook-screen">
+            <div class="cooking">
+              <h2 class="title">Etapes</h2>
+              <div ng-repeat="instruction in form.instructions">
+                <div class="step card" ng-if="instruction.summary" ng-bind-html="trustHtml(instruction.summary)"></div>
+                <div class="step card" ng-if="!instruction.summary" ng-bind-html="trustHtml(instruction.content)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="screen" ng-if="phoneView === 'cook'">
+          <div class="cook-screen">
+            <div class="cooking">
+              <h2 class="title">Préparation</h2>
+              <div ng-repeat="instruction in form.instructions">
+                <div class="step card">
+                  <h3 ng-if="instruction.title" ng-bind-html="trustHtml(instruction.title)"></h3>
+                  <div ng-bind-html="trustHtml(instruction.content)"></div>
+                </div>
+                <div class="timers" ng-if="instruction.timers">
+                  <div class="timer {{timer.color}}" ng-repeat="timer in instruction.timers">
+                    <div class="label" ng-if="timer.label" ng-bind-html="trustHtml(timer.label)"></div>
+                    <div class="time">{{timerDuration(timer) | duration}}</div>
+                    <ul class="steps">
+                      <li class="step" ng-repeat="step in timer.steps">
+                        <div class="date">{{step.time | duration}}</div>
+                        <div class="circle"></div>
+                        <div class="label">{{step.label}}</div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
