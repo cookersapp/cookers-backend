@@ -113,6 +113,7 @@ angular.module('app')
 
   $scope.status = {
     loading: true,
+    loadingSelections: [true, true, true, true],
     adding: false,
     error: null
   };
@@ -133,9 +134,9 @@ angular.module('app')
     $scope.status.loading = false;
     $scope.status.error = err.statusText ? err.statusText : 'Unable to load recipe <'+recipeId+'> :(';
   });
-  SelectionsSrv.get($scope.weekNumber+1).then(function(selection){ $scope.nextSelections[1] = selection; });
-  SelectionsSrv.get($scope.weekNumber+2).then(function(selection){ $scope.nextSelections[2] = selection; });
-  SelectionsSrv.get($scope.weekNumber+3).then(function(selection){ $scope.nextSelections[3] = selection; });
+  SelectionsSrv.get($scope.weekNumber+1).then(function(selection){ $scope.nextSelections[1] = selection; $scope.status.loadingSelections[1] = false; });
+  SelectionsSrv.get($scope.weekNumber+2).then(function(selection){ $scope.nextSelections[2] = selection; $scope.status.loadingSelections[2] = false; });
+  SelectionsSrv.get($scope.weekNumber+3).then(function(selection){ $scope.nextSelections[3] = selection; $scope.status.loadingSelections[3] = false; });
 
   $scope.existInSelection = function(selection){
     if($scope.recipe && $scope.recipe.id && selection && selection.recipes && selection.recipes.length > 0){
@@ -146,8 +147,9 @@ angular.module('app')
   };
   $scope.addRecipeToSelection = function(weekOffset){
     var selection = $scope.nextSelections[weekOffset];
-    if($scope.recipe && $scope.recipe.id){
+    if($scope.recipe && $scope.recipe.id && !$scope.status.loadingSelections[weekOffset]){
       $scope.status.adding = true;
+      $scope.status.loadingSelections[weekOffset] = true;
       if(!$scope.existInSelection(selection)){
         if(!selection){selection = {week: $scope.weekNumber+weekOffset, recipes: []};}
         if(!selection.recipes || !Array.isArray(selection.recipes)){selection.recipes = [];}
@@ -160,6 +162,7 @@ angular.module('app')
         SelectionsSrv.get($scope.weekNumber+weekOffset).then(function(selection){
           $scope.nextSelections[weekOffset] = selection;
           $scope.status.adding = false;
+          $scope.status.loadingSelections[weekOffset] = false;
         });
       });
     }
