@@ -2,6 +2,21 @@
 
 angular.module('app')
 
+.directive('source', function(Utils){
+  return {
+    restrict: 'A',
+    templateUrl: 'views/directives/source.html',
+    scope: {
+      data: '=source'
+    },
+    link: function(scope, element, attr){
+      scope.isLink = function(data){
+        return typeof data === 'string' && Utils.isUrl(data);
+      };
+    }
+  };
+})
+
 .directive('rdWidget', function(){
   var directive = {
     transclude: true,

@@ -1,0 +1,69 @@
+.sort {
+  user-select: none;
+  .asc, .desc { display: none; }
+  &.active {
+    .none {display: none; }
+    .asc, .desc { display: inline-block; }
+  }
+}
+
+.media-recipe {
+  background: #fff;
+  box-shadow: 1px 1px 8px #d8d8d8;
+  .media-body {
+    padding: 20px 10px;
+    .media-heading:first-letter {
+      text-transform: uppercase;
+    }
+    .media-separator {
+      height: 2px;
+      width: 26px;
+      background-color: #d9d9d9;
+      margin: 7px 0 7px 0;
+    }
+  }
+
+  &.item {
+    .media-object {
+      height: 80px;
+    }
+    .media-body {
+      margin-top: 10px;
+      margin-right: 10px;
+      padding: 0px;
+      color: #737373;
+      .media-heading {
+        font-weight: bold;
+        font-size: 13px;
+      }
+      p {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+.card {
+  padding: 10px 7px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.ingredients {
+  li {
+    border-left: 4px solid black;
+    padding-left: 5px;
+    &.essentiel { border-color: #d9534f; }
+    &.secondaire { border-color: #f0ad4e; }
+    &.accompagnement { border-color: #5cb85c; }
+    &.facultatif { border-color: #5bc0de; }
+  }
+}

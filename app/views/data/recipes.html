@@ -1,0 +1,35 @@
+<div class="row">
+  <div class="col-md-6">
+    <form role="form">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search ..." ng-model="search">
+      </div>
+    </form>
+  </div>
+  <div class="col-md-6">
+    Trier par :
+    <a ng-click="sortRecipes('name')" class="sort" ng-class="{active: sort.order === 'name'}">
+      <i class="fa fa-sort-asc asc" ng-if="!sort.desc"></i>
+      <i class="fa fa-sort-desc desc" ng-if="sort.desc"></i>
+      <i class="fa fa-sort none"></i> nom
+    </a> -
+    <a ng-click="sortRecipes('updated', true)" class="sort" ng-class="{active: sort.order === 'updated'}">
+      <i class="fa fa-sort-asc asc" ng-if="!sort.desc"></i>
+      <i class="fa fa-sort-desc desc" ng-if="sort.desc"></i>
+      <i class="fa fa-sort none"></i> mise à jour
+    </a>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-3" ng-repeat="recipe in recipes | filter:search">
+    <div class="media media-recipe item" ui-sref="user.data.recipe({recipeId: recipe.id})">
+      <a class="pull-left" ui-sref="user.data.recipe({recipeId: recipe.id})">
+        <img class="media-object" ng-src="{{recipe.images.thumbnail}}">
+      </a>
+      <div class="media-body">
+        <h4 class="media-heading"><span class="pull-right">{{recipe.updated ? recipe.updated : recipe.created | date}}</span>{{recipe.name}}</h4>
+        <p>TODO: custom comment</p>
+      </div>
+    </div>
+  </div>
+</div>

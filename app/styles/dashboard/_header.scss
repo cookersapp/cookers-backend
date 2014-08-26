@@ -2,6 +2,7 @@
   height: 60px;
   background: #fff;
   margin-bottom: 15px;
+  font-family: "Montserrat";
   & > div:last-child {
     padding-right: 0;
   }
@@ -9,6 +10,9 @@
     .page {
       font-size: 17px;
       padding-top: 11px;
+      &:first-letter {
+        text-transform: uppercase;
+      }
     }
     .breadcrumb-links {
       font-size: 10px;

@@ -2,6 +2,80 @@
 
 angular.module('app')
 
+.factory('Utils', function($http, firebaseUrl){
+  var service = {
+    sort: sort,
+    getData: getData,
+    getDataArray: getDataArray,
+    isUrl: isUrl
+  };
+
+  function getData(result){
+    return result.data;
+  }
+
+  function getDataArray(result){
+    var arr = [];
+    for(var i in result.data){
+      arr.push(result.data[i]);
+    }
+    return arr;
+  }
+
+  function isUrl(text) {
+    return (/^(https?):\/\/((?:[a-z0-9.-]|%[0-9A-F]{2}){3,})(?::(\d+))?((?:\/(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})*)*)(?:\?((?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*))?(?:#((?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*))?$/i).test(text);
+  }
+
+  function sort(arr, params){
+    if(arr && Array.isArray(arr)){
+      if(params.order === 'updated'){arr.sort(_updatedSort);}
+      else if(params.order === 'name'){arr.sort(_nameSort);}
+      
+      if(params.desc){arr.reverse();}
+    }
+  }
+
+  function _updatedSort(a, b){
+    var da = a.updated ? a.updated : a.created;
+    var db = b.updated ? b.updated : b.created;
+    return da - db;
+  }
+  function _nameSort(a, b){
+    if(a.name.toLowerCase() > b.name.toLowerCase()){ return 1; }
+    else if(a.name.toLowerCase() < b.name.toLowerCase()){ return -1; }
+    else { return 0; }
+  }
+
+  return service;
+})
+
+.factory('RecipeSrv', function($http, firebaseUrl, Utils){
+  var service = {
+    cache: [],
+    getAll: getAll,
+    get: get,
+    getUrl: getUrl
+  };
+
+  function getAll(){
+    return $http.get(getUrl()).then(Utils.getDataArray).then(function(recipes){
+      service.cache = recipes;
+      return recipes;
+    });
+  }
+
+  function get(id){
+    return $http.get(getUrl(id)).then(Utils.getData);
+  }
+
+  function getUrl(id){
+    if(id)  { return firebaseUrl+'/recipes/'+id+'.json';  }
+    else    { return firebaseUrl+'/recipes.json';         }
+  }
+
+  return service;
+})
+
 .factory('StorageSrv', function(){
   var service = {
     get:    function(key){        if(localStorage){ return JSON.parse(localStorage.getItem(key));     } },
@@ -18,7 +92,7 @@ angular.module('app')
       accessLevels = routingConfig.accessLevels,
       userRoles = routingConfig.userRoles,
       defaultUser = { username: '', role: userRoles.public },
-      currentUser = StorageSrv.get(storageKey) || defaultUser,
+      currentUser = StorageSrv.get(storageKey) || angular.copy(defaultUser),
       loginDefer = null,
       logoutDefer = null;
 

@@ -64,7 +64,8 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'ui.bootstrap', 'f
   })
   .state('user.home', {
     url: '/',
-    templateUrl: 'views/home.html'
+    templateUrl: 'views/home.html',
+    controller: 'HomeCtrl'
   })
   .state('user.dashboard', {
     url: '/dashboard',
@@ -74,6 +75,20 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'ui.bootstrap', 'f
   .state('user.tables', {
     url: '/tables',
     templateUrl: 'views/tables.html'
+  })
+  .state('user.data', {
+    abstract: true,
+    template: '<ui-view/>'
+  })
+  .state('user.data.recipes', {
+    url: '/recipes',
+    templateUrl: 'views/data/recipes.html',
+    controller: 'RecipesCtrl'
+  })
+  .state('user.data.recipe', {
+    url: '/recipes/:recipeId',
+    templateUrl: 'views/data/recipe.html',
+    controller: 'RecipeCtrl'
   });
 
   $urlRouterProvider.otherwise('/');
@@ -93,7 +108,7 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'ui.bootstrap', 'f
 .constant('debug', true)
 .constant('firebaseUrl', 'https://crackling-fire-7710.firebaseio.com')
 
-.run(function($rootScope, $sce, $state, $localStorage, $window, AuthSrv){
+.run(function($rootScope, $sce, $state, $location, $localStorage, $window, AuthSrv){
   // init
   if(!$localStorage.state){$localStorage.state = {};}
   $rootScope.state = $localStorage.state;
@@ -145,6 +160,11 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'ui.bootstrap', 'f
     } else {
       this.$apply(fn);
     }
+  };
+
+  $rootScope.isActive = function (viewLocation) {
+    var regex = new RegExp('^'+viewLocation+'$', 'g');
+    return regex.test($location.path());
   };
 
   $rootScope.trustHtml = function(html){

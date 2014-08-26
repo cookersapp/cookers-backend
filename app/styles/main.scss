@@ -15,3 +15,25 @@ $icon-font-path: "/bower_components/bootstrap-sass-official/vendor/assets/fonts/
 @import "dashboard/_sidebar";
 @import "dashboard/_widgets";
 @import "dashboard/_hamburg";
+@import "_recipes";
+
+[ng-click], [ui-sref] {
+  cursor: pointer;
+}
+
+a.active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+ul, ol {
+  padding-left: 20px;
+}
+
+.source {
+  display: block;
+  max-width: 300px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

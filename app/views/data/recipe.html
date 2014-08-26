@@ -1,0 +1,81 @@
+<div class="row" ng-if="recipe">
+  <div class="col-md-7">
+    <div class="media media-recipe">
+      <a class="pull-left" href="#">
+        <img class="media-object" ng-src="{{recipe.images.thumbnail}}">
+      </a>
+      <div class="media-body">
+        <h2 class="media-heading">
+          <span class="pull-right">
+            <a class="btn btn-sm btn-default" href="{{restUrl(recipe)}}" target="_blank"><i class="fa fa-external-link"></i></a>
+          </span>
+          {{recipe.name}}
+        </h2>
+        <div class="media-separator"></div>
+        <p>
+          <span class="label label-default">{{recipe.category}}</span>
+          <span class="label label-danger">{{recipe.time | cookTime}}</span>
+          <span class="label label-info">{{recipe.servings | servings}}</span>
+          <span class="label label-primary">{{recipe.price | price}}</span>
+        </p>
+        <p ng-if="recipe.privateNotes">
+          Private note: {{recipe.privateNotes}}
+        </p>
+        <p class="text-muted">
+          <span class="pull-right" ng-if="recipe.source" source="recipe.source"></span>
+          Créé le {{recipe.created | date}}
+          <span ng-if="recipe.updated">, mis à jour le {{recipe.updated | date}}</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="media media-recipe">
+      <a class="pull-left" href="#">
+        <img class="media-object" ng-src="{{recipe.images.portrait}}">
+      </a>
+      <div class="media-body">
+        <div class="pull-left">
+          <h4>Ingredients :</h4>
+          <ul class="ingredients">
+            <li class="{{ingredient.role}}" title="{{ingredient.role}}"
+                ng-repeat="ingredient in recipe.ingredients"
+                ng-class="{'bg-danger': ingredient.price.value === 0}">
+              {{ingredient | ingredient}} ({{ingredient.price | price}})
+            </li>
+          </ul>
+        </div>
+        <div class="pull-left">
+          <h4>Ustensiles :</h4>
+          <ul>
+            <li ng-repeat="tool in recipe.tools">{{tool | tool}}</li>
+          </ul>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+
+    <div class="media media-recipe">
+      <div class="media-body">
+        <h3 class="center">Instructions :</h3>
+        <div class="row" ng-repeat="instruction in recipe.instructions">
+          <div class="col-md-6">
+            <ul>
+              <li ng-bind-html="trustHtml(instruction.summary)"></li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <!-- TODO : add timers -->
+            <div class="card" title="{{instruction.summary}}">
+              <h4 class="center">{{instruction.title}}</h4>
+              <div ng-bind-html="trustHtml(instruction.content)"></div>
+            </div>
+          </div>
+        </div>
+        <img ng-src="{{recipe.images.landing}}" class="center">
+      </div>
+    </div>
+  </div>
+  <div class="col-md-5">
+
+  </div>
+</div>
