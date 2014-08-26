@@ -152,23 +152,16 @@ angular.module('app')
         if(!selection){selection = {week: $scope.weekNumber+weekOffset, recipes: []};}
         if(!selection.recipes || !Array.isArray(selection.recipes)){selection.recipes = [];}
         selection.recipes.push($scope.recipe);
-        var s = SelectionsSrv.process(selection);
-        SelectionsSrv.save(s).then(function(){
-          SelectionsSrv.get($scope.weekNumber+weekOffset).then(function(selection){
-            $scope.nextSelections[weekOffset] = selection;
-            $scope.status.adding = false;
-          });
-        });
       } else {
         _.remove(selection.recipes, {id: $scope.recipe.id});
-        var s = SelectionsSrv.process(selection);
-        SelectionsSrv.save(s).then(function(){
-          SelectionsSrv.get($scope.weekNumber+weekOffset).then(function(selection){
-            $scope.nextSelections[weekOffset] = selection;
-            $scope.status.adding = false;
-          });
-        });
       }
+      var s = SelectionsSrv.process(selection);
+      SelectionsSrv.save(s).then(function(){
+        SelectionsSrv.get($scope.weekNumber+weekOffset).then(function(selection){
+          $scope.nextSelections[weekOffset] = selection;
+          $scope.status.adding = false;
+        });
+      });
     }
   };
 
