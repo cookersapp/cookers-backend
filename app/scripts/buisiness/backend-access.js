@@ -29,10 +29,15 @@ angular.module('app')
   return DataSrvBuilder.createDataService('recipes', process);
 })
 
-.factory('FoodSrv', function(DataSrvBuilder){
+.factory('FoodSrv', function(DataSrvBuilder, Utils){
   function process(formFood){
-    // TODO : implement this method !
-    return angular.copy(formFood);
+    var food = angular.copy(formFood);
+    if(!food.id){food.id = Utils.createUuid();}
+    if(!food.created){food.created = Date.now();}
+    food.updated = Date.now();
+    food.name = food.name ? food.name.toLowerCase() : '';
+    food.slug = getSlug(food.name);
+    return food;
   }
   return DataSrvBuilder.createDataService('foods', process);
 })

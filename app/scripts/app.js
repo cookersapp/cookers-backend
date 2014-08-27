@@ -104,6 +104,11 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'firebase', 'ui.bo
     url: '/selections',
     templateUrl: 'views/data/selections.html',
     controller: 'SelectionsCtrl'
+  })
+  .state('user.data.foods', {
+    url: '/foods',
+    templateUrl: 'views/data/foods.html',
+    controller: 'FoodsCtrl'
   });
 
   $urlRouterProvider.otherwise('/');
@@ -131,10 +136,10 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'firebase', 'ui.bo
   ingredientRoles:  ['essentiel', 'facultatif', 'assaisonnement', 'accompagnement'],
   instructionTitles:['Allons-y gaiement !', 'C\'est parti !', 'En avant guingamp !', 'Cassons la croûte !'],
   timerColors:      ['blue', 'red', 'yellow', 'green', 'orange'],
-  
-  
   foodCategories:   ['Viandes & Poissons', 'Fruits & Légumes', 'Pains & Pâtisseries', 'Frais', 'Surgelés', 'Épicerie salée', 'Épicerie sucrée', 'Boissons', 'Bébé', 'Bio', 'Hygiène & Beauté', 'Entretien & Nettoyage', 'Animalerie', 'Bazar & Textile'],
   currencies:       ['€'],
+  
+  
   days:             ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
 })
 

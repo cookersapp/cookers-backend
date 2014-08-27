@@ -1,0 +1,132 @@
+<div class="row">
+  <div class="col-md-6">
+    <div class="widget">
+      <div class="widget-header">
+        <i class="fa fa-spoon"></i> Aliments
+        <button type="button" class="btn btn-sm btn-success pull-right" ng-click="addFood()" style="margin-left: 10px;"><i class="fa fa-plus"></i> Créer un aliment</button>
+        <input type="text" class="form-control input-sm pull-right" placeholder="Search ..." ng-model="search">
+        <div class="clearfix"></div>
+      </div>
+      <div class="widget-body no-padding">
+        <rd-loading ng-if="status.loading && !(foods && foods.length)"></rd-loading>
+        <div class="alert alert-danger" role="alert" ng-if="status.error"><strong>Error!</strong> {{status.error}}</div>
+        <div class="table-responsive" ng-if="foods && foods.length">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th ng-click="sortFoods('name')" class="sort" ng-class="{active: sort.order === 'name'}">
+                  <i class="fa fa-sort-asc asc" ng-if="!sort.desc"></i>
+                  <i class="fa fa-sort-desc desc" ng-if="sort.desc"></i>
+                  <i class="fa fa-sort none"></i>
+                  Nom ({{filteredFood.length}})
+                </th>
+                <th ng-click="sortFoods('category')" class="sort" ng-class="{active: sort.order === 'category'}">
+                  <i class="fa fa-sort-asc asc" ng-if="!sort.desc"></i>
+                  <i class="fa fa-sort-desc desc" ng-if="sort.desc"></i>
+                  <i class="fa fa-sort none"></i>
+                  Catégorie
+                </th>
+                <th>Prix</th>
+                <th ng-click="sortFoods('updated', true)" class="sort" ng-class="{active: sort.order === 'updated'}">
+                  <i class="fa fa-sort-asc asc" ng-if="!sort.desc"></i>
+                  <i class="fa fa-sort-desc desc" ng-if="sort.desc"></i>
+                  <i class="fa fa-sort none"></i>
+                  Mis à jour
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="food in filteredFood = (foods | filter:search)" ng-click="toggleFood(food)" ng-class="{active: selected && food.id === selected.id}">
+                <td>{{food.name}}</td>
+                <td>{{food.category}}</td>
+                <td>
+                  <span ng-repeat="price in food.prices">
+                    <a ng-if="isUrl(price.source)" href="{{price.source}}" target="_blank">{{price | price}}</a>
+                    <span ng-if="!isUrl(price.source)" title="{{price.source}}">{{price | price}}</span>
+                    {{$last ? '' : ', '}}
+                  </span>
+                </td>
+                <td>{{food.updated ? food.updated : food.created | date}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6" ng-if="selected && !status.actions.editing">
+    <div class="card">
+      <h4 class="card-heading">
+        <span class="pull-right">
+          <a class="btn btn-xs btn-default" href="{{restUrl(selected)}}" target="_blank"><i class="fa fa-external-link"></i></a>
+          <a class="btn btn-xs btn-info" ng-click="edit(selected)"><i class="fa fa-pencil-square-o"></i></a>
+          <a class="btn btn-xs btn-danger" ng-click="remove(selected)" ng-disabled="status.actions.removing">
+            <i class="fa fa-times" ng-if="!status.actions.removing"></i>
+            <i class="fa fa-spinner fa-spin" ng-if="status.actions.removing"></i>
+          </a>
+        </span>
+        <span class="label label-default">{{selected.category}}</span> {{selected.name}}
+      </h4>
+      <ol>
+        <li ng-repeat="price in selected.prices">{{price | price}}</li>
+      </ol>
+    </div>
+  </div>
+  <div class="col-md-6" ng-if="status.actions.editing">
+    <form name="food" ng-submit="save()">
+      <div class="card">
+        <div class="form-group">
+          <label for="name">Nom</label>
+          <input id="name" name="name" type="text" class="form-control" ng-model="form.name" placeholder="Ex: pomme de terre" required>
+        </div>
+        <div class="form-group">
+          <label for="category">Catégorie</label>
+          <select id="category" name="category" class="form-control" ng-model="form.category" ng-options="category for category in foodCategories" required>
+            <option value="">--</option>
+          </select>
+          <p class="help-block">Classification inspirée du <a href="http://fd2-www.leclercdrive.fr/117701/courses/pgeWMEL009_Courses.aspx" target="_blank">drive de leclerc</a>.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="form-group">
+          <label>Prix</label>
+          <div class="form-inline" ng-repeat="price in form.prices" style="margin-bottom: 5px;">
+            <div class="form-group">
+              <input id="price_value_{{$index}}" name="price_value_{{$index}}" type="number" step="any" class="form-control input-small" ng-model="price.value" placeholder="Ex: 1.99" required>
+            </div>
+            <div class="form-group">
+              <select id="price_currency_{{$index}}" name="price_currency_{{$index}}" class="form-control" ng-model="price.currency" ng-options="currency for currency in currencies" required>
+                <option value="">--</option>
+              </select>
+            </div>
+            <div class="form-group">
+              /
+              <select id="price_unit_{{$index}}" name="price_unit_{{$index}}" class="form-control" ng-model="price.unit" ng-options="unit for unit in quantityUnits" required>
+                <option value="">--</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <input id="price_source_{{$index}}" name="price_source_{{$index}}" type="text" class="form-control" ng-model="price.source" placeholder="Ex: http://fd2-www.leclercdrive.fr/117701/courses/pgeWMEL009_Courses.aspx">
+            </div>
+            <button type="button" class="btn btn-danger" ng-click="removeElt(form.prices, $index)"><i class="fa fa-times"></i></button>
+          </div>
+          <button type="button" class="btn btn-default btn-xs" ng-click="addElt(form, 'prices', defaultPrice)">Ajouter un prix</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="pull-right">
+          <button type="submit" class="btn btn-primary" ng-if="!form.id" ng-disabled="status.actions.saving">
+            <i class="fa fa-spinner fa-spin" ng-if="status.actions.saving"></i> Créer
+          </button>
+          <button type="submit" class="btn btn-success" ng-if="form.id" ng-disabled="status.actions.saving">
+            <i class="fa fa-spinner fa-spin" ng-if="status.actions.saving"></i> Enregistrer
+          </button>
+        </div>
+        <a class="btn btn-default" ng-click="cancelEdit()">Annuler</a>
+        <div class="clearfix"></div>
+      </div>
+    </form>
+  </div>
+</div>

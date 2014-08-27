@@ -21,25 +21,35 @@ angular.module('app')
   function sort(arr, params){
     if(arr && Array.isArray(arr)){
       if(params.order === 'updated'){arr.sort(_updatedSort);}
-      else if(params.order === 'name'){arr.sort(_nameSort);}
       else if(params.order === 'week'){arr.sort(_weekSort);}
+      else if(params.order === 'name'){arr.sort(_nameSort);}
+      else if(params.order === 'category'){arr.sort(_categorySort);}
 
       if(params.desc){arr.reverse();}
     }
   }
 
-  function _nameSort(a, b){
-    if(a.name.toLowerCase() > b.name.toLowerCase()){ return 1; }
-    else if(a.name.toLowerCase() < b.name.toLowerCase()){ return -1; }
-    else { return 0; }
-  }
   function _updatedSort(a, b){
-    var da = a.updated ? a.updated : a.created;
-    var db = b.updated ? b.updated : b.created;
-    return da - db;
+    var aDate = a.updated ? a.updated : a.created;
+    var bDate = b.updated ? b.updated : b.created;
+    return aDate - bDate;
   }
   function _weekSort(a, b){
     return a.week - b.week;
+  }
+  function _nameSort(a, b){
+    var aName = a && a.name ? a.name.toLowerCase() : '';
+    var bName = b && b.name ? b.name.toLowerCase() : '';
+    if(aName > bName){ return 1; }
+    else if(aName < bName){ return -1; }
+    else { return 0; }
+  }
+  function _categorySort(a, b){
+    var aCategory = a && a.category ? a.category.toLowerCase() : '';
+    var bCategory = b && b.category ? b.category.toLowerCase() : '';
+    if(aCategory > bCategory){ return 1; }
+    else if(aCategory < bCategory){ return -1; }
+    else { return 0; }
   }
 
   return service;

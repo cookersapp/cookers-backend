@@ -177,7 +177,7 @@ angular.module('app')
         $state.go('user.data.recipes');
       });
     }
-  }
+  };
 
   $scope.restUrl = function(recipe){
     return RecipeSrv.getUrl(recipe.id);
@@ -455,6 +455,135 @@ angular.module('app')
       $scope.recipes = recipes;
     }, function(err){
       console.warn('can\'t load recipes', err);
+    });
+  }
+})
+
+.controller('FoodsCtrl', function($rootScope, $scope, FoodSrv, Utils, dataList){
+  var title = 'Aliments';
+  $rootScope.config.header.title = 'Aliments';
+  $rootScope.config.header.levels = [
+    {name: 'Home', state: 'user.home'},
+    {name: title}
+  ];
+  if(!$rootScope.config.foods){
+    angular.extend($rootScope.config, {
+      foods: {
+        sort: { order: 'name' }
+      }
+    });
+  }
+
+  var defaultFood = {
+    category: dataList.foodCategories[0]
+  };
+  $scope.defaultPrice = {
+    currency: dataList.currencies[0],
+    unit: dataList.quantityUnits[0]
+  };
+
+  $scope.status = {
+    loading: true,
+    actions: {
+      editing: false,
+      removing: false,
+      saving: false
+    },
+    error: null
+  };
+  $scope.foodCategories = dataList.foodCategories;
+  $scope.currencies = dataList.currencies;
+  $scope.quantityUnits = dataList.quantityUnits;
+  $scope.selected = null;
+  $scope.form = null;
+  $scope.sort = $rootScope.config.foods.sort;
+  $scope.foods = FoodSrv.cache;
+  Utils.sort($scope.foods, $scope.sort);
+  $rootScope.config.header.title = title+' ('+$scope.foods.length+')';
+  loadFoods();
+
+  $scope.sortFoods = function(order, desc){
+    if($scope.sort.order === order){$scope.sort.desc = !$scope.sort.desc;}
+    else {$scope.sort.order = order; $scope.sort.desc = desc? desc : false;}
+    Utils.sort($scope.foods, $scope.sort);
+  };
+
+  $scope.toggleFood = function(food){
+    if($scope.selected && food && $scope.selected.id === food.id){ $scope.selected = null; }
+    else {
+      $scope.selected = food;
+    }
+    $scope.status.actions.editing = false;
+  };
+
+  $scope.addFood = function(){
+    $scope.status.actions.editing = true;
+    $scope.form = angular.copy(defaultFood);
+  };
+  $scope.edit = function(food){
+    $scope.status.actions.editing = true;
+    $scope.form = angular.copy(food);
+  };
+  $scope.cancelEdit = function(){
+    $scope.status.actions.editing = false;
+    $scope.form = null;
+  };
+  $scope.remove = function(food){
+    if(food && food.id && window.confirm('Supprimer cet aliment ?')){
+      $scope.status.actions.removing = true;
+      FoodSrv.remove(food).then(function(){
+        loadFoods().then(function(){
+          $scope.selected = null;
+          $scope.status.actions.removing = false;
+        });
+      }, function(err){
+        console.log('Error', err);
+        $scope.status.actions.removing = false;
+      });
+    }
+  };
+  $scope.save = function(){
+    $scope.status.actions.saving = true;
+    var food = FoodSrv.process($scope.form);
+    var foodId = food.id;
+    FoodSrv.save(food).then(function(){
+      loadFoods().then(function(){
+        $scope.selected = _.find($scope.foods, {id: foodId});
+        $scope.status.actions.editing = false;
+        $scope.status.actions.saving = false;
+      });
+    }, function(err){
+      console.log('Error', err);
+      $scope.status.actions.saving = false;
+    });
+  };
+
+  $scope.addElt = function(obj, attr, elt){
+    if(!Array.isArray(obj[attr])){obj[attr] = [];}
+    if(!elt){elt = {};}
+    else {elt = angular.copy(elt);}
+    elt.created = Date.now();
+    obj[attr].push(elt);
+  };
+  $scope.removeElt = function(arr, index){
+    if(Array.isArray(arr)){arr.splice(index, 1);}
+  };
+
+  $scope.isUrl = Utils.isUrl;
+  $scope.restUrl = function(food){
+    return FoodSrv.getUrl(food.id);
+  };
+
+  function loadFoods(){
+    return FoodSrv.getAll().then(function(foods){
+      $scope.foods = foods;
+      Utils.sort($scope.foods, $scope.sort);
+      $rootScope.config.header.title = title+' ('+$scope.foods.length+')';
+      $scope.status.loading = false;
+    }, function(err){
+      console.warn('can\'t load foods', err);
+      $scope.status.loading = false;
+      $scope.status.error = err.statusText ? err.statusText : 'Unable to load recipes :(';
     });
   }
 });
