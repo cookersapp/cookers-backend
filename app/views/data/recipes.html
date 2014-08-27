@@ -8,16 +8,8 @@
   </div>
   <div class="col-md-3">
     Trier par :
-    <a ng-click="sortRecipes('name')" class="sort" ng-class="{active: sort.order === 'name'}">
-      <i class="fa fa-sort-asc asc" ng-if="!sort.desc"></i>
-      <i class="fa fa-sort-desc desc" ng-if="sort.desc"></i>
-      <i class="fa fa-sort none"></i> nom
-    </a> -
-    <a ng-click="sortRecipes('updated', true)" class="sort" ng-class="{active: sort.order === 'updated'}">
-      <i class="fa fa-sort-asc asc" ng-if="!sort.desc"></i>
-      <i class="fa fa-sort-desc desc" ng-if="sort.desc"></i>
-      <i class="fa fa-sort none"></i> mise à jour
-    </a>
+    <a ng-click="sortRecipes('name')"><sort active="sort.order === 'name'" desc="sort.desc">Nom</sort></a> -
+    <a ng-click="sortRecipes('updated', true)"><sort active="sort.order === 'updated'" desc="sort.desc">Mise à jour</sort></a>
   </div>
   <div class="col-md-3">
     <button type="button" class="btn btn-success pull-right" ui-sref="user.data.recipecreate"><i class="fa fa-plus"></i> Créer une recette</button>

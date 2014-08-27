@@ -152,7 +152,7 @@ angular.module('app')
   return directive;
 })
 
-.directive('loadingButton', function(Utils){
+.directive('loadingButton', function(){
   return {
     restrict: 'E',
     template: ['<button type="{{btnType ? btnType : \'button\'}}" class="btn {{btnClass}}" ng-disabled="btnDisabled || btnLoading">'+
@@ -166,6 +166,23 @@ angular.module('app')
       btnIcon: '@',
       btnType: '@',
       btnClass: '@'
+    },
+    transclude: true
+  };
+})
+
+.directive('sort', function(){
+  return {
+    restrict: 'E',
+    template: ['<span class="sort" ng-class="{active: active}">'+
+               '<i class="fa fa-sort-desc" ng-if="active && !desc"></i>'+
+               '<i class="fa fa-sort-asc" ng-if="active && desc"></i>'+
+               '<i class="fa fa-sort none" ng-if="!active"></i>'+
+               ' <span ng-transclude></span>'+
+               '</span>'].join(''),
+    scope: {
+      active: '=',
+      desc: '='
     },
     transclude: true
   };

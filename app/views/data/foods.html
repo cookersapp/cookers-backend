@@ -14,24 +14,15 @@
           <table class="table table-hover">
             <thead>
               <tr>
-                <th ng-click="sortFoods('name')" class="sort" ng-class="{active: sort.order === 'name'}">
-                  <i class="fa fa-sort-asc asc" ng-if="!sort.desc"></i>
-                  <i class="fa fa-sort-desc desc" ng-if="sort.desc"></i>
-                  <i class="fa fa-sort none"></i>
-                  Nom ({{filteredFood.length}})
+                <th ng-class="{active: sort.order === 'name'}" ng-click="sortFoods('name')">
+                  <sort active="sort.order === 'name'" desc="sort.desc">Nom ({{filteredFood.length}})</sort>
                 </th>
-                <th ng-click="sortFoods('category')" class="sort" ng-class="{active: sort.order === 'category'}">
-                  <i class="fa fa-sort-asc asc" ng-if="!sort.desc"></i>
-                  <i class="fa fa-sort-desc desc" ng-if="sort.desc"></i>
-                  <i class="fa fa-sort none"></i>
-                  Catégorie
+                <th ng-class="{active: sort.order === 'category'}" ng-click="sortFoods('category')">
+                  <sort active="sort.order === 'category'" desc="sort.desc">Catégorie</sort>
                 </th>
                 <th>Prix</th>
-                <th ng-click="sortFoods('updated', true)" class="sort" ng-class="{active: sort.order === 'updated'}">
-                  <i class="fa fa-sort-asc asc" ng-if="!sort.desc"></i>
-                  <i class="fa fa-sort-desc desc" ng-if="sort.desc"></i>
-                  <i class="fa fa-sort none"></i>
-                  Mis à jour
+                <th ng-class="{active: sort.order === 'updated'}" ng-click="sortFoods('updated', true)">
+                  <sort active="sort.order === 'updated'" desc="sort.desc">Mis à jour</sort>
                 </th>
               </tr>
             </thead>

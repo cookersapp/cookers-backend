@@ -1,9 +1,7 @@
 .sort {
   user-select: none;
-  .asc, .desc { display: none; }
   &.active {
-    .none {display: none; }
-    .asc, .desc { display: inline-block; }
+    font-weight: bold;
   }
 }
 
