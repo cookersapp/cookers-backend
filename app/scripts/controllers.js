@@ -118,6 +118,7 @@ angular.module('app')
     loading: true,
     loadingSelections: [true, true, true, true],
     adding: false,
+    removing: false,
     error: null
   };
   $scope.recipe = null;
@@ -173,7 +174,9 @@ angular.module('app')
 
   $scope.remove = function(){
     if($scope.recipe && $scope.recipe.id && window.confirm('Supprimer cette recette ?')){
+      $scope.status.removing = true;
       RecipeSrv.remove($scope.recipe).then(function(){
+        $scope.status.removing = false;
         $state.go('user.data.recipes');
       });
     }

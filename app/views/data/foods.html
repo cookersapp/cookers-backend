@@ -60,10 +60,7 @@
         <span class="pull-right">
           <a class="btn btn-xs btn-default" href="{{restUrl(selected)}}" target="_blank"><i class="fa fa-external-link"></i></a>
           <a class="btn btn-xs btn-info" ng-click="edit(selected)"><i class="fa fa-pencil-square-o"></i></a>
-          <a class="btn btn-xs btn-danger" ng-click="remove(selected)" ng-disabled="status.actions.removing">
-            <i class="fa fa-times" ng-if="!status.actions.removing"></i>
-            <i class="fa fa-spinner fa-spin" ng-if="status.actions.removing"></i>
-          </a>
+          <loading-button btn-class="btn-xs btn-danger" btn-icon="fa fa-times" btn-loading="status.actions.removing" ng-click="remove(selected)"></loading-button>
         </span>
         <span class="label label-default">{{selected.category}}</span> {{selected.name}}
       </h4>
@@ -117,12 +114,8 @@
 
       <div class="card">
         <div class="pull-right">
-          <button type="submit" class="btn btn-primary" ng-if="!form.id" ng-disabled="status.actions.saving">
-            <i class="fa fa-spinner fa-spin" ng-if="status.actions.saving"></i> Créer
-          </button>
-          <button type="submit" class="btn btn-success" ng-if="form.id" ng-disabled="status.actions.saving">
-            <i class="fa fa-spinner fa-spin" ng-if="status.actions.saving"></i> Enregistrer
-          </button>
+          <loading-button btn-type="submit" btn-class="btn-primary" btn-loading="status.actions.saving" ng-if="!form.id">Créer</loading-button>
+          <loading-button btn-type="submit" btn-class="btn-success" btn-loading="status.actions.saving" ng-if="form.id">Enregistrer</loading-button>
         </div>
         <a class="btn btn-default" ng-click="cancelEdit()">Annuler</a>
         <div class="clearfix"></div>

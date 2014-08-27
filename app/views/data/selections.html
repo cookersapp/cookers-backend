@@ -17,11 +17,7 @@
 <div class="row" ng-if="selections && selections.length">
   <div class="col-md-3">
     <div class="center">
-      <button type="button" class="btn btn-success" ng-click="addSelection()" ng-disabled="status.actions.adding">
-        <i class="fa fa-plus" ng-if="!status.actions.adding"></i>
-        <i class="fa fa-spinner fa-spin" ng-if="status.actions.adding"></i>
-        Créer une sélection
-      </button>
+      <loading-button btn-class="btn-success" btn-icon="fa fa-plus" btn-loading="status.actions.adding" ng-click="addSelection()">Créer une sélection</loading-button>
     </div>
     <div class="card" ng-class="{current: selection.week === currentWeek, active: selected && selected.selection.id === selection.id}"
          ng-repeat="selection in selections" ng-click="toggle(selection)">
@@ -36,14 +32,8 @@
     <h3 style="margin-top: 0px;">
       <span class="pull-right">
         <a class="btn btn-sm btn-default" href="{{restUrl(selected.selection)}}" target="_blank"><i class="fa fa-external-link"></i></a>
-        <button type="button" class="btn btn-sm btn-success" ng-if="selected.shouldSave" ng-click="saveSelection(selected.selection)" ng-disabled="status.actions.saving">
-          <i class="fa fa-floppy-o" ng-if="!status.actions.saving"></i>
-          <i class="fa fa-spinner fa-spin" ng-if="status.actions.saving"></i>
-        </button>
-        <button type="button" class="btn btn-sm btn-danger" ng-click="removeSelection(selected.selection)" ng-disabled="status.actions.removing">
-          <i class="fa fa-times" ng-if="!status.actions.removing"></i>
-          <i class="fa fa-spinner fa-spin" ng-if="status.actions.removing"></i>
-        </button>
+        <loading-button btn-class="btn-sm btn-success" btn-icon="fa fa-floppy-o" btn-loading="status.actions.saving" ng-if="selected.shouldSave" ng-click="saveSelection(selected.selection)"></loading-button>
+        <loading-button btn-class="btn-sm btn-danger" btn-icon="fa fa-times" btn-loading="status.actions.removing" ng-click="removeSelection(selected.selection)"></loading-button>
       </span>
       {{selected.selection.week}}. {{selected.selection.week | week:'D MMM'}}
     </h3>

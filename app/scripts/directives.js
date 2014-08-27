@@ -152,6 +152,25 @@ angular.module('app')
   return directive;
 })
 
+.directive('loadingButton', function(Utils){
+  return {
+    restrict: 'E',
+    template: ['<button type="{{btnType ? btnType : \'button\'}}" class="btn {{btnClass}}" ng-disabled="btnDisabled || btnLoading">'+
+               '<i class="fa fa-spinner fa-spin" ng-if="btnLoading"></i>'+
+               '<i class="{{btnIcon}}" ng-if="btnIcon && !btnLoading"></i>'+
+               ' <span ng-transclude></span>'+
+               '</button>'].join(''),
+    scope: {
+      btnLoading: '=',
+      btnDisabled: '=',
+      btnIcon: '@',
+      btnType: '@',
+      btnClass: '@'
+    },
+    transclude: true
+  };
+})
+
 /**
  * Loading Directive
  * @see http://tobiasahlin.com/spinkit/
