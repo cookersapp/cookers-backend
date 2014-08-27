@@ -15,7 +15,9 @@ $icon-font-path: "/bower_components/bootstrap-sass-official/vendor/assets/fonts/
 @import "dashboard/_sidebar";
 @import "dashboard/_widgets";
 @import "dashboard/_hamburg";
+@import "_global";
 @import "_recipes";
+@import "_selections";
 @import "_phonedemo";
 
 [ng-click], [ui-sref] {
@@ -28,7 +30,7 @@ a.active {
 }
 
 ul, ol {
-  padding-left: 20px;
+  padding-left: 30px;
 }
 
 .source {
@@ -43,3 +45,8 @@ ul, ol {
 .input-small { max-width: 80px; }
 .input-medium { max-width: 120px; }
 .form-group .form-group { margin-bottom: 0px; }
+
+.btn-xxs, .btn-group-xxs > .btn {
+  padding: 0px 4px;
+  font-size: 11px;
+}

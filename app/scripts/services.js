@@ -22,20 +22,24 @@ angular.module('app')
     if(arr && Array.isArray(arr)){
       if(params.order === 'updated'){arr.sort(_updatedSort);}
       else if(params.order === 'name'){arr.sort(_nameSort);}
+      else if(params.order === 'week'){arr.sort(_weekSort);}
 
       if(params.desc){arr.reverse();}
     }
   }
 
+  function _nameSort(a, b){
+    if(a.name.toLowerCase() > b.name.toLowerCase()){ return 1; }
+    else if(a.name.toLowerCase() < b.name.toLowerCase()){ return -1; }
+    else { return 0; }
+  }
   function _updatedSort(a, b){
     var da = a.updated ? a.updated : a.created;
     var db = b.updated ? b.updated : b.created;
     return da - db;
   }
-  function _nameSort(a, b){
-    if(a.name.toLowerCase() > b.name.toLowerCase()){ return 1; }
-    else if(a.name.toLowerCase() < b.name.toLowerCase()){ return -1; }
-    else { return 0; }
+  function _weekSort(a, b){
+    return a.week - b.week;
   }
 
   return service;

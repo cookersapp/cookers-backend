@@ -1,0 +1,95 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2 style="margin-top: 0px;">Semaine actuelle: {{currentWeek}}</h2>
+  </div>
+</div>
+
+<div class="row" ng-if="status.loading && !(selections && selections.length)">
+  <div class="col-md-12">
+    <rd-loading></rd-loading>
+  </div>
+</div>
+<div class="row" ng-if="status.error">
+  <div class="col-md-12">
+    <div class="alert alert-danger" role="alert"><strong>Error!</strong> {{status.error}}</div>
+  </div>
+</div>
+<div class="row" ng-if="selections && selections.length">
+  <div class="col-md-3">
+    <div class="center">
+      <button type="button" class="btn btn-success" ng-click="addSelection()" ng-disabled="status.actions.adding">
+        <i class="fa fa-plus" ng-if="!status.actions.adding"></i>
+        <i class="fa fa-spinner fa-spin" ng-if="status.actions.adding"></i>
+        Créer une sélection
+      </button>
+    </div>
+    <div class="card" ng-class="{current: selection.week === currentWeek, active: selected && selected.selection.id === selection.id}"
+         ng-repeat="selection in selections" ng-click="toggle(selection)">
+      <h4 class="card-heading">{{selection.week}}. {{selection.week | week:'D MMM'}}</h4>
+      <ol>
+        <li ng-repeat="recipe in selection.recipes">{{recipe.name}}</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="col-md-3 selection-details" ng-if="selected && selected.selection">
+    <h3 style="margin-top: 0px;">
+      <span class="pull-right">
+        <a class="btn btn-sm btn-default" href="{{restUrl(selected.selection)}}" target="_blank"><i class="fa fa-external-link"></i></a>
+        <button type="button" class="btn btn-sm btn-success" ng-if="selected.shouldSave" ng-click="saveSelection(selected.selection)" ng-disabled="status.actions.saving">
+          <i class="fa fa-floppy-o" ng-if="!status.actions.saving"></i>
+          <i class="fa fa-spinner fa-spin" ng-if="status.actions.saving"></i>
+        </button>
+        <button type="button" class="btn btn-sm btn-danger" ng-click="removeSelection(selected.selection)" ng-disabled="status.actions.removing">
+          <i class="fa fa-times" ng-if="!status.actions.removing"></i>
+          <i class="fa fa-spinner fa-spin" ng-if="status.actions.removing"></i>
+        </button>
+      </span>
+      {{selected.selection.week}}. {{selected.selection.week | week:'D MMM'}}
+    </h3>
+    <div class="center">
+      <button type="button" class="btn btn-success" ng-click="status.showRecipeSearch=!status.showRecipeSearch;"><i class="fa fa-plus"></i> Ajouter une recette</button>
+    </div>
+    <div class="media media-recipe item" ng-repeat="recipe in selected.selection.recipes">
+      <a class="pull-left" ui-sref="user.data.recipe({recipeId: recipe.id})">
+        <img class="media-object" ng-src="{{recipe.images.thumbnail}}">
+      </a>
+      <div class="media-body">
+        <h4 class="media-heading">{{recipe.name}}</h4>
+        <p ng-if="recipe.privateNotes">
+          Private note: {{recipe.privateNotes}}
+        </p>
+        <div class="big-actions">
+          <span class="pull-right">
+            <button type="button" class="btn btn-sm btn-default" ng-click="moveRecipeDown(selected.selection, $index)" ng-if="!$last"><i class="fa fa-arrow-down"></i></button>
+            <button type="button" class="btn btn-sm btn-danger" ng-click="removeRecipe(selected.selection, $index)"><i class="fa fa-times"></i></button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3 col-md-offset-1" ng-if="selected && selected.selection && status.showRecipeSearch">
+    <form role="form">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search ..." ng-model="search">
+      </div>
+    </form>
+    <div class="media media-recipe item" ng-repeat="recipe in recipes | filter:search" ng-if="!existInSelection(selected.selection, recipe)">
+      <a class="pull-left" ui-sref="user.data.recipe({recipeId: recipe.id})">
+        <img class="media-object" ng-src="{{recipe.images.thumbnail}}">
+      </a>
+      <div class="media-body">
+        <h4 class="media-heading">{{recipe.name}}</h4>
+        <p ng-if="recipe.privateNotes">
+          Private note: {{recipe.privateNotes}}
+        </p>
+        <div class="big-actions">
+          <span class="pull-right">
+            <button type="button" class="btn btn-sm btn-success" ng-click="addRecipe(selected.selection, recipe)"><i class="fa fa-plus"></i></button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

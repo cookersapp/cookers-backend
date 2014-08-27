@@ -239,9 +239,6 @@
       </div>
 
       <div class="card">
-        <a class="btn btn-default" ui-sref="user.data.recipes" ng-if="!recipe.id">Annuler</a>
-        <a class="btn btn-default" ui-sref="user.data.recipe({recipeId: recipe.id})" ng-if="recipe.id">Annuler</a>
-        <span class="text-danger" ng-if="foods.length === 0">Impossible d'enregistrer quand les aliments ne sont pas chargés</span>
         <div class="pull-right">
           <button type="submit" class="btn btn-primary" ng-if="!recipe.id" ng-disabled="foods.length === 0 || status.saving">
             <i class="fa fa-spinner fa-spin" ng-if="status.saving"></i> Créer
@@ -250,6 +247,9 @@
             <i class="fa fa-spinner fa-spin" ng-if="status.saving"></i> Enregistrer
           </button>
         </div>
+        <a class="btn btn-default" ui-sref="user.data.recipes" ng-if="!recipe.id">Annuler</a>
+        <a class="btn btn-default" ui-sref="user.data.recipe({recipeId: recipe.id})" ng-if="recipe.id">Annuler</a>
+        <span class="text-danger" ng-if="foods.length === 0">Impossible d'enregistrer quand les aliments ne sont pas chargés</span>
         <div class="clearfix"></div>
       </div>
     </form>

@@ -1,16 +1,8 @@
-.sort {
-  user-select: none;
-  .asc, .desc { display: none; }
-  &.active {
-    .none {display: none; }
-    .asc, .desc { display: inline-block; }
-  }
-}
-
 .media-recipe {
   background: #fff;
   box-shadow: 1px 1px 8px #d8d8d8;
   .media-body {
+    position: relative;
     padding: 20px 10px;
     .media-heading:first-letter {
       text-transform: uppercase;
@@ -24,6 +16,11 @@
     .card {
       margin: 0px;
     }
+    .big-actions {
+      position: absolute;
+      right: 0px;
+      bottom: 10px;
+    }
   }
 
   &.item {
@@ -34,6 +31,7 @@
       margin-top: 10px;
       margin-right: 10px;
       padding: 0px;
+      height: 70px;
       color: #737373;
       .media-heading {
         font-weight: bold;
@@ -46,24 +44,6 @@
   }
 }
 
-.card {
-  margin: 20px 10px;
-  padding: 10px 7px;
-  background-color: #fff;
-  border-radius: 2px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
-}
-.card:first-child {
-  margin-top: 0px;
-}
-
-.center {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-}
 
 .ingredients {
   li {

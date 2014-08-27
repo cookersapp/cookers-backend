@@ -4,7 +4,14 @@ angular.module('app')
 
 .filter('date', function(){
   return function(timestamp, format){
-    return timestamp ? moment(timestamp).format(format ? format : 'LL') : '<date>';
+    return timestamp ? moment(timestamp).format(format ? format : 'll') : '<date>';
+  };
+})
+
+.filter('week', function(){
+  return function(week, format){
+    var f = format ? format : 'll';
+    return week ? moment().week(week).day(1).format(f)+' - '+moment().week(week).day(7).format(f) : '<week>';
   };
 })
 

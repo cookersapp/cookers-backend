@@ -108,9 +108,9 @@ angular.module('app')
 })
 
 
-.controller('RecipeCtrl', function($rootScope, $scope, $state, $stateParams, RecipeSrv, SelectionsSrv){
+.controller('RecipeCtrl', function($rootScope, $scope, $state, $stateParams, RecipeSrv, SelectionSrv){
   var recipeId = $stateParams.recipeId;
-  
+
   // remove phone cache
   if(localStorage){localStorage.removeItem('ngStorage-data');}
 
@@ -137,9 +137,9 @@ angular.module('app')
     $scope.status.loading = false;
     $scope.status.error = err.statusText ? err.statusText : 'Unable to load recipe <'+recipeId+'> :(';
   });
-  SelectionsSrv.get($scope.weekNumber+1).then(function(selection){ $scope.nextSelections[1] = selection; $scope.status.loadingSelections[1] = false; });
-  SelectionsSrv.get($scope.weekNumber+2).then(function(selection){ $scope.nextSelections[2] = selection; $scope.status.loadingSelections[2] = false; });
-  SelectionsSrv.get($scope.weekNumber+3).then(function(selection){ $scope.nextSelections[3] = selection; $scope.status.loadingSelections[3] = false; });
+  SelectionSrv.get($scope.weekNumber+1).then(function(selection){ $scope.nextSelections[1] = selection; $scope.status.loadingSelections[1] = false; });
+  SelectionSrv.get($scope.weekNumber+2).then(function(selection){ $scope.nextSelections[2] = selection; $scope.status.loadingSelections[2] = false; });
+  SelectionSrv.get($scope.weekNumber+3).then(function(selection){ $scope.nextSelections[3] = selection; $scope.status.loadingSelections[3] = false; });
 
   $scope.existInSelection = function(selection){
     if($scope.recipe && $scope.recipe.id && selection && selection.recipes && selection.recipes.length > 0){
@@ -160,9 +160,9 @@ angular.module('app')
       } else {
         _.remove(selection.recipes, {id: $scope.recipe.id});
       }
-      var s = SelectionsSrv.process(selection);
-      SelectionsSrv.save(s).then(function(){
-        SelectionsSrv.get($scope.weekNumber+weekOffset).then(function(selection){
+      var s = SelectionSrv.process(selection);
+      SelectionSrv.save(s).then(function(){
+        SelectionSrv.get($scope.weekNumber+weekOffset).then(function(selection){
           $scope.nextSelections[weekOffset] = selection;
           $scope.status.adding = false;
           $scope.status.loadingSelections[weekOffset] = false;
@@ -250,7 +250,7 @@ angular.module('app')
     if(Array.isArray(arr)){arr.splice(index, 1);}
   };
   $scope.moveEltDown = function(arr, index){
-    if(!Array.isArray(arr)){
+    if(Array.isArray(arr)){
       if(index < arr.length-1){ // do nothing on last element
         var elt = arr.splice(index, 1)[0];
         arr.splice(index+1, 0, elt);
@@ -314,5 +314,147 @@ angular.module('app')
         dest[i] = src[i];
       }
     }
+  }
+})
+
+
+.controller('SelectionsCtrl', function($rootScope, $scope, SelectionSrv, RecipeSrv, Utils){
+  $rootScope.config.header.title = 'Sélections';
+  $rootScope.config.header.levels = [
+    {name: 'Home', state: 'user.home'},
+    {name: 'Sélections'}
+  ];
+
+  $scope.status = {
+    loading: true,
+    actions: {
+      adding: false,
+      removing: false,
+      saving: false
+    },
+    showRecipeSearch: false,
+    error: null
+  };
+  $scope.currentWeek = moment().week();
+  $scope.selected = null;
+  $scope.selections = SelectionSrv.cache;
+  Utils.sort($scope.selections, {order: 'week', desc: true});
+  $rootScope.config.header.title = 'Sélections ('+$scope.selections.length+')';
+  $scope.recipes = RecipeSrv.cache;
+  loadSelections();
+  loadRecipes();
+
+  $scope.toggle = function(selection){
+    if($scope.selected && selection && $scope.selected.selection.id === selection.id){ $scope.selected = null; }
+    else {
+      $scope.selected = {
+        shouldSave: false,
+        selection: angular.copy(selection) 
+      };
+    }
+    $scope.status.showRecipeSearch = false;
+  };
+
+  $scope.existInSelection = function(selection, recipe){
+    if(recipe && recipe.id && selection && selection.recipes && selection.recipes.length > 0){
+      return _.find(selection.recipes, {id: recipe.id}) !== undefined;
+    } else {
+      return false;
+    }
+  };
+  $scope.addRecipe = function(selection, recipe){
+    if(selection && recipe && recipe.id){
+      if(!selection.recipes || !Array.isArray(selection.recipes)){selection.recipes = [];}
+      if(_.find(selection.recipes, {id: recipe.id}) === undefined){
+        selection.recipes.push(recipe);
+        $scope.selected.shouldSave = true;
+      }
+    }
+  };
+  $scope.moveRecipeDown = function(selection, index){
+    if(selection && selection.recipes && Array.isArray(selection.recipes)){
+      if(index < selection.recipes.length-1){ // do nothing on last element
+        var elt = selection.recipes.splice(index, 1)[0];
+        selection.recipes.splice(index+1, 0, elt);
+        $scope.selected.shouldSave = true;
+      }
+    }
+  };
+  $scope.removeRecipe = function(selection, index){
+    if(selection && selection.recipes && Array.isArray(selection.recipes)){
+      selection.recipes.splice(index, 1);
+      $scope.selected.shouldSave = true;
+    }
+  };
+
+  $scope.addSelection = function(){
+    $scope.status.actions.adding = true;
+    var week = $scope.currentWeek;
+    while(_.find($scope.selections, {week: week}) !== undefined){
+      week++;
+    }
+    var selection = SelectionSrv.process({
+      week: week,
+      recipes: []
+    });
+    SelectionSrv.save(selection).then(function(){
+      loadSelections().then(function(){
+        $scope.toggle(_.find($scope.selections, {id: week.toString()}));
+        $scope.status.actions.adding = false;
+      });
+    }, function(err){
+      console.log('Error', err);
+      $scope.status.actions.adding = false;
+    });
+  };
+  $scope.removeSelection = function(selection){
+    if(selection && selection.id && window.confirm('Supprimer cette sélection ?')){
+      $scope.status.actions.removing = true;
+      SelectionSrv.remove(selection).then(function(){
+        loadSelections().then(function(){
+          $scope.selected = null;
+          $scope.status.actions.removing = false;
+        });
+      }, function(err){
+        console.log('Error', err);
+        $scope.status.actions.removing = false;
+      });
+    }
+  };
+  $scope.saveSelection = function(selection){
+    $scope.status.actions.saving = true;
+    SelectionSrv.save(selection).then(function(){
+      loadSelections().then(function(){
+        $scope.selected.shouldSave = false;
+        $scope.status.actions.saving = false;
+      });
+    }, function(err){
+      console.log('Error', err);
+      $scope.status.actions.saving = false;
+    });
+  };
+
+  $scope.restUrl = function(selection){
+    return SelectionSrv.getUrl(selection.id);
+  };
+
+  function loadSelections(){
+    return SelectionSrv.getAll().then(function(selections){
+      $rootScope.config.header.title = 'Sélections ('+selections.length+')';
+      Utils.sort(selections, {order: 'week', desc: true});
+      $scope.selections = selections;
+      $scope.status.loading = false;
+    }, function(err){
+      console.warn('can\'t load selections', err);
+      $scope.status.loading = false;
+      $scope.status.error = err.statusText ? err.statusText : 'Unable to load selections :(';
+    });
+  }
+  function loadRecipes(){
+    return RecipeSrv.getAll().then(function(recipes){
+      $scope.recipes = recipes;
+    }, function(err){
+      console.warn('can\'t load recipes', err);
+    });
   }
 });

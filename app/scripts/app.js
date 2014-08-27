@@ -99,6 +99,11 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'firebase', 'ui.bo
     url: '/recipes/:recipeId/edit',
     templateUrl: 'views/data/recipe-edit.html',
     controller: 'RecipeEditCtrl'
+  })
+  .state('user.data.selections', {
+    url: '/selections',
+    templateUrl: 'views/data/selections.html',
+    controller: 'SelectionsCtrl'
   });
 
   $urlRouterProvider.otherwise('/');

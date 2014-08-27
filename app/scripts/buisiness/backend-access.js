@@ -37,7 +37,7 @@ angular.module('app')
   return DataSrvBuilder.createDataService('foods', process);
 })
 
-.factory('SelectionsSrv', function(DataSrvBuilder){
+.factory('SelectionSrv', function(DataSrvBuilder){
   function process(formSelection){
     var selection = angular.copy(formSelection);
     if(!selection.created){selection.created = Date.now();}
@@ -81,7 +81,7 @@ angular.module('app')
     function save(data){
       var defer = $q.defer();
       if(data && data.id){
-        collectionRef.child(data.id).set(data, function(error){
+        collectionRef.child(data.id).set(angular.copy(data), function(error){
           if(error){
             console.log('Error', error);
             defer.reject(error);
