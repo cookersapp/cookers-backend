@@ -137,9 +137,9 @@ angular.module('app')
   };
 
   // custom load data !
-  SelectionSrv.get(ctx.data.weekNumber+1).then(function(selection){ ctx.data.nextSelections[1] = selection; ctx.status.loadingSelections[1] = false; });
-  SelectionSrv.get(ctx.data.weekNumber+2).then(function(selection){ ctx.data.nextSelections[2] = selection; ctx.status.loadingSelections[2] = false; });
-  SelectionSrv.get(ctx.data.weekNumber+3).then(function(selection){ ctx.data.nextSelections[3] = selection; ctx.status.loadingSelections[3] = false; });
+  SelectionSrv.get(ctx.data.weekNumber+1, true).then(function(selection){ ctx.data.nextSelections[1] = selection; ctx.status.loadingSelections[1] = false; });
+  SelectionSrv.get(ctx.data.weekNumber+2, true).then(function(selection){ ctx.data.nextSelections[2] = selection; ctx.status.loadingSelections[2] = false; });
+  SelectionSrv.get(ctx.data.weekNumber+3, true).then(function(selection){ ctx.data.nextSelections[3] = selection; ctx.status.loadingSelections[3] = false; });
 
   $scope.data = ctx.data;
   $scope.status = ctx.status;
@@ -165,7 +165,7 @@ angular.module('app')
     if(ctx.model.selected && ctx.model.selected.id && !ctx.status.loadingSelections[weekOffset]){
       ctx.status.savingSelection = true;
       ctx.status.loadingSelections[weekOffset] = true;
-      if(CrudBuilder.eltExistsIn(selection.recipes, ctx.model.selected)){
+      if(selection && CrudBuilder.eltExistsIn(selection.recipes, ctx.model.selected)){
         _.remove(selection.recipes, {id: ctx.model.selected.id});
       } else {
         if(!selection){selection = {week: ctx.data.weekNumber+weekOffset, recipes: []};}
@@ -323,7 +323,7 @@ angular.module('app')
   $scope.status = ctx.status;
   $scope.model = ctx.model;
 
-  var crud = CrudBuilder.create(SelectionSrv, ctx);
+  var crud = CrudBuilder.create(SelectionSrv, ctx, true);
   crud.init();
 
   $scope.toggle = crud.toggle;

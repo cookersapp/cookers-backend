@@ -10,13 +10,13 @@ angular.module('app')
     eltExistsIn: _eltExistsIn
   };
 
-  function createCrud(DataSrv, ctx){
+  function createCrud(DataSrv, ctx, _lazy){
     // parameters starting with _ are optionnals
     return {
-      init:         function()                { _init(DataSrv, ctx);                            },
+      init:         function()                { _init(DataSrv, ctx, _lazy);                     },
       initForElt:   function(id, _edit)       { _initForElt(DataSrv, ctx, id, _edit);           },
       sort:         function(order, _desc)    { _sort(ctx, order, _desc);                       }, // sort ctx.model.elts according to parameters 'order' and 'desc'
-      toggle:       function(elt)             { _toggle(ctx, elt);                              }, // select/unselect an elt in ctx.model.elts
+      toggle:       function(elt)             { _toggle(DataSrv, ctx, _lazy, elt);              }, // select/unselect an elt in ctx.model.elts
       create:       function()                { _create(ctx);                                   },
       edit:         function(elt)             { _edit(ctx, elt);                                },
       cancelEdit:   function()                { _cancelEdit(ctx);                               },
@@ -31,13 +31,13 @@ angular.module('app')
   }
 
 
-  function _init(DataSrv, ctx){
+  function _init(DataSrv, ctx, _lazy){
     if(ctx.header){
       if(ctx.title){ctx.header.title = ctx.title+' ('+ctx.model.elts.length+')';}
       if(ctx.breadcrumb){ctx.header.levels = ctx.breadcrumb;}
     }
     if(ctx.config && ctx.config.sort){Utils.sort(ctx.model.elts, ctx.config.sort);}
-    _loadData(DataSrv, ctx);
+    _loadData(DataSrv, ctx, _lazy);
   }
 
   function _initForElt(DataSrv, ctx, id, _edit){
@@ -87,7 +87,16 @@ angular.module('app')
     }
   }
 
-  function _toggle(ctx, elt){
+  function _toggle(DataSrv, ctx, _lazy, elt){
+    if(_lazy && !elt.lazyLoaded){
+      DataSrv.fullLoad(elt).then(function(){
+        _realToggle(ctx, elt);
+      });
+    } else {
+      _realToggle(ctx, elt);
+    }
+  }
+  function _realToggle(ctx, elt){
     if(elt && ctx.model.selected && elt.id === ctx.model.selected.id){
       ctx.model.selected = null;
     } else {
@@ -189,8 +198,8 @@ angular.module('app')
     return _elt && _elt.id ? DataSrv.getUrl(_elt.id) : DataSrv.getUrl();
   }
 
-  function _loadData(DataSrv, ctx){
-    return DataSrv.getAll().then(function(elts){
+  function _loadData(DataSrv, ctx, _lazy){
+    return DataSrv.getAll(_lazy).then(function(elts){
       if(ctx.header){ctx.header.title = ctx.title+' ('+elts.length+')';}
       if(ctx.config && ctx.config.sort){Utils.sort(elts, ctx.config.sort);}
       ctx.model.elts = elts;
