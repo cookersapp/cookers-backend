@@ -227,10 +227,16 @@ angular.module('app')
 
   $rootScope.$on('$firebaseSimpleLogin:login', function(event, userData){
     if(loginDefer){
-      var user = { email: userData.email, username: userData.email, role: userRoles.user };
-      angular.extend(currentUser, user);
-      StorageSrv.set(storageKey, currentUser);
-      loginDefer.resolve(user);
+      if(userData.email === 'loicknuchel@gmail.com' || userData.email === 'audrey.stropp@gmail.com'){
+        var user = { email: userData.email, username: userData.email, role: userRoles.user };
+        angular.extend(currentUser, user);
+        StorageSrv.set(storageKey, currentUser);
+        loginDefer.resolve(user);
+      } else {
+        loginDefer.reject({
+          message: 'Vous n\'avez pas les droits pour vous connecter !'
+        });
+      }
     }
   });
   $rootScope.$on('$firebaseSimpleLogin:logout', function(event){
