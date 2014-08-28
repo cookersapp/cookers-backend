@@ -2,6 +2,42 @@
 
 angular.module('app')
 
+.directive('sort', function(){
+  return {
+    restrict: 'E',
+    template: ['<span class="sort" ng-class="{active: active}">'+
+               '<i class="fa fa-sort-desc" ng-if="active && !desc"></i>'+
+               '<i class="fa fa-sort-asc" ng-if="active && desc"></i>'+
+               '<i class="fa fa-sort none" ng-if="!active"></i>'+
+               ' <span ng-transclude></span>'+
+               '</span>'].join(''),
+    scope: {
+      active: '=',
+      desc: '='
+    },
+    transclude: true
+  };
+})
+
+.directive('loadingButton', function(){
+  return {
+    restrict: 'E',
+    template: ['<button type="{{btnType ? btnType : \'button\'}}" class="btn {{btnClass}}" ng-disabled="btnDisabled || btnLoading">'+
+               '<i class="fa fa-spinner fa-spin" ng-if="btnLoading"></i>'+
+               '<i class="{{btnIcon}}" ng-if="btnIcon && !btnLoading"></i>'+
+               ' <span ng-transclude></span>'+
+               '</button>'].join(''),
+    scope: {
+      btnLoading: '=',
+      btnDisabled: '=',
+      btnIcon: '@',
+      btnType: '@',
+      btnClass: '@'
+    },
+    transclude: true
+  };
+})
+
 /*
  * Load bootstrap affix plugin
  *  Plugin find elements on onload but angular markup is set after :(
@@ -149,42 +185,6 @@ angular.module('app')
     restrict: 'E'
   };
   return directive;
-})
-
-.directive('loadingButton', function(){
-  return {
-    restrict: 'E',
-    template: ['<button type="{{btnType ? btnType : \'button\'}}" class="btn {{btnClass}}" ng-disabled="btnDisabled || btnLoading">'+
-               '<i class="fa fa-spinner fa-spin" ng-if="btnLoading"></i>'+
-               '<i class="{{btnIcon}}" ng-if="btnIcon && !btnLoading"></i>'+
-               ' <span ng-transclude></span>'+
-               '</button>'].join(''),
-    scope: {
-      btnLoading: '=',
-      btnDisabled: '=',
-      btnIcon: '@',
-      btnType: '@',
-      btnClass: '@'
-    },
-    transclude: true
-  };
-})
-
-.directive('sort', function(){
-  return {
-    restrict: 'E',
-    template: ['<span class="sort" ng-class="{active: active}">'+
-               '<i class="fa fa-sort-desc" ng-if="active && !desc"></i>'+
-               '<i class="fa fa-sort-asc" ng-if="active && desc"></i>'+
-               '<i class="fa fa-sort none" ng-if="!active"></i>'+
-               ' <span ng-transclude></span>'+
-               '</span>'].join(''),
-    scope: {
-      active: '=',
-      desc: '='
-    },
-    transclude: true
-  };
 })
 
 /**
