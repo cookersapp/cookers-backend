@@ -60,7 +60,7 @@ angular.module('app')
       srv1.remove(data);
       return srv2.remove(data);
     },
-    process: noProcess,
+    process: preProcess,
     getUrl: srv2.getUrl,
     fullLoad: fullLoad,
     fullLoadAll: fullLoadAll
@@ -101,8 +101,12 @@ angular.module('app')
     return $q.all(selectionPromises);
   }
 
-  function noProcess(formSelection){
-    return angular.copy(formSelection);
+  function preProcess(formSelection){
+    var selection = angular.copy(formSelection);
+    if(!selection.id){selection.id = selection.week.toString();}
+    DataSrvBuilder.preprocessData(selection);
+    delete selection.lazyLoaded;
+    return selection;
   }
   function process1(formSelection){
     var selection = angular.copy(formSelection);
@@ -176,12 +180,12 @@ angular.module('app')
             console.log('Error', error);
             defer.reject(error);
           } else {
-            defer.resolve();
             if(_.find(service.cache, {id: elt.id}) === undefined){
               service.cache.push(elt);
             } else {
               CollectionUtils.replaceWithId(service.cache, elt);
             }
+            defer.resolve();
           }
         });
       } else {

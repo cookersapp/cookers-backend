@@ -88,15 +88,7 @@ angular.module('app')
   }
 
   function _toggle(DataSrv, ctx, _lazy, elt){
-    if(_lazy && !elt.lazyLoaded){
-      DataSrv.fullLoad(elt).then(function(){
-        _realToggle(ctx, elt);
-      });
-    } else {
-      _realToggle(ctx, elt);
-    }
-  }
-  function _realToggle(ctx, elt){
+    if(_lazy && !elt.lazyLoaded){ DataSrv.fullLoad(elt); }
     if(elt && ctx.model.selected && elt.id === ctx.model.selected.id){
       ctx.model.selected = null;
     } else {
@@ -124,8 +116,6 @@ angular.module('app')
         _addedCb(elt);
       } else {
         return DataSrv.get(eltId).then(function(elt){
-          _.remove(ctx.model.elts, {id: eltId});
-          ctx.model.elts.push(elt);
           if(ctx.config.sort){Utils.sort(ctx.model.elts, ctx.config.sort);}
           ctx.header.title = ctx.title+' ('+ctx.model.elts.length+')';
           ctx.model.selected = elt;
