@@ -15,7 +15,7 @@
             <thead>
               <tr>
                 <th ng-class="{active: config.sort.order === 'name'}" ng-click="sort('name')">
-                  <sort active="config.sort.order === 'name'" desc="config.sort.desc">Nom ({{filteredFood.length}})</sort>
+                  <sort active="config.sort.order === 'name'" desc="config.sort.desc">Nom ({{filtered.length}})</sort>
                 </th>
                 <th ng-class="{active: config.sort.order === 'category'}" ng-click="sort('category')">
                   <sort active="config.sort.order === 'category'" desc="config.sort.desc">Catégorie</sort>
@@ -27,7 +27,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="food in filteredFood = (model.elts | filter:search)" ng-click="toggle(food)" ng-class="{active: model.selected && food.id === model.selected.id}">
+              <tr ng-repeat="food in filtered = (model.elts | filter:search)" ng-click="toggle(food)" ng-class="{active: model.selected && food.id === model.selected.id}">
                 <td>{{food.name}}</td>
                 <td>{{food.category}}</td>
                 <td>
@@ -61,7 +61,7 @@
     </div>
   </div>
   <div class="col-md-6" ng-if="model.form">
-    <form name="food" ng-submit="save()">
+    <form ng-submit="save()">
       <div class="card">
         <div class="form-group">
           <label for="name">Nom</label>

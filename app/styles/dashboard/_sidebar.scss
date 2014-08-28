@@ -57,13 +57,16 @@ ul.sidebar {
       font-size: 15px;
       color: #b2bfdc;
       line-height: 40px;
-    }
-    a:hover {
-      color: #fff;
-      border-left: 3px solid #e99d1a;
-      text-indent: 22px;
-      .menu-icon {
-        text-indent: 25px;
+      &:hover {
+        color: #fff;
+        border-left: 3px solid #e99d1a;
+        text-indent: 22px;
+        .menu-icon {
+          text-indent: 25px;
+        }
+      }
+      &:first-letter {
+        text-transform: uppercase;
       }
     }
     .menu-icon {

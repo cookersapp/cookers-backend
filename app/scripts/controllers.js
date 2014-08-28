@@ -421,4 +421,72 @@ angular.module('app')
   $scope.eltRestUrl = crud.eltRestUrl;
 
   $scope.isUrl = Utils.isUrl;
+})
+
+.controller('GlobalmessagesCtrl', function($rootScope, $scope, GlobalmessageSrv, CrudBuilder, Utils, dataList){
+  if(!$rootScope.config.foods){
+    angular.extend($rootScope.config, {
+      globalmessages: {
+        sort: { order: 'updated', desc: true }
+      }
+    });
+  }
+
+  var ctx = {
+    title: 'Global messages',
+    breadcrumb: [
+      {name: 'Home', state: 'user.home'},
+      {name: 'Global messages'}
+    ],
+    header: $rootScope.config.header,
+    config: {
+      defaultValues: {
+        elt: {
+          type: dataList.messageTypes[0],
+          display: dataList.messageDisplay[0],
+          shouldDisplay: 'function shouldDisplayFn(message, user){\n  return true;\n}\nshouldDisplayFn(message, user);',
+          exec: 'function exec(message, user){\n  \n}\nexec(message, user);',
+          targets: [dataList.appVersions[0], dataList.appVersions[1], dataList.appVersions[2], dataList.appVersions[3]]
+        }
+      },
+      sort: $rootScope.config.globalmessages.sort
+    },
+    data: {
+      messageTypes: dataList.messageTypes,
+      messageDisplay: dataList.messageDisplay,
+      appVersions: dataList.appVersions
+    },
+    status: {
+      loading: true,
+      removing: false,
+      saving: false,
+      error: null
+    },
+    model: {
+      elts: GlobalmessageSrv.cache,
+      selected: null,
+      form: null
+    }
+  };
+
+  $scope.config = ctx.config;
+  $scope.data = ctx.data;
+  $scope.status = ctx.status;
+  $scope.model = ctx.model;
+
+  // todo : add sorts
+  var crud = CrudBuilder.create(GlobalmessageSrv, ctx);
+  crud.init();
+
+  $scope.sort = crud.sort;
+
+  $scope.toggle = crud.toggle;
+
+  $scope.create = crud.create;
+  $scope.edit = crud.edit;
+  $scope.cancelEdit = crud.cancelEdit;
+  $scope.save = crud.save;
+  $scope.remove = crud.remove;
+
+  $scope.eltRestUrl = crud.eltRestUrl;
 });

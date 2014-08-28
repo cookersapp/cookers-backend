@@ -2,7 +2,7 @@
   <div class="col-md-7">
     <rd-loading ng-if="status.loading && !(model.selected)"></rd-loading>
     <div class="alert alert-danger" role="alert" ng-if="status.error"><strong>Error!</strong> {{status.error}}</div>
-    <form role="form" ng-submit="save()" ng-if="model.selected">
+    <form ng-submit="save()" ng-if="model.selected">
       <div class="card">
         <h1 ng-if="model.selected.id">
           <div class="pull-right">

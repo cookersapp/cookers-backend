@@ -109,6 +109,15 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'firebase', 'ui.bo
     url: '/foods',
     templateUrl: 'views/data/foods.html',
     controller: 'FoodsCtrl'
+  })
+  .state('user.admin', {
+    abstract: true,
+    template: '<ui-view/>'
+  })
+  .state('user.admin.globalmessages', {
+    url: '/globalmessages',
+    templateUrl: 'views/admin/globalmessages.html',
+    controller: 'GlobalmessagesCtrl'
   });
 
   $urlRouterProvider.otherwise('/');
@@ -138,9 +147,9 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'firebase', 'ui.bo
   timerColors:      ['blue', 'red', 'yellow', 'green', 'orange'],
   foodCategories:   ['Viandes & Poissons', 'Fruits & Légumes', 'Pains & Pâtisseries', 'Frais', 'Surgelés', 'Épicerie salée', 'Épicerie sucrée', 'Boissons', 'Bébé', 'Bio', 'Hygiène & Beauté', 'Entretien & Nettoyage', 'Animalerie', 'Bazar & Textile'],
   currencies:       ['€'],
-  
-  
-  days:             ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+  messageTypes:     ['standard', 'sticky', 'exec'],
+  messageDisplay:   ['default', 'success', 'info', 'warning', 'danger'],
+  appVersions:      ['~', '0.1.0', '0.2.0', '0.3.0', '0.3.1', '0.4.0']
 })
 
 .run(function($rootScope, $sce, $state, $location, $localStorage, $window, AuthSrv){

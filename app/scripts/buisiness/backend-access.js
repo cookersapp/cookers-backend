@@ -134,6 +134,15 @@ angular.module('app')
   return service;
 })
 
+.factory('GlobalmessageSrv', function(DataSrvBuilder){
+  function process(formMessage){
+    var message = angular.copy(formMessage);
+    DataSrvBuilder.preprocessData(message);
+    return message;
+  }
+  return DataSrvBuilder.createDataService('globalmessages', process);
+})
+
 .factory('DataSrvBuilder', function($q, $http, firebaseUrl, Utils, CollectionUtils){
   var service = {
     preprocessData: preprocessData,

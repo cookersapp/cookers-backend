@@ -41,32 +41,44 @@ angular.module('app')
       else if(params.order === 'week'){arr.sort(_weekSort);}
       else if(params.order === 'name'){arr.sort(_nameSort);}
       else if(params.order === 'category'){arr.sort(_categorySort);}
+      else if(params.order === 'type'){arr.sort(_typeSort);}
+      else if(params.order === 'prod'){arr.sort(_prodSort);}
 
       if(params.desc){arr.reverse();}
     }
   }
 
   function _updatedSort(a, b){
-    var aDate = a.updated ? a.updated : a.created;
-    var bDate = b.updated ? b.updated : b.created;
-    return aDate - bDate;
+    var aInt = a.updated ? a.updated : a.created;
+    var bInt = b.updated ? b.updated : b.created;
+    return aInt - bInt;
   }
   function _weekSort(a, b){
     return a.week - b.week;
   }
   function _nameSort(a, b){
-    var aName = a && a.name ? a.name.toLowerCase() : '';
-    var bName = b && b.name ? b.name.toLowerCase() : '';
-    if(aName > bName){ return 1; }
-    else if(aName < bName){ return -1; }
+    var aStr = a && a.name ? a.name.toLowerCase() : '';
+    var bStr = b && b.name ? b.name.toLowerCase() : '';
+    if(aStr > bStr){ return 1; }
+    else if(aStr < bStr){ return -1; }
     else { return 0; }
   }
   function _categorySort(a, b){
-    var aCategory = a && a.category ? a.category.toLowerCase() : '';
-    var bCategory = b && b.category ? b.category.toLowerCase() : '';
-    if(aCategory > bCategory){ return 1; }
-    else if(aCategory < bCategory){ return -1; }
+    var aStr = a && a.category ? a.category.toLowerCase() : '';
+    var bStr = b && b.category ? b.category.toLowerCase() : '';
+    if(aStr > bStr){ return 1; }
+    else if(aStr < bStr){ return -1; }
     else { return 0; }
+  }
+  function _typeSort(a, b){
+    var aStr = a && a.type ? a.type.toLowerCase() : '';
+    var bStr = b && b.type ? b.type.toLowerCase() : '';
+    if(aStr > bStr){ return 1; }
+    else if(aStr < bStr){ return -1; }
+    else { return 0; }
+  }
+  function _prodSort(a, b){
+    return a.isProd === b.isProd ? 0 : (a.isProd ? -1 : 1);
   }
 
   return service;
