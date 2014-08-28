@@ -61,7 +61,7 @@ angular.module('app')
 
 
   function loadSelectionRecipes(selection, _recipePromiseCache){
-    if(selection.recipes){
+    if(selection && selection.recipes){
       var recipePromises = [];
       for(var j in selection.recipes){
         recipePromises.push($q.when(selection.recipes[j].id).then(function(recipeId){
@@ -174,7 +174,11 @@ angular.module('app')
             defer.reject(error);
           } else {
             defer.resolve();
-            CollectionUtils.replaceWithId(service.cache, elt);
+            if(_.find(service.cache, {id: elt.id}) === undefined){
+              service.cache.push(elt);
+            } else {
+              CollectionUtils.replaceWithId(service.cache, elt);
+            }
           }
         });
       } else {
