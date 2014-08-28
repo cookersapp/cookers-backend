@@ -49,7 +49,6 @@ angular.module('app')
       format: '@'
     },
     link: function(scope, element, attr){
-      console.log(scope.format);
       scope.file = '';
       scope.loading = false;
       scope.media = null;

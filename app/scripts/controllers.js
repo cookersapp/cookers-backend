@@ -78,6 +78,10 @@ angular.module('app')
 
   var ctx = {
     title: 'Recettes',
+    breadcrumb: [
+      {name: 'Home', state: 'user.home'},
+      {name: 'Recettes'}
+    ],
     header: $rootScope.config.header,
     config: {
       sort: $rootScope.config.recipes.sort
@@ -90,11 +94,6 @@ angular.module('app')
       elts: RecipeSrv.cache
     }
   };
-
-  ctx.header.levels = [
-    {name: 'Home', state: 'user.home'},
-    {name: ctx.title}
-  ];
 
   $scope.config = ctx.config;
   $scope.status = ctx.status;
@@ -114,6 +113,12 @@ angular.module('app')
   if(localStorage){localStorage.removeItem('ngStorage-data');}
 
   var ctx = {
+    title: 'Recette',
+    breadcrumb: [
+      {name: 'Home',      state: 'user.home'},
+      {name: 'Recettes',  state: 'user.data.recipes'},
+      {name: 'Recette'}
+    ],
     header: $rootScope.config.header,
     data: {
       weekNumber: moment().week(),
@@ -131,14 +136,29 @@ angular.module('app')
     }
   };
 
+  // custom load data !
+  SelectionSrv.get(ctx.data.weekNumber+1).then(function(selection){ ctx.data.nextSelections[1] = selection; ctx.status.loadingSelections[1] = false; });
+  SelectionSrv.get(ctx.data.weekNumber+2).then(function(selection){ ctx.data.nextSelections[2] = selection; ctx.status.loadingSelections[2] = false; });
+  SelectionSrv.get(ctx.data.weekNumber+3).then(function(selection){ ctx.data.nextSelections[3] = selection; ctx.status.loadingSelections[3] = false; });
+
   $scope.data = ctx.data;
   $scope.status = ctx.status;
   $scope.model = ctx.model;
 
-  loadRecipe(recipeId);
-  loadNextSelections(ctx.data.weekNumber);
+  var crud = CrudBuilder.create(RecipeSrv, ctx);
+  crud.initForElt(recipeId);
 
-  $scope.eltExistsIn = CrudBuilder.eltExistsIn;
+  $scope.remove = function(elt){
+    crud.remove(elt, function(){
+      ctx.status.removing = false;
+      $state.go('user.data.recipes');
+    });
+  };
+
+  $scope.eltExistsIn = crud.eltExistsIn;
+  $scope.eltRestUrl = crud.eltRestUrl;
+
+
 
   $scope.toggleRecipeInSelection = function(weekOffset){
     var selection = ctx.data.nextSelections[weekOffset];
@@ -166,42 +186,6 @@ angular.module('app')
       });
     }
   };
-
-  $scope.remove = function(elt){
-    if(elt && elt.id && window.confirm('Supprimer ?')){
-      ctx.status.removing = true;
-      RecipeSrv.remove(ctx.model.selected).then(function(){
-        ctx.status.removing = false;
-        $state.go('user.data.recipes');
-      });
-    }
-  };
-
-  $scope.eltRestUrl = function(elt){
-    return RecipeSrv.getUrl(elt.id);
-  };
-
-  function loadRecipe(recipeId){
-    RecipeSrv.get(recipeId).then(function(recipe){
-      ctx.header.title = recipe.name;
-      ctx.header.levels = [
-        {name: 'Home',      state: 'user.home'},
-        {name: 'Recettes',  state: 'user.data.recipes'},
-        {name: recipe.name}
-      ];
-      ctx.model.selected = recipe;
-      ctx.status.loading = false;
-    }, function(err){
-      console.warn('can\'t load recipe <'+recipeId+'>', err);
-      ctx.status.loading = false;
-      ctx.status.error = err.statusText ? err.statusText : 'Unable to load recipe <'+recipeId+'> :(';
-    });
-  }
-  function loadNextSelections(curWeek){
-    SelectionSrv.get(curWeek+1).then(function(selection){ ctx.data.nextSelections[1] = selection; ctx.status.loadingSelections[1] = false; });
-    SelectionSrv.get(curWeek+2).then(function(selection){ ctx.data.nextSelections[2] = selection; ctx.status.loadingSelections[2] = false; });
-    SelectionSrv.get(curWeek+3).then(function(selection){ ctx.data.nextSelections[3] = selection; ctx.status.loadingSelections[3] = false; });
-  }
 })
 
 
@@ -209,6 +193,13 @@ angular.module('app')
   var recipeId = $stateParams.recipeId;
 
   var ctx = {
+    title: 'Nouvelle recette',
+    breadcrumb: [
+      {name: 'Home',      state: 'user.home'},
+      {name: 'Recettes',  state: 'user.data.recipes'},
+      {name: recipeId ? 'Modification' : 'Création'}
+    ],
+    eltState: function(elt){ return 'user.data.recipe({recipeId: \''+elt.id+'\'})'; },
     header: $rootScope.config.header,
     config: {
       defaultValues: {
@@ -231,6 +222,7 @@ angular.module('app')
       }
     },
     data: {
+      process: FoodSrv.cache,
       foods: FoodSrv.cache,
       recipeCategories: dataList.recipeCategories,
       servingUnits: dataList.servingUnits,
@@ -251,24 +243,13 @@ angular.module('app')
     }
   };
 
+  // custom load data !
   FoodSrv.getAll().then(function(foods){
+    ctx.data.process = foods;
     ctx.data.foods = foods;
   }, function(err){
     console.warn('can\'t load foods', err);
   });
-  
-  if(recipeId){
-    RecipeSrv.get(recipeId).then(function(recipe){
-      init(recipe);
-    }, function(err){
-      console.warn('can\'t load recipe <'+recipeId+'>', err);
-      ctx.status.loading = false;
-      ctx.status.error = err.statusText ? err.statusText : 'Unable to load recipe <'+recipeId+'> :(';
-    });
-  } else {
-    init(ctx.config.defaultValues.elt);
-  }
-  
 
   $scope.config = ctx.config;
   $scope.data = ctx.data;
@@ -276,23 +257,19 @@ angular.module('app')
   $scope.model = ctx.model;
 
   var crud = CrudBuilder.create(RecipeSrv, ctx);
+  crud.initForElt(recipeId, true);
 
   $scope.save = function(){
-    ctx.status.saving = true;
-    var recipe = RecipeSrv.process(ctx.model.form, ctx.data.foods);
-    RecipeSrv.save(recipe).then(function(){
+    crud.save(ctx.model.form, function(elt){
       ctx.status.saving = false;
-      $state.go('user.data.recipe', {recipeId: recipe.id});
-    }, function(err){
-      console.log('Error', err);
-      ctx.status.saving = false;
+      $state.go('user.data.recipe', {recipeId: elt.id});
     });
   };
-  
+
   $scope.addElt = crud.addElt;
   $scope.removeElt = crud.removeElt;
   $scope.moveEltDown = crud.moveEltDown;
-  
+
   // for phone preview
   $scope.timerDuration = function(timer){
     if(timer && timer.steps && timer.steps.length > 0){
@@ -302,31 +279,16 @@ angular.module('app')
       return timer && timer.seconds ? timer.seconds : 0;
     }
   };
-
-  function init(recipe){
-    ctx.header.title = recipe.name ? recipe.name : 'Nouvelle recette';
-    ctx.header.levels = [
-      {name: 'Home',      state: 'user.home'},
-      {name: 'Recettes',  state: 'user.data.recipes'}
-    ];
-    if(recipe.id){
-      ctx.header.levels.push({name: recipe.name, state: 'user.data.recipe({recipeId: \''+recipe.id+'\'})'});
-      ctx.header.levels.push({name: 'Modification'});
-    } else {
-      ctx.header.levels.push({name: 'Création'});
-    }
-    
-    ctx.model.selected = recipe;
-    ctx.model.form = angular.copy(recipe);
-    Utils.extendsWith(ctx.model.form, ctx.config.defaultValues.elt);
-    ctx.status.loading = false;
-  }
 })
 
 
 .controller('SelectionsCtrl', function($rootScope, $scope, SelectionSrv, RecipeSrv, CrudBuilder, Utils){
   var ctx = {
     title: 'Sélections',
+    breadcrumb: [
+      {name: 'Home', state: 'user.home'},
+      {name: 'Sélections'}
+    ],
     header: $rootScope.config.header,
     config: {
       sort: {order: 'week', desc: true}
@@ -349,17 +311,12 @@ angular.module('app')
     }
   };
 
-  // custom load recipes !
+  // custom load data !
   RecipeSrv.getAll().then(function(recipes){
     ctx.data.recipes = recipes;
   }, function(err){
     console.warn('can\'t load recipes', err);
   });
-
-  ctx.header.levels = [
-    {name: 'Home', state: 'user.home'},
-    {name: ctx.title}
-  ];
 
   $scope.config = ctx.config;
   $scope.data = ctx.data;
@@ -377,7 +334,6 @@ angular.module('app')
     while(_.find(ctx.model.elts, {week: week}) !== undefined){
       week++;
     }
-    
     crud.save({week: week, recipes: []}).then(function(){
       ctx.status.creating = false;
     });
@@ -406,6 +362,10 @@ angular.module('app')
 
   var ctx = {
     title: 'Aliments',
+    breadcrumb: [
+      {name: 'Home', state: 'user.home'},
+      {name: 'Aliments'}
+    ],
     header: $rootScope.config.header,
     config: {
       defaultValues: {
@@ -436,11 +396,6 @@ angular.module('app')
       form: null
     }
   };
-
-  ctx.header.levels = [
-    {name: 'Home', state: 'user.home'},
-    {name: ctx.title}
-  ];
 
   $scope.config = ctx.config;
   $scope.data = ctx.data;

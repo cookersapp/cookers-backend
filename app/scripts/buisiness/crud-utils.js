@@ -11,47 +11,84 @@ angular.module('app')
   };
 
   function createCrud(DataSrv, ctx){
+    // parameters starting with _ are optionnals
     return {
-      init:         function()                { _init(DataSrv, ctx);                },
-      sort:         function(order, desc)     { _sort(ctx, order, desc);            }, // sort ctx.model.elts according to parameters 'order' and 'desc'
-      toggle:       function(elt)             { _toggle(ctx, elt);                  }, // select/unselect an elt in ctx.model.elts
-      create:       function()                { _create(ctx);                       },
-      edit:         function(elt)             { _edit(ctx, elt);                    },
-      cancelEdit:   function()                { _cancelEdit(ctx);                   },
-      save:         function(elt)             { return _save(DataSrv, ctx, elt);    }, // elt is optional, ctx.model.form is taken if not provided
-      remove:       function(elt)             { return _remove(DataSrv, ctx, elt);  },
-      addElt:       function(obj, attr, elt)  { _addElt(ctx, obj, attr, elt);       },
-      removeElt:    function(arr, index)      { _removeElt(arr, index);             },
-      moveEltDown:  function(arr, index)      { _moveEltDown(arr, index);           },
-      eltExistsIn:  function(arr, elt)        { return _eltExistsIn(arr, elt);      },
-      eltRestUrl:   function(elt)             { return _eltRestUrl(DataSrv, elt);   }
+      init:         function()                { _init(DataSrv, ctx);                            },
+      initForElt:   function(id, _edit)       { _initForElt(DataSrv, ctx, id, _edit);           },
+      sort:         function(order, _desc)    { _sort(ctx, order, _desc);                       }, // sort ctx.model.elts according to parameters 'order' and 'desc'
+      toggle:       function(elt)             { _toggle(ctx, elt);                              }, // select/unselect an elt in ctx.model.elts
+      create:       function()                { _create(ctx);                                   },
+      edit:         function(elt)             { _edit(ctx, elt);                                },
+      cancelEdit:   function()                { _cancelEdit(ctx);                               },
+      save:         function(_elt, _addedCb)  { return _save(DataSrv, ctx, _elt, _addedCb);     }, // elt is optional, ctx.model.form is taken if not provided
+      remove:       function(elt, _removedCb) { return _remove(DataSrv, ctx, elt, _removedCb);  },
+      addElt:       function(obj, attr, _elt) { _addElt(ctx, obj, attr, _elt);                  },
+      removeElt:    function(arr, index)      { _removeElt(arr, index);                         },
+      moveEltDown:  function(arr, index)      { _moveEltDown(arr, index);                       },
+      eltExistsIn:  function(arr, elt)        { return _eltExistsIn(arr, elt);                  },
+      eltRestUrl:   function(_elt)            { return _eltRestUrl(DataSrv, _elt);              }
     };
   }
 
 
   function _init(DataSrv, ctx){
-    if(ctx.config.sort){Utils.sort(ctx.model.elts, ctx.config.sort);}
-    ctx.header.title = ctx.title+' ('+ctx.model.elts.length+')';
+    if(ctx.header){
+      if(ctx.title){ctx.header.title = ctx.title+' ('+ctx.model.elts.length+')';}
+      if(ctx.breadcrumb){ctx.header.levels = ctx.breadcrumb;}
+    }
+    if(ctx.config && ctx.config.sort){Utils.sort(ctx.model.elts, ctx.config.sort);}
     _loadData(DataSrv, ctx);
   }
 
-  function _sort(ctx, order, desc){
+  function _initForElt(DataSrv, ctx, id, _edit){
+    if(id){
+      DataSrv.get(id).then(function(elt){
+        _loadElt(ctx, elt, _edit);
+      }, function(err){
+        console.warn('can\'t load '+ctx.title+' <'+id+'>', err);
+        ctx.status.loading = false;
+        ctx.status.error = err.statusText ? err.statusText : 'Unable to load '+ctx.title+' <'+id+'> :(';
+      });
+    } else if(ctx.config && ctx.config.defaultValues && ctx.config.defaultValues.elt){
+      _loadElt(ctx, ctx.config.defaultValues.elt, _edit);
+    } else {
+      _loadElt(ctx, {}, _edit);
+    }
+  }
+
+  function _loadElt(ctx, elt, _edit){
+    if(ctx.header){
+      ctx.header.title = elt.name ? elt.name : ctx.title;
+      if(ctx.breadcrumb){ctx.header.levels = ctx.breadcrumb;}
+      if(_edit && elt.id && ctx.eltState){ ctx.header.levels.splice(ctx.header.levels.length-1, 0, {name: elt.name, state: ctx.eltState(elt)}); }
+      else if(!_edit && elt.name && ctx.header.levels.length > 0){ ctx.header.levels[ctx.header.levels.length-1].name = elt.name; }
+    }
+
+    if(_edit){
+      ctx.model.form = angular.copy(elt);
+      if(ctx.config && ctx.config.defaultValues && ctx.config.defaultValues.elt){ Utils.extendsWith(ctx.model.form, ctx.config.defaultValues.elt); }
+    }
+    ctx.model.selected = elt;
+    ctx.status.loading = false;
+  }
+
+  function _sort(ctx, order, _desc){
     if(ctx.config.sort){
       var sort = ctx.config.sort;
       if(sort.order === order){
         sort.desc = !sort.desc;
       } else {
         sort.order = order;
-        sort.desc = desc ? desc : false;
+        sort.desc = _desc ? _desc : false;
       }
       Utils.sort(ctx.model.elts, sort);
     } else {
-      Utils.sort(ctx.model.elts, {order: order, desc: desc});
+      Utils.sort(ctx.model.elts, {order: order, desc: _desc});
     }
   }
 
   function _toggle(ctx, elt){
-    if(elt && ctx.model.selected && ctx.model.selected.id === elt.id){
+    if(elt && ctx.model.selected && elt.id === ctx.model.selected.id){
       ctx.model.selected = null;
     } else {
       ctx.model.selected = elt;
@@ -69,34 +106,42 @@ angular.module('app')
   function _cancelEdit(ctx){
     ctx.model.form = null;
   }
-  function _save(DataSrv, ctx, elt){
+  function _save(DataSrv, ctx, _elt, _addedCb){
     ctx.status.saving = true;
-    var elt = DataSrv.process(elt ? elt : ctx.model.form, ctx.data.process ? ctx.data.process : null);
+    var elt = DataSrv.process(_elt ? _elt : ctx.model.form, ctx.data.process ? ctx.data.process : null);
     var eltId = elt.id;
     return DataSrv.save(elt).then(function(){
-      return DataSrv.get(eltId).then(function(elt){
-        _.remove(ctx.model.elts, {id: eltId});
-        ctx.model.elts.push(elt);
-        if(ctx.config.sort){Utils.sort(ctx.model.elts, ctx.config.sort);}
-        ctx.header.title = ctx.title+' ('+ctx.model.elts.length+')';
-        ctx.model.selected = elt;
-        ctx.model.form = null;
-        ctx.status.loading = false;
-        ctx.status.saving = false;
-      });
+      if(_addedCb){
+        _addedCb(elt);
+      } else {
+        return DataSrv.get(eltId).then(function(elt){
+          _.remove(ctx.model.elts, {id: eltId});
+          ctx.model.elts.push(elt);
+          if(ctx.config.sort){Utils.sort(ctx.model.elts, ctx.config.sort);}
+          ctx.header.title = ctx.title+' ('+ctx.model.elts.length+')';
+          ctx.model.selected = elt;
+          ctx.model.form = null;
+          ctx.status.loading = false;
+          ctx.status.saving = false;
+        });
+      }
     }, function(err){
       console.log('Error', err);
       ctx.status.saving = false;
     });
   }
-  function _remove(DataSrv, ctx, elt){
+  function _remove(DataSrv, ctx, elt, _removedCb){
     if(elt && elt.id && window.confirm('Supprimer ?')){
       ctx.status.removing = true;
       var eltId = elt.id;
       return DataSrv.remove(elt).then(function(){
-        _.remove(ctx.model.elts, {id: eltId});
-        ctx.model.selected = null;
-        ctx.status.removing = false;
+        if(_removedCb){
+          _removedCb(elt);
+        } else {
+          _.remove(ctx.model.elts, {id: eltId});
+          ctx.model.selected = null;
+          ctx.status.removing = false;
+        }
       }, function(err){
         console.log('Error', err);
         ctx.status.removing = false;
@@ -106,13 +151,13 @@ angular.module('app')
     }
   }
 
-  function _addElt(ctx, obj, attr, elt){
+  function _addElt(ctx, obj, attr, _elt){
     if(obj && typeof obj === 'object'){
       if(!Array.isArray(obj[attr])){ obj[attr] = []; }
 
-      if(elt){elt = angular.copy(elt);}
+      var elt = {};
+      if(_elt){elt = angular.copy(_elt);}
       else if(ctx.config && ctx.config.defaultValues && ctx.config.defaultValues[attr]){ elt = angular.copy(ctx.config.defaultValues[attr]); }
-      else {elt = {};}
 
       obj[attr].push(elt);
     } else {
@@ -137,14 +182,14 @@ angular.module('app')
     }
   }
 
-  function _eltRestUrl(DataSrv, elt){
-    return elt && elt.id ? DataSrv.getUrl(elt.id) : DataSrv.getUrl();
+  function _eltRestUrl(DataSrv, _elt){
+    return _elt && _elt.id ? DataSrv.getUrl(_elt.id) : DataSrv.getUrl();
   }
 
   function _loadData(DataSrv, ctx){
     return DataSrv.getAll().then(function(elts){
-      ctx.header.title = ctx.title+' ('+elts.length+')';
-      if(ctx.config.sort){Utils.sort(elts, ctx.config.sort);}
+      if(ctx.header){ctx.header.title = ctx.title+' ('+elts.length+')';}
+      if(ctx.config && ctx.config.sort){Utils.sort(elts, ctx.config.sort);}
       ctx.model.elts = elts;
       ctx.status.loading = false;
     }, function(err){
