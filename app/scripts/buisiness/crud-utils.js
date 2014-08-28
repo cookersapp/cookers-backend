@@ -18,7 +18,7 @@ angular.module('app')
       create:       function()                { _create(ctx);                       },
       edit:         function(elt)             { _edit(ctx, elt);                    },
       cancelEdit:   function()                { _cancelEdit(ctx);                   },
-      save:         function()                { return _save(DataSrv, ctx);         },
+      save:         function(elt)             { return _save(DataSrv, ctx, elt);    }, // elt is optional, ctx.model.form is taken if not provided
       remove:       function(elt)             { return _remove(DataSrv, ctx, elt);  },
       addElt:       function(obj, attr, elt)  { _addElt(ctx, obj, attr, elt);       },
       removeElt:    function(arr, index)      { _removeElt(arr, index);             },
@@ -69,12 +69,12 @@ angular.module('app')
   function _cancelEdit(ctx){
     ctx.model.form = null;
   }
-  function _save(DataSrv, ctx){
+  function _save(DataSrv, ctx, elt){
     ctx.status.saving = true;
-    var elt = DataSrv.process(ctx.model.form, ctx.data.process ? ctx.data.process : null);
+    var elt = DataSrv.process(elt ? elt : ctx.model.form, ctx.data.process ? ctx.data.process : null);
     var eltId = elt.id;
     return DataSrv.save(elt).then(function(){
-      _loadData(DataSrv, ctx).then(function(){
+      return _loadData(DataSrv, ctx).then(function(){
         ctx.model.selected = _.find(ctx.model.elts, {id: eltId});
         ctx.model.form = null;
         ctx.status.saving = false;

@@ -377,11 +377,8 @@ angular.module('app')
     while(_.find(ctx.model.elts, {week: week}) !== undefined){
       week++;
     }
-    ctx.model.form = {
-      week: week,
-      recipes: []
-    };
-    crud.save().then(function(){
+    
+    crud.save({week: week, recipes: []}).then(function(){
       ctx.status.creating = false;
     });
   };

@@ -31,6 +31,7 @@
       </span>
       {{model.selected.week}}. {{model.selected.week | week:'D MMM'}}
     </h3>
+    <p ng-if="!model.selected.recipes || model.selected.recipes.length === 0">Aucune recette ajouté à la sélection :(</p>
     <div class="media media-recipe item" ng-repeat="recipe in model.selected.recipes">
       <a class="pull-left" ui-sref="user.data.recipe({recipeId: recipe.id})">
         <img class="media-object" ng-src="{{recipe.images.thumbnail}}">
