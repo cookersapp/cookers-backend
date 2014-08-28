@@ -74,9 +74,14 @@ angular.module('app')
     var elt = DataSrv.process(elt ? elt : ctx.model.form, ctx.data.process ? ctx.data.process : null);
     var eltId = elt.id;
     return DataSrv.save(elt).then(function(){
-      return _loadData(DataSrv, ctx).then(function(){
-        ctx.model.selected = _.find(ctx.model.elts, {id: eltId});
+      return DataSrv.get(eltId).then(function(elt){
+        _.remove(ctx.model.elts, {id: eltId});
+        ctx.model.elts.push(elt);
+        if(ctx.config.sort){Utils.sort(ctx.model.elts, ctx.config.sort);}
+        ctx.header.title = ctx.title+' ('+ctx.model.elts.length+')';
+        ctx.model.selected = elt;
         ctx.model.form = null;
+        ctx.status.loading = false;
         ctx.status.saving = false;
       });
     }, function(err){
@@ -87,11 +92,11 @@ angular.module('app')
   function _remove(DataSrv, ctx, elt){
     if(elt && elt.id && window.confirm('Supprimer ?')){
       ctx.status.removing = true;
+      var eltId = elt.id;
       return DataSrv.remove(elt).then(function(){
-        return _loadData(DataSrv, ctx).then(function(){
-          ctx.model.selected = null;
-          ctx.status.removing = false;
-        });
+        _.remove(ctx.model.elts, {id: eltId});
+        ctx.model.selected = null;
+        ctx.status.removing = false;
       }, function(err){
         console.log('Error', err);
         ctx.status.removing = false;
@@ -108,7 +113,7 @@ angular.module('app')
       if(elt){elt = angular.copy(elt);}
       else if(ctx.config && ctx.config.defaultValues && ctx.config.defaultValues[attr]){ elt = angular.copy(ctx.config.defaultValues[attr]); }
       else {elt = {};}
-      
+
       obj[attr].push(elt);
     } else {
       console.warn('Unable to addElt to', obj);
@@ -133,7 +138,7 @@ angular.module('app')
   }
 
   function _eltRestUrl(DataSrv, elt){
-    return DataSrv.getUrl(elt.id);
+    return elt && elt.id ? DataSrv.getUrl(elt.id) : DataSrv.getUrl();
   }
 
   function _loadData(DataSrv, ctx){
