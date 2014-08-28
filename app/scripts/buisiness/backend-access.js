@@ -127,7 +127,7 @@ angular.module('app')
   return service;
 })
 
-.factory('DataSrvBuilder', function($q, $http, firebaseUrl, Calculator, Utils){
+.factory('DataSrvBuilder', function($q, $http, firebaseUrl, Utils, CollectionUtils){
   var service = {
     preprocessData: preprocessData,
     createDataService: createDataService
@@ -155,9 +155,9 @@ angular.module('app')
     var collectionRef = new Firebase(collectionUrl);
 
     function getAll(){
-      return $http.get(getUrl()).then(_getDataArray).then(function(data){
-        service.cache = data;
-        return data;
+      return $http.get(getUrl()).then(_getDataArray).then(function(elts){
+        service.cache = elts;
+        return elts;
       });
     }
 
@@ -165,41 +165,43 @@ angular.module('app')
       return $http.get(getUrl(id)).then(_getData);
     }
 
-    function save(data){
+    function save(elt){
       var defer = $q.defer();
-      if(data && data.id){
-        collectionRef.child(data.id).set(angular.copy(data), function(error){
+      if(elt && elt.id){
+        collectionRef.child(elt.id).set(angular.copy(elt), function(error){
           if(error){
             console.log('Error', error);
             defer.reject(error);
           } else {
             defer.resolve();
+            CollectionUtils.replaceWithId(service.cache, elt);
           }
         });
       } else {
         defer.reject({
           message: 'Wrong argument !',
-          data: data
+          data: elt
         });
       }
       return defer.promise;
     }
 
-    function remove(data){
+    function remove(elt){
       var defer = $q.defer();
-      if(data && data.id){
-        collectionRef.child(data.id).remove(function(error){
+      if(elt && elt.id){
+        collectionRef.child(elt.id).remove(function(error){
           if(error){
             console.log('Error', error);
             defer.reject(error);
           } else {
             defer.resolve();
+            _.remove(service.cache, {id: elt.id});
           }
         });
       } else {
         defer.reject({
           message: 'Wrong argument !',
-          data: data
+          data: elt
         });
       }
       return defer.promise;
