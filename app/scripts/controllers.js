@@ -424,7 +424,7 @@ angular.module('app')
 })
 
 .controller('GlobalmessagesCtrl', function($rootScope, $scope, GlobalmessageSrv, CrudBuilder, Utils, dataList){
-  if(!$rootScope.config.foods){
+  if(!$rootScope.config.globalmessages){
     angular.extend($rootScope.config, {
       globalmessages: {
         sort: { order: 'updated', desc: true }

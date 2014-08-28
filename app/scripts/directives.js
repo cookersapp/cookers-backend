@@ -4,18 +4,31 @@ angular.module('app')
 
 .directive('sort', function(){
   return {
-    restrict: 'E',
-    template: ['<span class="sort" ng-class="{active: active}">'+
-               '<i class="fa fa-sort-desc" ng-if="active && !desc"></i>'+
-               '<i class="fa fa-sort-asc" ng-if="active && desc"></i>'+
-               '<i class="fa fa-sort none" ng-if="!active"></i>'+
-               ' <span ng-transclude></span>'+
-               '</span>'].join(''),
+    restrict: 'A',
+    template: ['<i class="fa fa-sort-desc" ng-if="isActive() && !sort.desc"></i>'+
+               '<i class="fa fa-sort-asc" ng-if="isActive() && sort.desc"></i>'+
+               '<i class="fa fa-sort none" ng-if="!isActive()"></i>'+
+               ' <span ng-transclude></span>'].join(''),
     scope: {
-      active: '=',
-      desc: '='
+      name: '@',
+      sort: '='
     },
-    transclude: true
+    transclude: true,
+    link: function(scope, element, attr){
+      element.addClass('sort');
+
+      scope.$watch('sort.order', function(val){
+        if(val === scope.name){
+          element.addClass('active');
+        } else {
+          element.removeClass('active');
+        }
+      });
+
+      scope.isActive = function(){
+        return scope.name === scope.sort.order;
+      };
+    }
   };
 })
 

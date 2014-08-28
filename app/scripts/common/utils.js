@@ -58,7 +58,6 @@ angular.module('app')
   }
 
   function sort(arr, params){
-    console.log('sort', params);
     if(Array.isArray(arr) && arr.length > 0){
       if(params.order === 'updated')  { _updatedSort(arr, params);  }
       else                            { _autoSort(arr, params);     }

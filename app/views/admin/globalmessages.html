@@ -14,17 +14,11 @@
           <table class="table table-hover">
             <thead>
               <tr>
-                <th ng-class="{active: config.sort.order === 'type'}" ng-click="sort('type')">
-                  <sort active="config.sort.order === 'type'" desc="config.sort.desc">Type</sort>
-                </th>
-                <th ng-class="{active: config.sort.order === 'isProd'}" ng-click="sort('isProd')">
-                  <sort active="config.sort.order === 'isProd'" desc="config.sort.desc">Prod</sort>
-                </th>
+                <th sort="config.sort" name="type" ng-click="sort('type')">Type</th>
+                <th sort="config.sort" name="isProd" ng-click="sort('isProd')">Prod</th>
                 <th>Message ({{filtered.length}})</th>
                 <th>Versions</th>
-                <th ng-class="{active: config.sort.order === 'updated'}" ng-click="sort('updated', true)">
-                  <sort active="config.sort.order === 'updated'" desc="config.sort.desc">Mis à jour</sort>
-                </th>
+                <th sort="config.sort" name="updated" ng-click="sort('updated', true)">Mis à jour</th>
               </tr>
             </thead>
             <tbody>
