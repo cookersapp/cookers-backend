@@ -107,7 +107,7 @@
                 <option value="">--</option>
               </select>
             </div>
-            <button type="button" class="btn btn-danger" ng-click="removeElt(model.form.ingredients, $index)"><i class="fa fa-times"></i></button>
+            <button type="button" class="btn btn-danger" ng-click="removeElt(model.form.ingredients, $index)"><i class="fa fa-trash-o"></i></button>
             <button type="button" class="btn btn-default" ng-click="moveEltDown(model.form.ingredients, $index)" ng-if="!$last"><i class="fa fa-arrow-down"></i></button>
           </div>
           <button type="button" class="btn btn-default btn-xs" ng-click="addElt(model.form, 'ingredients')">Ajouter un ingrédient</button>
@@ -120,7 +120,7 @@
                 <input id="tool_{{$index}}" name="tool_{{$index}}" type="text" class="form-control" ng-model="tool.name" placeholder="Ex: casserole" required>
               </div>
               <div class="col-md-1">
-                <button type="button" class="btn btn-danger" ng-click="removeElt(model.form.tools, $index)"><i class="fa fa-times"></i></button>
+                <button type="button" class="btn btn-danger" ng-click="removeElt(model.form.tools, $index)"><i class="fa fa-trash-o"></i></button>
               </div>
             </div>
           </div>
@@ -140,7 +140,7 @@
                 <button type="button" class="btn" ng-click="addElt(instruction, 'timers')"><i class="fa fa-plus"></i> <i class="fa fa-clock-o"></i></button>
               </div>
               <div class="col-md-1">
-                <button type="button" class="btn btn-danger" ng-click="removeElt(model.form.instructions, $index)"><i class="fa fa-times"></i></button>
+                <button type="button" class="btn btn-danger" ng-click="removeElt(model.form.instructions, $index)"><i class="fa fa-trash-o"></i></button>
               </div>
             </div>
             <div class="row">
@@ -169,7 +169,7 @@
                     <button type="button" class="btn" ng-click="addElt(timer, 'steps')"><i class="fa fa-plus"></i> <i class="fa fa-tag"></i></button>
                   </div>
                   <div class="col-md-1">
-                    <button type="button" class="btn btn-danger" ng-click="removeElt(instruction.timers, $index)"><i class="fa fa-times"></i></button>
+                    <button type="button" class="btn btn-danger" ng-click="removeElt(instruction.timers, $index)"><i class="fa fa-trash-o"></i></button>
                   </div>
                 </div>
                 <div class="row" ng-if="!(timer.steps.length > 0)">
@@ -185,7 +185,7 @@
                     <input type="number" class="form-control" ng-model="step.time" placeholder="temps (en secondes)" required>
                   </div>
                   <div class="col-md-1">
-                    <button type="button" class="btn btn-danger" ng-click="removeElt(timer.steps, $index)"><i class="fa fa-times"></i></button>
+                    <button type="button" class="btn btn-danger" ng-click="removeElt(timer.steps, $index)"><i class="fa fa-trash-o"></i></button>
                   </div>
                 </div>
               </div>

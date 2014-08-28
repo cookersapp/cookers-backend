@@ -1,6 +1,5 @@
 # TODO
 
-- update font awesome
 - isActive sur le menu (à gauche)
 - écran global messages
 - directive alert

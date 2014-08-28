@@ -27,7 +27,7 @@
       <span class="pull-right">
         <a class="btn btn-sm btn-default" href="{{eltRestUrl(model.selected)}}" target="_blank"><i class="fa fa-external-link"></i></a>
         <a class="btn btn-sm btn-info" ng-click="edit(model.selected)"><i class="fa fa-pencil-square-o"></i></a>
-        <loading-button btn-class="btn-sm btn-danger" btn-icon="fa fa-times" btn-loading="status.removing" ng-click="remove(model.selected)"></loading-button>
+        <loading-button btn-class="btn-sm btn-danger" btn-icon="fa fa-trash-o" btn-loading="status.removing" ng-click="remove(model.selected)"></loading-button>
       </span>
       {{model.selected.week}}. {{model.selected.week | week:'D MMM'}}
     </h3>
@@ -64,7 +64,7 @@
         <div class="big-actions">
           <span class="pull-right">
             <button type="button" class="btn btn-sm btn-default" ng-click="moveEltDown(model.form.recipes, $index)" ng-if="!$last"><i class="fa fa-arrow-down"></i></button>
-            <button type="button" class="btn btn-sm btn-danger" ng-click="removeElt(model.form.recipes, $index)"><i class="fa fa-times"></i></button>
+            <button type="button" class="btn btn-sm btn-danger" ng-click="removeElt(model.form.recipes, $index)"><i class="fa fa-trash-o"></i></button>
           </span>
         </div>
       </div>

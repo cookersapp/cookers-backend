@@ -51,7 +51,7 @@
         <span class="pull-right">
           <a class="btn btn-xs btn-default" href="{{eltRestUrl(model.selected)}}" target="_blank"><i class="fa fa-external-link"></i></a>
           <a class="btn btn-xs btn-info" ng-click="edit(model.selected)"><i class="fa fa-pencil-square-o"></i></a>
-          <loading-button btn-class="btn-xs btn-danger" btn-icon="fa fa-times" btn-loading="status.removing" ng-click="remove(model.selected)"></loading-button>
+          <loading-button btn-class="btn-xs btn-danger" btn-icon="fa fa-trash-o" btn-loading="status.removing" ng-click="remove(model.selected)"></loading-button>
         </span>
         <span class="label label-default">{{model.selected.category}}</span> {{model.selected.name}}
       </h4>
@@ -97,7 +97,7 @@
             <div class="form-group">
               <input id="price_source_{{$index}}" name="price_source_{{$index}}" type="text" class="form-control" ng-model="price.source" placeholder="Ex: http://fd2-www.leclercdrive.fr/117701/courses/pgeWMEL009_Courses.aspx">
             </div>
-            <button type="button" class="btn btn-danger" ng-click="removeElt(model.form.prices, $index)"><i class="fa fa-times"></i></button>
+            <button type="button" class="btn btn-danger" ng-click="removeElt(model.form.prices, $index)"><i class="fa fa-trash-o"></i></button>
           </div>
           <button type="button" class="btn btn-default btn-xs" ng-click="addElt(model.form, 'prices')">Ajouter un prix</button>
         </div>

@@ -22,7 +22,7 @@
               </div>
               <a class="btn btn-sm btn-default" href="{{eltRestUrl(model.selected)}}" target="_blank"><i class="fa fa-external-link"></i></a>
               <a class="btn btn-sm btn-info" ui-sref="user.data.recipeedit({recipeId: model.selected.id})"><i class="fa fa-pencil-square-o"></i></a>
-              <loading-button btn-class="btn-sm btn-danger" btn-icon="fa fa-times" btn-loading="status.removing" ng-click="remove(model.selected)"></loading-button>
+              <loading-button btn-class="btn-sm btn-danger" btn-icon="fa fa-trash-o" btn-loading="status.removing" ng-click="remove(model.selected)"></loading-button>
             </span>
             {{model.selected.name}}
           </h2>
