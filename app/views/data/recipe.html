@@ -1,106 +1,100 @@
-<div class="row" ng-if="status.loading && !(recipe)">
-  <div class="col-md-12">
-    <rd-loading></rd-loading>
-  </div>
-</div>
-<div class="row" ng-if="status.error">
-  <div class="col-md-12">
-    <div class="alert alert-danger" role="alert"><strong>Error!</strong> {{status.error}}</div>
-  </div>
-</div>
-<div class="row" ng-if="recipe">
+<div class="row">
   <div class="col-md-7">
-    <div class="media media-recipe">
-      <a class="pull-left">
-        <img class="media-object" ng-src="{{recipe.images.thumbnail}}">
-      </a>
-      <div class="media-body" style="min-height: 200px;">
-        <h2 class="media-heading">
-          <span class="pull-right">
-            <div class="btn-group">
-              <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" ng-disabled="status.adding">
-                <i class="fa fa-spinner fa-spin" ng-if="status.adding"></i> Ajouter à la sélection <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu" role="menu">
-                <li ng-class="{active: existInSelection(nextSelections[1]), disabled: status.loadingSelections[1]}"><a ng-click="addRecipeToSelection(1)"><i class="fa fa-spinner fa-spin" ng-if="status.loadingSelections[1]"></i> Semaine prochaine (<span ng-if="nextSelections[1] && nextSelections[1].recipes">{{nextSelections[1].recipes.length}} recettes</span><span ng-if="!(nextSelections[1] && nextSelections[1].recipes)">vide</span>)</a></li>
-                <li ng-class="{active: existInSelection(nextSelections[2]), disabled: status.loadingSelections[2]}"><a ng-click="addRecipeToSelection(2)"><i class="fa fa-spinner fa-spin" ng-if="status.loadingSelections[2]"></i> Semaine suivante (<span ng-if="nextSelections[2] && nextSelections[2].recipes">{{nextSelections[2].recipes.length}} recettes</span><span ng-if="!(nextSelections[2] && nextSelections[2].recipes)">vide</span>)</a></li>
-                <li ng-class="{active: existInSelection(nextSelections[3]), disabled: status.loadingSelections[3]}"><a ng-click="addRecipeToSelection(3)"><i class="fa fa-spinner fa-spin" ng-if="status.loadingSelections[3]"></i> Semaine d'après (<span ng-if="nextSelections[3] && nextSelections[3].recipes">{{nextSelections[3].recipes.length}} recettes</span><span ng-if="!(nextSelections[3] && nextSelections[3].recipes)">vide</span>)</a></li>
-              </ul>
-            </div>
-            <a class="btn btn-sm btn-default" href="{{restUrl(recipe)}}" target="_blank"><i class="fa fa-external-link"></i></a>
-            <a class="btn btn-sm btn-info" ui-sref="user.data.recipeedit({recipeId: recipe.id})"><i class="fa fa-pencil-square-o"></i></a>
-            <loading-button btn-class="btn-sm btn-danger" btn-icon="fa fa-times" btn-loading="status.removing" ng-click="remove()"></loading-button>
-          </span>
-          {{recipe.name}}
-        </h2>
-        <div class="media-separator"></div>
-        <p>
-          <span class="label label-default">{{recipe.category}}</span>
-          <span class="label label-danger">{{recipe.time | cookTime}}</span>
-          <span class="label label-info">{{recipe.servings | servings}}</span>
-          <span class="label label-primary">{{recipe.price | price}}</span>
-        </p>
-        <p ng-if="recipe.privateNotes">
-          Private note: {{recipe.privateNotes}}
-        </p>
-        <p class="text-muted">
-          <span class="pull-right" ng-if="recipe.source" source="recipe.source"></span>
-          Créé le {{recipe.created | date}}
-          <span ng-if="recipe.updated">, mis à jour le {{recipe.updated | date}}</span>
-        </p>
-      </div>
-    </div>
-
-    <div class="media media-recipe">
-      <a class="pull-left">
-        <img class="media-object" ng-src="{{recipe.images.portrait}}">
-      </a>
-      <div class="media-body">
-        <div class="pull-left">
-          <h4>Ingredients :</h4>
-          <ul class="ingredients">
-            <li class="{{ingredient.role}}" title="{{ingredient.role}}"
-                ng-repeat="ingredient in recipe.ingredients"
-                ng-class="{'bg-danger': ingredient.price.value === 0}">
-              {{ingredient | ingredient}} ({{ingredient.price | price}})
-            </li>
-          </ul>
+    <rd-loading ng-if="status.loading && !(model.selected)"></rd-loading>
+    <div class="alert alert-danger" role="alert" ng-if="status.error"><strong>Error!</strong> {{status.error}}</div>
+    <div ng-if="model.selected">
+      <div class="media media-recipe">
+        <a class="pull-left">
+          <img class="media-object" ng-src="{{model.selected.images.thumbnail}}">
+        </a>
+        <div class="media-body" style="min-height: 200px;">
+          <h2 class="media-heading">
+            <span class="pull-right">
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" ng-disabled="status.savingSelection">
+                  <i class="fa fa-spinner fa-spin" ng-if="status.savingSelection"></i> Ajouter à la sélection <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li ng-class="{active: eltExistsIn(data.nextSelections[1].recipes, model.selected), disabled: status.loadingSelections[1]}"><a ng-click="toggleRecipeInSelection(1)"><i class="fa fa-spinner fa-spin" ng-if="status.loadingSelections[1]"></i> Semaine prochaine (<span ng-if="data.nextSelections[1] && data.nextSelections[1].recipes">{{data.nextSelections[1].recipes.length}} recettes</span><span ng-if="!(data.nextSelections[1] && data.nextSelections[1].recipes)">vide</span>)</a></li>
+                  <li ng-class="{active: eltExistsIn(data.nextSelections[2].recipes, model.selected), disabled: status.loadingSelections[2]}"><a ng-click="toggleRecipeInSelection(2)"><i class="fa fa-spinner fa-spin" ng-if="status.loadingSelections[2]"></i> Semaine suivante (<span ng-if="data.nextSelections[2] && data.nextSelections[2].recipes">{{data.nextSelections[2].recipes.length}} recettes</span><span ng-if="!(data.nextSelections[2] && data.nextSelections[2].recipes)">vide</span>)</a></li>
+                  <li ng-class="{active: eltExistsIn(data.nextSelections[3].recipes, model.selected), disabled: status.loadingSelections[3]}"><a ng-click="toggleRecipeInSelection(3)"><i class="fa fa-spinner fa-spin" ng-if="status.loadingSelections[3]"></i> Semaine d'après (<span ng-if="data.nextSelections[3] && data.nextSelections[3].recipes">{{data.nextSelections[3].recipes.length}} recettes</span><span ng-if="!(data.nextSelections[3] && data.nextSelections[3].recipes)">vide</span>)</a></li>
+                </ul>
+              </div>
+              <a class="btn btn-sm btn-default" href="{{eltRestUrl(model.selected)}}" target="_blank"><i class="fa fa-external-link"></i></a>
+              <a class="btn btn-sm btn-info" ui-sref="user.data.recipeedit({recipeId: model.selected.id})"><i class="fa fa-pencil-square-o"></i></a>
+              <loading-button btn-class="btn-sm btn-danger" btn-icon="fa fa-times" btn-loading="status.removing" ng-click="remove(model.selected)"></loading-button>
+            </span>
+            {{model.selected.name}}
+          </h2>
+          <div class="media-separator"></div>
+          <p>
+            <span class="label label-default">{{model.selected.category}}</span>
+            <span class="label label-danger">{{model.selected.time | cookTime}}</span>
+            <span class="label label-info">{{model.selected.servings | servings}}</span>
+            <span class="label label-primary">{{model.selected.price | price}}</span>
+          </p>
+          <p ng-if="model.selected.privateNotes">
+            Private note: {{model.selected.privateNotes}}
+          </p>
+          <p class="text-muted">
+            <span class="pull-right" ng-if="model.selected.source" source="model.selected.source"></span>
+            Créé le {{model.selected.created | date}}
+            <span ng-if="model.selected.updated">, mis à jour le {{model.selected.updated | date}}</span>
+          </p>
         </div>
-        <div class="pull-left">
-          <h4>Ustensiles :</h4>
-          <ul>
-            <li ng-repeat="tool in recipe.tools">{{tool | tool}}</li>
-          </ul>
-        </div>
-        <div class="clearfix"></div>
       </div>
-    </div>
 
-    <div class="media media-recipe">
-      <div class="media-body">
-        <h3 class="center">Instructions :</h3>
-        <div class="row" ng-repeat="instruction in recipe.instructions">
-          <div class="col-md-6">
-            <ul>
-              <li ng-bind-html="trustHtml(instruction.summary)"></li>
+      <div class="media media-recipe">
+        <a class="pull-left">
+          <img class="media-object" ng-src="{{model.selected.images.portrait}}">
+        </a>
+        <div class="media-body">
+          <div class="pull-left">
+            <h4>Ingredients :</h4>
+            <ul class="ingredients">
+              <li class="{{ingredient.role}}" title="{{ingredient.role}}"
+                  ng-repeat="ingredient in model.selected.ingredients"
+                  ng-class="{'bg-danger': ingredient.price.value === 0}">
+                {{ingredient | ingredient}} ({{ingredient.price | price}})
+              </li>
             </ul>
           </div>
-          <div class="col-md-6">
-            <!-- TODO : add timers -->
-            <div class="card" title="{{instruction.summary}}">
-              <h4 class="center">{{instruction.title}}</h4>
-              <div ng-bind-html="trustHtml(instruction.content)"></div>
+          <div class="pull-left">
+            <h4>Ustensiles :</h4>
+            <ul>
+              <li ng-repeat="tool in model.selected.tools">{{tool | tool}}</li>
+            </ul>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+
+      <div class="media media-recipe">
+        <div class="media-body">
+          <h3 class="center">Instructions :</h3>
+          <div class="row" ng-repeat="instruction in model.selected.instructions">
+            <div class="col-md-6">
+              <ul>
+                <li ng-bind-html="trustHtml(instruction.summary)"></li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <!-- TODO : add timers -->
+              <div class="card" title="{{instruction.summary}}">
+                <h4 class="center">{{instruction.title}}</h4>
+                <div ng-bind-html="trustHtml(instruction.content)"></div>
+              </div>
             </div>
           </div>
+          <img ng-src="{{model.selected.images.landing}}" class="center">
         </div>
-        <img ng-src="{{recipe.images.landing}}" class="center">
       </div>
-    </div>
 
-    <div class="media media-recipe">
-      <div class="media-body">
-        <h4 class="center">Image originale :</h4>
-        <img ng-src="{{recipe.images.original}}" class="center">
+      <div class="media media-recipe">
+        <div class="media-body">
+          <h4 class="center">Image originale :</h4>
+          <img ng-src="{{model.selected.images.original}}" class="center">
+        </div>
       </div>
     </div>
   </div>
@@ -113,8 +107,8 @@
         </div>
       </div>
       <div class="phone">
-        <iframe ng-src="{{'ionicApp/#/app/recipe/'+recipe.id}}" ng-if="phoneView === 'recipe'"></iframe>
-        <iframe ng-src="{{'ionicApp/#/app/cook/none/'+recipe.id}}" ng-if="phoneView === 'cook'"></iframe>
+        <iframe ng-src="{{'ionicApp/#/app/recipe/'+model.selected.id}}" ng-if="phoneView === 'recipe'"></iframe>
+        <iframe ng-src="{{'ionicApp/#/app/cook/none/'+model.selected.id}}" ng-if="phoneView === 'cook'"></iframe>
       </div>
     </div>
   </div>

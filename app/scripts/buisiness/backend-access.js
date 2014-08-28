@@ -2,14 +2,19 @@
 
 angular.module('app')
 
-.factory('RecipeSrv', function(DataSrvBuilder, Calculator, Utils){
+.factory('FoodSrv', function(DataSrvBuilder){
+  function process(formFood){
+    var food = angular.copy(formFood);
+    DataSrvBuilder.preprocessData(food);
+    return food;
+  }
+  return DataSrvBuilder.createDataService('foods', process);
+})
+
+.factory('RecipeSrv', function(DataSrvBuilder, Calculator){
   function process(formRecipe, foods){
     var recipe = angular.copy(formRecipe);
-    if(!recipe.id){recipe.id = Utils.createUuid();}
-    if(!recipe.created){recipe.created = Date.now();}
-    recipe.updated = Date.now();
-    recipe.name = recipe.name ? recipe.name.toLowerCase() : '';
-    recipe.slug = getSlug(recipe.name);
+    DataSrvBuilder.preprocessData(recipe);
     delete recipe.difficulty;
     if(recipe.ingredients){
       for(var i in recipe.ingredients){
@@ -29,25 +34,11 @@ angular.module('app')
   return DataSrvBuilder.createDataService('recipes', process);
 })
 
-.factory('FoodSrv', function(DataSrvBuilder, Utils){
-  function process(formFood){
-    var food = angular.copy(formFood);
-    if(!food.id){food.id = Utils.createUuid();}
-    if(!food.created){food.created = Date.now();}
-    food.updated = Date.now();
-    food.name = food.name ? food.name.toLowerCase() : '';
-    food.slug = getSlug(food.name);
-    return food;
-  }
-  return DataSrvBuilder.createDataService('foods', process);
-})
-
 .factory('SelectionSrv', function(DataSrvBuilder){
   function process(formSelection){
     var selection = angular.copy(formSelection);
-    if(!selection.created){selection.created = Date.now();}
-    selection.updated = Date.now();
-    selection.id = selection.week.toString();
+    if(!selection.id){selection.id = selection.week.toString();}
+    DataSrvBuilder.preprocessData(selection);
     return selection;
   }
   
@@ -56,8 +47,17 @@ angular.module('app')
 
 .factory('DataSrvBuilder', function($q, $http, firebaseUrl, Calculator, Utils){
   var service = {
+    preprocessData: preprocessData,
     createDataService: createDataService
   };
+  
+  function preprocessData(data){
+    if(!data.id){data.id = Utils.createUuid();}
+    if(!data.created){data.created = Date.now();}
+    data.updated = Date.now();
+    if(data.name){data.name = data.name.toLowerCase();}
+    if(data.name){data.slug = getSlug(data.name);}
+  }
 
   function createDataService(dataName, processDataFn){
     var service = {

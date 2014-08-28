@@ -3,31 +3,31 @@
     <div class="widget">
       <div class="widget-header">
         <i class="fa fa-spoon"></i> Aliments
-        <button type="button" class="btn btn-sm btn-success pull-right" ng-click="addFood()" style="margin-left: 10px;"><i class="fa fa-plus"></i> Créer un aliment</button>
+        <button type="button" class="btn btn-sm btn-success pull-right" ng-click="create()" style="margin-left: 10px;"><i class="fa fa-plus"></i> Créer un aliment</button>
         <input type="text" class="form-control input-sm pull-right" placeholder="Search ..." ng-model="search">
         <div class="clearfix"></div>
       </div>
       <div class="widget-body no-padding">
-        <rd-loading ng-if="status.loading && !(foods && foods.length)"></rd-loading>
+        <rd-loading ng-if="status.loading && !(model.elts && model.elts.length > 0)"></rd-loading>
         <div class="alert alert-danger" role="alert" ng-if="status.error"><strong>Error!</strong> {{status.error}}</div>
-        <div class="table-responsive" ng-if="foods && foods.length">
+        <div class="table-responsive" ng-if="model.elts && model.elts.length > 0">
           <table class="table table-hover">
             <thead>
               <tr>
-                <th ng-class="{active: sort.order === 'name'}" ng-click="sortFoods('name')">
-                  <sort active="sort.order === 'name'" desc="sort.desc">Nom ({{filteredFood.length}})</sort>
+                <th ng-class="{active: config.sort.order === 'name'}" ng-click="sort('name')">
+                  <sort active="config.sort.order === 'name'" desc="config.sort.desc">Nom ({{filteredFood.length}})</sort>
                 </th>
-                <th ng-class="{active: sort.order === 'category'}" ng-click="sortFoods('category')">
-                  <sort active="sort.order === 'category'" desc="sort.desc">Catégorie</sort>
+                <th ng-class="{active: config.sort.order === 'category'}" ng-click="sort('category')">
+                  <sort active="config.sort.order === 'category'" desc="config.sort.desc">Catégorie</sort>
                 </th>
                 <th>Prix</th>
-                <th ng-class="{active: sort.order === 'updated'}" ng-click="sortFoods('updated', true)">
-                  <sort active="sort.order === 'updated'" desc="sort.desc">Mis à jour</sort>
+                <th ng-class="{active: config.sort.order === 'updated'}" ng-click="sort('updated', true)">
+                  <sort active="config.sort.order === 'updated'" desc="config.sort.desc">Mis à jour</sort>
                 </th>
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="food in filteredFood = (foods | filter:search)" ng-click="toggleFood(food)" ng-class="{active: selected && food.id === selected.id}">
+              <tr ng-repeat="food in filteredFood = (model.elts | filter:search)" ng-click="toggle(food)" ng-class="{active: model.selected && food.id === model.selected.id}">
                 <td>{{food.name}}</td>
                 <td>{{food.category}}</td>
                 <td>
@@ -45,31 +45,31 @@
       </div>
     </div>
   </div>
-  <div class="col-md-6" ng-if="selected && !status.actions.editing">
+  <div class="col-md-6" ng-if="model.selected && !model.form">
     <div class="card">
       <h4 class="card-heading">
         <span class="pull-right">
-          <a class="btn btn-xs btn-default" href="{{restUrl(selected)}}" target="_blank"><i class="fa fa-external-link"></i></a>
-          <a class="btn btn-xs btn-info" ng-click="edit(selected)"><i class="fa fa-pencil-square-o"></i></a>
-          <loading-button btn-class="btn-xs btn-danger" btn-icon="fa fa-times" btn-loading="status.actions.removing" ng-click="remove(selected)"></loading-button>
+          <a class="btn btn-xs btn-default" href="{{eltRestUrl(model.selected)}}" target="_blank"><i class="fa fa-external-link"></i></a>
+          <a class="btn btn-xs btn-info" ng-click="edit(model.selected)"><i class="fa fa-pencil-square-o"></i></a>
+          <loading-button btn-class="btn-xs btn-danger" btn-icon="fa fa-times" btn-loading="status.removing" ng-click="remove(model.selected)"></loading-button>
         </span>
-        <span class="label label-default">{{selected.category}}</span> {{selected.name}}
+        <span class="label label-default">{{model.selected.category}}</span> {{model.selected.name}}
       </h4>
       <ol>
-        <li ng-repeat="price in selected.prices">{{price | price}}</li>
+        <li ng-repeat="price in model.selected.prices">{{price | price}}</li>
       </ol>
     </div>
   </div>
-  <div class="col-md-6" ng-if="status.actions.editing">
+  <div class="col-md-6" ng-if="model.form">
     <form name="food" ng-submit="save()">
       <div class="card">
         <div class="form-group">
           <label for="name">Nom</label>
-          <input id="name" name="name" type="text" class="form-control" ng-model="form.name" placeholder="Ex: pomme de terre" required>
+          <input id="name" name="name" type="text" class="form-control" ng-model="model.form.name" placeholder="Ex: pomme de terre" required>
         </div>
         <div class="form-group">
           <label for="category">Catégorie</label>
-          <select id="category" name="category" class="form-control" ng-model="form.category" ng-options="category for category in foodCategories" required>
+          <select id="category" name="category" class="form-control" ng-model="model.form.category" ng-options="category for category in data.foodCategories" required>
             <option value="">--</option>
           </select>
           <p class="help-block">Classification inspirée du <a href="http://fd2-www.leclercdrive.fr/117701/courses/pgeWMEL009_Courses.aspx" target="_blank">drive de leclerc</a>.</p>
@@ -79,34 +79,34 @@
       <div class="card">
         <div class="form-group">
           <label>Prix</label>
-          <div class="form-inline" ng-repeat="price in form.prices" style="margin-bottom: 5px;">
+          <div class="form-inline" ng-repeat="price in model.form.prices" style="margin-bottom: 5px;">
             <div class="form-group">
               <input id="price_value_{{$index}}" name="price_value_{{$index}}" type="number" step="any" class="form-control input-small" ng-model="price.value" placeholder="Ex: 1.99" required>
             </div>
             <div class="form-group">
-              <select id="price_currency_{{$index}}" name="price_currency_{{$index}}" class="form-control" ng-model="price.currency" ng-options="currency for currency in currencies" required>
+              <select id="price_currency_{{$index}}" name="price_currency_{{$index}}" class="form-control" ng-model="price.currency" ng-options="currency for currency in data.currencies" required>
                 <option value="">--</option>
               </select>
             </div>
             <div class="form-group">
               /
-              <select id="price_unit_{{$index}}" name="price_unit_{{$index}}" class="form-control" ng-model="price.unit" ng-options="unit for unit in quantityUnits" required>
+              <select id="price_unit_{{$index}}" name="price_unit_{{$index}}" class="form-control" ng-model="price.unit" ng-options="unit for unit in data.quantityUnits" required>
                 <option value="">--</option>
               </select>
             </div>
             <div class="form-group">
               <input id="price_source_{{$index}}" name="price_source_{{$index}}" type="text" class="form-control" ng-model="price.source" placeholder="Ex: http://fd2-www.leclercdrive.fr/117701/courses/pgeWMEL009_Courses.aspx">
             </div>
-            <button type="button" class="btn btn-danger" ng-click="removeElt(form.prices, $index)"><i class="fa fa-times"></i></button>
+            <button type="button" class="btn btn-danger" ng-click="removeElt(model.form.prices, $index)"><i class="fa fa-times"></i></button>
           </div>
-          <button type="button" class="btn btn-default btn-xs" ng-click="addElt(form, 'prices', defaultPrice)">Ajouter un prix</button>
+          <button type="button" class="btn btn-default btn-xs" ng-click="addElt(model.form, 'prices')">Ajouter un prix</button>
         </div>
       </div>
 
       <div class="card">
         <div class="pull-right">
-          <loading-button btn-type="submit" btn-class="btn-primary" btn-loading="status.actions.saving" ng-if="!form.id">Créer</loading-button>
-          <loading-button btn-type="submit" btn-class="btn-success" btn-loading="status.actions.saving" ng-if="form.id">Enregistrer</loading-button>
+          <loading-button btn-type="submit" btn-class="btn-primary" btn-loading="status.saving" ng-if="!model.form.id">Créer</loading-button>
+          <loading-button btn-type="submit" btn-class="btn-success" btn-loading="status.saving" ng-if="model.form.id">Enregistrer</loading-button>
         </div>
         <a class="btn btn-default" ng-click="cancelEdit()">Annuler</a>
         <div class="clearfix"></div>

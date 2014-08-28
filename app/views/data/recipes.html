@@ -8,35 +8,31 @@
   </div>
   <div class="col-md-3">
     Trier par :
-    <a ng-click="sortRecipes('name')"><sort active="sort.order === 'name'" desc="sort.desc">Nom</sort></a> -
-    <a ng-click="sortRecipes('updated', true)"><sort active="sort.order === 'updated'" desc="sort.desc">Mise à jour</sort></a>
+    <a ng-click="sort('name')"><sort active="config.sort.order === 'name'" desc="config.sort.desc">Nom</sort></a> -
+    <a ng-click="sort('updated', true)"><sort active="config.sort.order === 'updated'" desc="config.sort.desc">Mise à jour</sort></a>
   </div>
   <div class="col-md-3">
     <button type="button" class="btn btn-success pull-right" ui-sref="user.data.recipecreate"><i class="fa fa-plus"></i> Créer une recette</button>
   </div>
 </div>
 
-<div class="row" ng-if="status.loading && !(recipes && recipes.length)">
+<div class="row">
   <div class="col-md-12">
-    <rd-loading></rd-loading>
-  </div>
-</div>
-<div class="row" ng-if="status.error">
-  <div class="col-md-12">
-    <div class="alert alert-danger" role="alert"><strong>Error!</strong> {{status.error}}</div>
-  </div>
-</div>
-<div class="row" ng-if="recipes && recipes.length">
-  <div class="col-md-3" ng-repeat="recipe in recipes | filter:search">
-    <div class="media media-recipe item" ui-sref="user.data.recipe({recipeId: recipe.id})">
-      <a class="pull-left" ui-sref="user.data.recipe({recipeId: recipe.id})">
-        <img class="media-object" ng-src="{{recipe.images.thumbnail}}">
-      </a>
-      <div class="media-body">
-        <h4 class="media-heading"><span class="pull-right">{{recipe.updated ? recipe.updated : recipe.created | date}}</span>{{recipe.name}}</h4>
-        <p ng-if="recipe.privateNotes">
-          Private note: {{recipe.privateNotes}}
-        </p>
+    <rd-loading ng-if="status.loading && !(model.elts && model.elts.length > 0)"></rd-loading>
+    <div class="alert alert-danger" role="alert" ng-if="status.error"><strong>Error!</strong> {{status.error}}</div>
+    <div class="row" ng-if="model.elts && model.elts.length > 0">
+      <div class="col-md-3" ng-repeat="recipe in model.elts | filter:search">
+        <div class="media media-recipe item" ui-sref="user.data.recipe({recipeId: recipe.id})">
+          <a class="pull-left" ui-sref="user.data.recipe({recipeId: recipe.id})">
+            <img class="media-object" ng-src="{{recipe.images.thumbnail}}">
+          </a>
+          <div class="media-body">
+            <h4 class="media-heading"><span class="pull-right">{{recipe.updated ? recipe.updated : recipe.created | date}}</span>{{recipe.name}}</h4>
+            <p ng-if="recipe.privateNotes">
+              Private note: {{recipe.privateNotes}}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
