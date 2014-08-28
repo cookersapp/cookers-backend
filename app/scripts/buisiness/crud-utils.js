@@ -139,7 +139,10 @@ angular.module('app')
           _removedCb(elt);
         } else {
           _.remove(ctx.model.elts, {id: eltId});
+          ctx.header.title = ctx.title+' ('+ctx.model.elts.length+')';
           ctx.model.selected = null;
+          ctx.model.form = null;
+          ctx.status.loading = false;
           ctx.status.removing = false;
         }
       }, function(err){
