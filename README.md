@@ -1,22 +1,17 @@
-# Cookers admin app
+# Old admin app for Cookers
 
-This app allow to administrate firebase.
-This app is accessible here : https://crackling-fire-7710.firebaseapp.com/
+This app has been replaced by https://bitbucket.org/cookersapp/admin  
+You can see the new version live at https://crackling-fire-7710.firebaseapp.com
+
+## Getting started
+
+- run `npm install`
+- run `bower install`
+- run `grunt serve` and you're done !!!
 
 ## Deploying to firebase
 
-- Install needed tools : https://www.firebase.com/docs/hosting.html
-- Build angular app : `grunt build`
-- Deploy to firebase : `firebase deploy`
+- run `grunt build`
+- run `firebase deploy`
 
-## TODO
-
-- Bugs
-    - quand on modifie un aliment pour ajouter un prix, le prix reste quand on enregistre l'aliment
-    - les images uploadées ne s'affichent pas lorsque l'application est déployée
-
-## Site de cuisine sympas
-
-- http://www.lacuisinedenathalie.com/
-- http://clickcookandtaste.overblog.com/
-- http://cestmamanquilafait.com/
+To install firebase CLI : https://www.firebase.com/docs/hosting.html
