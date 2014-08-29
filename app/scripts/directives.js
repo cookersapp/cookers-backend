@@ -69,7 +69,7 @@ angular.module('app')
 
       $spy.affix(data);
     }
-  }
+  };
 })
 
 .directive('source', function(Utils){
@@ -88,7 +88,6 @@ angular.module('app')
 })
 
 .directive('mediaCrushUpload', function(){
-  'use strict';
   return {
     restrict: 'E',
     templateUrl: 'views/directives/mediaCrushUpload.html',
@@ -102,14 +101,14 @@ angular.module('app')
       scope.loading = false;
       scope.media = null;
 
-      scope.$watch('file', function(newVal, oldVal){
-        if(typeof newVal === 'object'){
+      scope.$watch('file', function(val){
+        if(typeof val === 'object'){
           //safeApply(function(){
           scope.loading = true;
           scope.image = null;
           scope.ngModel = '';
           //});
-          MediaCrush.upload(newVal, function(media){
+          MediaCrush.upload(val, function(media){
             media.wait(function(){
               MediaCrush.get(media.hash, function(media){
                 safeApply(function(){
@@ -136,7 +135,6 @@ angular.module('app')
 
 .directive('file', function(){
   // from https://github.com/angular/angular.js/issues/1375#issuecomment-15690425
-  'use strict';
   return {
     restrict: 'E',
     template: '<input type="file" />',

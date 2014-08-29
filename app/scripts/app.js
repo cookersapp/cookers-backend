@@ -127,7 +127,7 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'firebase', 'ui.bo
 
   $urlRouterProvider.otherwise('/');
 
-  $httpProvider.interceptors.push(function($q, $location){
+  $httpProvider.interceptors.push(['$q', '$location', function($q, $location){
     return {
       'responseError': function(response){
         if(response.status === 401 || response.status === 403){
@@ -136,7 +136,7 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'firebase', 'ui.bo
         return $q.reject(response);
       }
     };
-  });
+  }]);
 })
 
 .constant('debug', true)

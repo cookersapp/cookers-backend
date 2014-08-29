@@ -2,7 +2,7 @@
 
 angular.module('app')
 
-.factory('Calculator', function(){
+.factory('Calculator', function($window){
   var service = {
     ingredientPrice: ingredientPrice,
     recipePrice: recipePrice
@@ -30,7 +30,7 @@ angular.module('app')
       if(_ctx && _ctx.recipe){err.recipe = angular.copy(_ctx.recipe);}
       console.warn(err.message, err);
       if(_errors) { _errors.push(err);  }
-      else        { alert(err.message); }
+      else        { $window.alert(err.message); }
       return {value: 0, currency: '?'};
     } else {
       return price;
@@ -38,7 +38,7 @@ angular.module('app')
   }
 
   function recipePrice(recipe, _errors){
-    var totalPrice = 0, recipeCurrency = '€';
+    var totalPrice = 0, recipeCurrency = '€', err;
     // sum ingredient prices
     if(recipe && recipe.ingredients){
       for(var i in recipe.ingredients){
@@ -48,25 +48,25 @@ angular.module('app')
             if(ingredient.price.currency === recipeCurrency){
               totalPrice += ingredient.price.value;
             } else {
-              var err = {
+              err = {
                 message: 'Currency mismatch between recipe <'+recipe.name+'> ('+recipeCurrency+') and ingredient <'+ingredient.food.name+'> ('+ingredient.price.currency+')',
                 recipe: angular.copy(recipe),
                 ingredient: angular.copy(ingredient)
               };
               console.warn(err.message, err);
               if(_errors) { _errors.push(err);  }
-              else        { alert(err.message); }
+              else        { $window.alert(err.message); }
             }
           }
         } else {
-          var err = {
+          err = {
             message: 'Ingredient <'+ingredient.food.name+'> of recipe <'+recipe.name+'> does not has price !',
             recipe: angular.copy(recipe),
             ingredient: angular.copy(ingredient)
           };
           console.warn(err.message, err);
           if(_errors) { _errors.push(err);  }
-          else        { alert(err.message); }
+          else        { $window.alert(err.message); }
         }
       }
     }
@@ -78,13 +78,13 @@ angular.module('app')
         unit: recipe.servings.unit
       };
     } else {
-      var err = {
+      err = {
         message: 'Recipe <'+recipe.name+'> does not have servings !!!',
         recipe: angular.copy(recipe)
       };
       console.warn(err.message, err);
       if(_errors) { _errors.push(err);  }
-      else        { alert(err.message); }
+      else        { $window.alert(err.message); }
       return {
         value: totalPrice,
         currency: recipeCurrency,
@@ -99,7 +99,7 @@ angular.module('app')
       return {
         currency: price.currency,
         value: price.value * quantity.value
-      }
+      };
     } else {
       // TODO : add conversion rules to food objects (for pièce for example)
       for(var i in unitConversion){
@@ -111,7 +111,7 @@ angular.module('app')
               return {
                 currency: prices[j].currency,
                 value: prices[j].value * quantity.value * (src.factor / dest.factor)
-              }
+              };
             }
           }
         }

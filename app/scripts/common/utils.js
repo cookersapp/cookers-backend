@@ -2,7 +2,7 @@
 
 angular.module('app')
 
-.factory('CollectionUtils', function($q, Utils){
+.factory('CollectionUtils', function(){
   var service = {
     replace: replace,
     replaceWithId: replaceWithId
@@ -24,7 +24,7 @@ angular.module('app')
   return service;
 })
 
-.factory('Utils', function($http){
+.factory('Utils', function(){
   var service = {
     createUuid: createUuid,
     isUrl: isUrl,

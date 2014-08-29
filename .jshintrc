@@ -19,8 +19,13 @@
   "trailing": true,
   "smarttabs": true,
   "globals": {
+    "$": false,
     "angular": false,
+    "_": false,
     "moment": false,
+    "Firebase": false,
+    "MediaCrush": false,
+    "getSlug": false,
     "Logger": false,
     "routingConfig": false
   }

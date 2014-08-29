@@ -67,7 +67,7 @@ angular.module('app')
 })
 
 
-.controller('RecipesCtrl', function($rootScope, $scope, RecipeSrv, CrudBuilder, Utils){
+.controller('RecipesCtrl', function($rootScope, $scope, RecipeSrv, CrudBuilder){
   if(!$rootScope.config.recipes){
     angular.extend($rootScope.config, {
       recipes: {
@@ -282,7 +282,7 @@ angular.module('app')
 })
 
 
-.controller('SelectionsCtrl', function($rootScope, $scope, SelectionSrv, RecipeSrv, CrudBuilder, Utils){
+.controller('SelectionsCtrl', function($rootScope, $scope, SelectionSrv, RecipeSrv, CrudBuilder){
   var ctx = {
     title: 'Sélections',
     breadcrumb: [
@@ -490,7 +490,7 @@ angular.module('app')
   $scope.eltRestUrl = crud.eltRestUrl;
 })
 
-.controller('BatchsCtrl', function($rootScope, $scope, $q, $timeout, FoodSrv, RecipeSrv, SelectionSrv){
+.controller('BatchsCtrl', function($rootScope, $scope, $q, $window, FoodSrv, RecipeSrv, SelectionSrv){
   var ctx = {
     title: 'Batchs',
     breadcrumb: [
@@ -534,37 +534,29 @@ angular.module('app')
       ctx.config[attr].model = res;
       ctx.config[attr].status.preparing = false;
     });
-  }
+  };
   $scope.save = function(attr){
-    if(ctx.config[attr].model._errors.length === 0 || confirm('Sure ???')){
+    if(ctx.config[attr].model._errors.length === 0 || $window.confirm('Sure ???')){
       ctx.config[attr].status.saving = true;
       saveProcessedData(attr, ctx.config[attr].service).then(function(){
         ctx.config[attr].status.saving = false;
         ctx.config[attr].status.saved = true;
       });
     }
-  }
+  };
   $scope.close = function(attr){
     ctx.config[attr].status.saved = false;
     ctx.config[attr].model = null;
-  }
+  };
 
 
   function saveProcessedData(attr, DataSrv){
     var savePromises = [];
     for(var i in ctx.config[attr].model.processed){
       var data = ctx.config[attr].model.processed[i];
-      //savePromises.push(DataSrv.save(data));
-      savePromises.push(fakeSave(data));
+      savePromises.push(DataSrv.save(data));
     }
     return $q.all(savePromises);
-  }
-  function fakeSave(){
-    var defer = $q.defer();
-    $timeout(function(){
-      defer.resolve();
-    }, 1000);
-    return defer.promise;
   }
 
 
