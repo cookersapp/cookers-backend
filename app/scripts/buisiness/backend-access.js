@@ -12,8 +12,9 @@ angular.module('app')
 })
 
 .factory('RecipeSrv', function(DataSrvBuilder, Calculator){
-  function process(formRecipe, foods){
+  function process(formRecipe, foods, _errors){
     var recipe = angular.copy(formRecipe);
+    var _ctx = {recipe: recipe};
     DataSrvBuilder.preprocessData(recipe);
     delete recipe.difficulty;
     if(recipe.ingredients){
@@ -21,13 +22,13 @@ angular.module('app')
         var ingredient = recipe.ingredients[i];
         var foodObj = _.find(foods, {id: ingredient.food.id});
         angular.copy(foodObj, ingredient.food);
-        ingredient.price = Calculator.ingredientPrice(ingredient, foodObj);
+        ingredient.price = Calculator.ingredientPrice(ingredient, foodObj, _errors, _ctx);
         delete ingredient.food.created;
         delete ingredient.food.updated;
         delete ingredient.food.prices;
       }
     }
-    recipe.price = Calculator.recipePrice(recipe);
+    recipe.price = Calculator.recipePrice(recipe, _errors);
     return recipe;
   }
 
@@ -186,7 +187,7 @@ angular.module('app')
       if(elt && elt.id){
         collectionRef.child(elt.id).set(angular.copy(elt), function(error){
           if(error){
-            console.log('Error', error);
+            console.error('Error', error);
             defer.reject(error);
           } else {
             if(_.find(service.cache, {id: elt.id}) === undefined){
@@ -199,7 +200,7 @@ angular.module('app')
         });
       } else {
         defer.reject({
-          message: 'Wrong argument !',
+          message: 'Elt to save has no id !!!',
           data: elt
         });
       }
@@ -211,16 +212,16 @@ angular.module('app')
       if(elt && elt.id){
         collectionRef.child(elt.id).remove(function(error){
           if(error){
-            console.log('Error', error);
+            console.error('Error', error);
             defer.reject(error);
           } else {
-            defer.resolve();
             _.remove(service.cache, {id: elt.id});
+            defer.resolve();
           }
         });
       } else {
         defer.reject({
-          message: 'Wrong argument !',
+          message: 'Elt to remove has no id !!!',
           data: elt
         });
       }

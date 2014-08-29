@@ -19,35 +19,54 @@ angular.module('app')
     ]}
   ];
 
-  function ingredientPrice(ingredient, food){
+  function ingredientPrice(ingredient, food, _errors, _ctx){
     var price = _getPriceForQuantity(food.prices, ingredient.quantity);
     if(price === null){
-      console.warn('Unable to get price for ingredient', ingredient);
-      console.warn('And food', food);
-      console.warn('With conversion rules', unitConversion);
-      alert('Unable to get price for '+ingredient.food.name+' :(');
+      var err = {
+        message: 'Unable to get price for ingredient <'+ingredient.food.name+'>'+(_ctx && _ctx.recipe ? ' in recipe <'+_ctx.recipe.name+'>' : ''),
+        ingredient: angular.copy(ingredient),
+        food: angular.copy(food)
+      };
+      if(_ctx && _ctx.recipe){err.recipe = angular.copy(_ctx.recipe);}
+      console.warn(err.message, err);
+      if(_errors) { _errors.push(err);  }
+      else        { alert(err.message); }
       return {value: 0, currency: '?'};
     } else {
       return price;
     }
   }
 
-  function recipePrice(recipe){
+  function recipePrice(recipe, _errors){
     var totalPrice = 0, recipeCurrency = '€';
     // sum ingredient prices
     if(recipe && recipe.ingredients){
       for(var i in recipe.ingredients){
         var ingredient = recipe.ingredients[i];
         if(ingredient.price){
-          if(recipeCurrency !== ingredient.price.currency){
-            console.warn('Ingredient currency ('+ingredient.food.name+' / '+ingredient.price.currency+') does not match with recipe currency ('+recipe.name+' / '+recipeCurrency+')', recipe);
-            alert('Currency mismatch between recipe ('+recipe.name+' / '+recipeCurrency+') and ingredient ('+ingredient.food.name+' / '+ingredient.price.currency+')');
-          } else {
-            totalPrice += ingredient.price.value;
+          if(ingredient.price.value !== 0){
+            if(ingredient.price.currency === recipeCurrency){
+              totalPrice += ingredient.price.value;
+            } else {
+              var err = {
+                message: 'Currency mismatch between recipe <'+recipe.name+'> ('+recipeCurrency+') and ingredient <'+ingredient.food.name+'> ('+ingredient.price.currency+')',
+                recipe: angular.copy(recipe),
+                ingredient: angular.copy(ingredient)
+              };
+              console.warn(err.message, err);
+              if(_errors) { _errors.push(err);  }
+              else        { alert(err.message); }
+            }
           }
         } else {
-          console.warn('Ingredient '+ingredient.food.name+' of recipe '+recipe.name+' does not has price !', recipe);
-          alert('Ingredient '+ingredient.food.name+' of recipe '+recipe.name+' does not has price !');
+          var err = {
+            message: 'Ingredient <'+ingredient.food.name+'> of recipe <'+recipe.name+'> does not has price !',
+            recipe: angular.copy(recipe),
+            ingredient: angular.copy(ingredient)
+          };
+          console.warn(err.message, err);
+          if(_errors) { _errors.push(err);  }
+          else        { alert(err.message); }
         }
       }
     }
@@ -59,8 +78,13 @@ angular.module('app')
         unit: recipe.servings.unit
       };
     } else {
-      console.warn('Recipe '+recipe.name+' does not have servings !!!', recipe);
-      alert('Recipe '+recipe.name+' does not have servings !!!');
+      var err = {
+        message: 'Recipe <'+recipe.name+'> does not have servings !!!',
+        recipe: angular.copy(recipe)
+      };
+      console.warn(err.message, err);
+      if(_errors) { _errors.push(err);  }
+      else        { alert(err.message); }
       return {
         value: totalPrice,
         currency: recipeCurrency,

@@ -423,7 +423,7 @@ angular.module('app')
   $scope.isUrl = Utils.isUrl;
 })
 
-.controller('GlobalmessagesCtrl', function($rootScope, $scope, GlobalmessageSrv, CrudBuilder, Utils, dataList){
+.controller('GlobalmessagesCtrl', function($rootScope, $scope, GlobalmessageSrv, CrudBuilder, dataList){
   if(!$rootScope.config.globalmessages){
     angular.extend($rootScope.config, {
       globalmessages: {
@@ -474,7 +474,6 @@ angular.module('app')
   $scope.status = ctx.status;
   $scope.model = ctx.model;
 
-  // todo : add sorts
   var crud = CrudBuilder.create(GlobalmessageSrv, ctx);
   crud.init();
 
@@ -489,4 +488,161 @@ angular.module('app')
   $scope.remove = crud.remove;
 
   $scope.eltRestUrl = crud.eltRestUrl;
+})
+
+.controller('BatchsCtrl', function($rootScope, $scope, $q, $timeout, FoodSrv, RecipeSrv, SelectionSrv){
+  var ctx = {
+    title: 'Batchs',
+    breadcrumb: [
+      {name: 'Home', state: 'user.home'},
+      {name: 'Batchs'}
+    ],
+    header: $rootScope.config.header,
+    config: {
+      foods2recipes: {
+        service: RecipeSrv,
+        fn: processRecipesWithFoods,
+        model: null,
+        status: {
+          preparing: false,
+          saving: false,
+          saved: false
+        }
+      },
+      recipes2selections: {
+        service: SelectionSrv,
+        fn: processSelectionsWithRecipes,
+        model: null,
+        status: {
+          preparing: false,
+          saving: false,
+          saved: false
+        }
+      }
+    }
+  };
+
+  ctx.header.title = ctx.title;
+  ctx.header.levels = ctx.breadcrumb;
+
+  $scope.config = ctx.config;
+
+  $scope.prepare = function(attr){
+    ctx.config[attr].status.preparing = true;
+    ctx.config[attr].model = null;
+    ctx.config[attr].fn().then(function(res){
+      ctx.config[attr].model = res;
+      ctx.config[attr].status.preparing = false;
+    });
+  }
+  $scope.save = function(attr){
+    if(ctx.config[attr].model._errors.length === 0 || confirm('Sure ???')){
+      ctx.config[attr].status.saving = true;
+      saveProcessedData(attr, ctx.config[attr].service).then(function(){
+        ctx.config[attr].status.saving = false;
+        ctx.config[attr].status.saved = true;
+      });
+    }
+  }
+  $scope.close = function(attr){
+    ctx.config[attr].status.saved = false;
+    ctx.config[attr].model = null;
+  }
+
+
+  function saveProcessedData(attr, DataSrv){
+    var savePromises = [];
+    for(var i in ctx.config[attr].model.processed){
+      var data = ctx.config[attr].model.processed[i];
+      //savePromises.push(DataSrv.save(data));
+      savePromises.push(fakeSave(data));
+    }
+    return $q.all(savePromises);
+  }
+  function fakeSave(){
+    var defer = $q.defer();
+    $timeout(function(){
+      defer.resolve();
+    }, 1000);
+    return defer.promise;
+  }
+
+
+  function processRecipesWithFoods(){
+    var foodsPromise = FoodSrv.getAll();
+    var recipesPromise = RecipeSrv.getAll();
+
+    return $q.all([foodsPromise, recipesPromise]).then(function(all){
+      var foods = all[0], recipes = all[1], _errors = [];
+      for(var i in recipes){
+        for(var j in recipes[i].ingredients){
+          var ingredient = recipes[i].ingredients[j];
+          var foodObj = _.find(foods, {id: ingredient.food.id});
+          if(foodObj){
+            angular.copy(foodObj, ingredient.food);
+          } else {
+            var err = {
+              message: 'Can\'t find ingredient <'+ingredient.food.id+'> for recipe <'+recipes[i].name+'>',
+              recipe: angular.copy(recipes[i]),
+              ingredient: angular.copy(ingredient)
+            };
+            _errors.push(err);
+            console.warn(err.message, err);
+          }
+        }
+      }
+      return {
+        _errors: _errors,
+        updatedRecipes: recipes,
+        foods: foods
+      };
+    }).then(function(res){
+      var processedRecipes = [];
+      for(var i in res.updatedRecipes){
+        processedRecipes.push(RecipeSrv.process(res.updatedRecipes[i], res.foods, res._errors));
+      }
+      return {
+        _errors: res._errors,
+        processed: processedRecipes
+      };
+    });
+  }
+
+  function processSelectionsWithRecipes(){
+    var recipesPromise = RecipeSrv.getAll();
+    var selectionsPromise = SelectionSrv.getAll();
+    return $q.all([recipesPromise, selectionsPromise]).then(function(all){
+      var recipes = all[0], selections = all[1], _errors = [];
+      for(var i in selections){
+        for(var j in selections[i].recipes){
+          var recipe = selections[i].recipes[j];
+          var recipeObj = _.find(recipes, {id: recipe.id});
+          if(recipeObj){
+            angular.copy(recipeObj, recipe);
+          } else {
+            var err = {
+              message: 'Can\'t find recipe <'+recipe.id+'> for selection <'+selections[i].id+'>',
+              selections: angular.copy(selections[i]),
+              recipe: angular.copy(recipe)
+            };
+            _errors.push(err);
+            console.warn(err.message, err);
+          }
+        }
+      }
+      return {
+        _errors: _errors,
+        updatedSelections: selections
+      };
+    }).then(function(res){
+      var processedSelections = [];
+      for(var i in res.updatedSelections){
+        processedSelections.push(SelectionSrv.process(res.updatedSelections[i]));
+      }
+      return {
+        _errors: res._errors,
+        processed: processedSelections
+      };
+    });
+  }
 });

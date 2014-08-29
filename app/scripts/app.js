@@ -118,6 +118,11 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'firebase', 'ui.bo
     url: '/globalmessages',
     templateUrl: 'views/admin/globalmessages.html',
     controller: 'GlobalmessagesCtrl'
+  })
+  .state('user.admin.batchs', {
+    url: '/batchs',
+    templateUrl: 'views/admin/batchs.html',
+    controller: 'BatchsCtrl'
   });
 
   $urlRouterProvider.otherwise('/');
