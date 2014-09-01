@@ -3,8 +3,6 @@
 angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'firebase', 'ui.bootstrap'])
 
 .config(function($stateProvider, $urlRouterProvider, $httpProvider, $provide, debug){
-  Logger.setDebug(debug);
-
   // catch exceptions in angular
   $provide.decorator('$exceptionHandler', ['$delegate', function($delegate){
     return function(exception, cause){
@@ -76,6 +74,11 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'firebase', 'ui.bo
     url: '/tables',
     templateUrl: 'views/tables.html'
   })
+  .state('user.mixpanel', {
+    url: '/mixpanel',
+    templateUrl: 'views/mixpanel.html',
+    controller: 'MixpanelCtrl'
+  })
   .state('user.data', {
     abstract: true,
     template: '<ui-view/>'
@@ -139,7 +142,7 @@ angular.module('app', ['ui.router', 'ngCookies', 'ngStorage', 'firebase', 'ui.bo
   }]);
 })
 
-.constant('debug', true)
+.constant('debug', Config.debug)
 .constant('firebaseUrl', 'https://crackling-fire-7710.firebaseio.com')
 
 .constant('dataList', {

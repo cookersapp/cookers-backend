@@ -71,8 +71,8 @@ angular.module('app')
     if(selection && !selection.lazyLoaded && selection.recipes){
       selection.lazyLoaded = true;
       var recipePromises = [];
-      for(var j in selection.recipes){
-        recipePromises.push($q.when(selection.recipes[j].id).then(function(recipeId){
+      for(var i in selection.recipes){
+        recipePromises.push($q.when(selection.recipes[i].id).then(function(recipeId){
           if(_recipePromiseCache){
             if(!_recipePromiseCache[recipeId]){ _recipePromiseCache[recipeId] = RecipeSrv.get(recipeId); }
             return _recipePromiseCache[recipeId];

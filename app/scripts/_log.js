@@ -7,7 +7,7 @@ var Logger = (function(){
   }
 
   var config = {
-    debug: false,
+    debug: Config ? Config.debug : false,
     currentEventId: null
   };
 

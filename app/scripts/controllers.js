@@ -67,6 +67,34 @@ angular.module('app')
 })
 
 
+.controller('MixpanelCtrl', function($rootScope, $scope, MixpanelSrv){
+  var ctx = {
+    config: {
+      cookersApp: {
+        api_key: '999256ff9ae7986fcb7bfb8d9a1a2292',
+        api_secret: '65387464ec0a60ba079b91aa9d2023da'
+      }
+    },
+    model: {
+      data: []
+    }
+  };
+
+  $rootScope.config.header.title = 'Mixpanel';
+  $rootScope.config.header.levels = [
+    {name: 'Home', state: 'user.home'},
+    {name: 'Mixpanel'}
+  ];
+
+  $scope.model = ctx.model;
+
+  var mixpanel = MixpanelSrv.create(ctx.config.cookersApp, 'day');
+  mixpanel.events(['exception', 'state'], {type: 'general', interval: 2}).then(function(data){ ctx.model.data[0] = data; });
+  mixpanel.events(['exception', 'state'], {type: 'unique'}).then(function(data){ ctx.model.data[1] = data; });
+  mixpanel.events(['exception', 'state'], {type: 'average'}).then(function(data){ ctx.model.data[2] = data; });
+})
+
+
 .controller('RecipesCtrl', function($rootScope, $scope, RecipeSrv, CrudBuilder){
   if(!$rootScope.config.recipes){
     angular.extend($rootScope.config, {

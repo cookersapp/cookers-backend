@@ -1,8 +1,92 @@
-'use strict';
-
 angular.module('app')
 
+.factory('MixpanelSrv', function($q, $http){
+  'use strict';
+  // requiert : https://github.com/michaelcarter/mixpanel-data-export-js
+  // mixpnael doc : https://mixpanel.com/docs/api-documentation/data-export-api
+  // params starting with _ are optionnals
+  // functions starting with _ are privates
+  var service = {
+    create: create,
+    exportData: exportData
+  };
+
+  function create(credentials, _unit){
+    var mixpanel = new MixpanelExport({
+      api_key: credentials.api_key,
+      api_secret: credentials.api_secret
+    });
+    var defaultParams = {};
+    if(_unit){defaultParams.unit = _unit;}
+
+    return {
+      events: function(events, _params){ return _events(mixpanel, events, angular.extend({}, defaultParams, _params)); },
+      data: function(){ return _data(mixpanel); }
+    };
+  }
+
+  // Get unique, total, or average data counts for a set of events over the last N days, weeks, or months.
+  function _events(mixpanel, events, params){
+    var defer = $q.defer();
+    if(mixpanel !== null){
+      params.event = events;
+      mixpanel.events(params, function(data) {
+        defer.resolve(data);
+      });
+    } else {
+      defer.reject({message: 'Credentials are not set !'});
+    }
+    return defer.promise;
+  }
+
+  function exportData(credentials){
+    var mixpanel = new MixpanelExport({
+      api_key: credentials.api_key,
+      api_secret: credentials.api_secret,
+      api_stub: 'http://data.mixpanel.com/api/2.0/',
+      timeout_after: 60
+    });
+
+    // ends with a 400 Bad request error :(
+    mixpanel.get(['export'], {from_date: '2014-08-29', to_date: '2014-08-30', event: ['exception']}, function(data){
+      console.log('data', data);
+    });
+    return $q.when();
+
+    // ends with "Unexpected token :" when angular tries to parse result (but request is OK)
+    /*var url = mixpanel._buildRequestURL(['export'], {from_date: '2014-08-28', to_date: '2014-08-30', event: ['exception']});
+    console.log('url', url);
+    return $http.jsonp(url, {
+      transformResponse: function(data, headers){
+        console.log('raw data', data);
+        return buildResult(data);
+      }
+    }).then(function(result){
+      console.log('result', result);
+      return result.data;
+    }, function(err){
+      console.log('err', err);
+    });
+
+    function buildResult(strValue){
+      if(strValue){
+        // add ',' at the end of all lines
+        var step1 = strValue.replace(new RegExp('\n', 'g'), ',');
+        // put data in an array
+        var step2 = '['+step1+']';
+        // remove last ',' to get a correct array
+        var step3 = step2.replace(',]', ']');
+        // parse json and return JS object
+        return JSON.parse(step3);
+      }
+    }*/
+  }
+
+  return service;
+})
+
 .factory('StorageSrv', function(){
+  'use strict';
   var service = {
     get:    function(key){        if(localStorage){ return JSON.parse(localStorage.getItem(key));     } },
     set:    function(key, value){ if(localStorage){ localStorage.setItem(key, JSON.stringify(value)); } },
@@ -14,6 +98,7 @@ angular.module('app')
 
 
 .factory('AuthSrv', function($rootScope, $state, $q, StorageSrv, $firebaseSimpleLogin, firebaseUrl){
+  'use strict';
   var storageKey = 'user',
       accessLevels = routingConfig.accessLevels,
       userRoles = routingConfig.userRoles,

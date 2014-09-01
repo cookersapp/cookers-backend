@@ -29,3 +29,8 @@ To install firebase CLI : https://www.firebase.com/docs/hosting.html
 **Explanation :**  
 I had some troubles with the grunt build so I do not deploy `dist/` folder to firebase :(  
 I uglily deploy the `app/` folder but the generated stylesheet needs to be added manually...
+
+## Notes
+
+- For charts, use : highcharts
+- Export data from mixpanel : https://github.com/michaelcarter/mixpanel-data-export-js
