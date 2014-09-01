@@ -11,7 +11,7 @@ angular.module('app')
   return DataSrvBuilder.createDataService('foods', process);
 })
 
-.factory('RecipeSrv', function(DataSrvBuilder, Calculator){
+.factory('RecipeSrv', function(DataSrvBuilder, PriceCalculator){
   function process(formRecipe, foods, _errors){
     var recipe = angular.copy(formRecipe);
     var _ctx = {recipe: recipe};
@@ -22,20 +22,20 @@ angular.module('app')
         var ingredient = recipe.ingredients[i];
         var foodObj = _.find(foods, {id: ingredient.food.id});
         angular.copy(foodObj, ingredient.food);
-        ingredient.price = Calculator.ingredientPrice(ingredient, foodObj, _errors, _ctx);
+        ingredient.price = PriceCalculator.ingredientPrice(ingredient, foodObj, _errors, _ctx);
         delete ingredient.food.created;
         delete ingredient.food.updated;
         delete ingredient.food.prices;
       }
     }
-    recipe.price = Calculator.recipePrice(recipe, _errors);
+    recipe.price = PriceCalculator.recipePrice(recipe, _errors);
     return recipe;
   }
 
   return DataSrvBuilder.createDataService('recipes', process);
 })
 
-.factory('SelectionSrv', function($q, DataSrvBuilder, RecipeSrv){
+.factory('SelectionSrv', function($q, DataSrvBuilder, RecipeSrv, QuantityCalculator){
   var srv1 = DataSrvBuilder.createDataService('weekrecipes', process1);
   var srv2 = DataSrvBuilder.createDataService('selections', process2);
   var service = {
@@ -102,11 +102,12 @@ angular.module('app')
     return $q.all(selectionPromises);
   }
 
-  function preProcess(formSelection){
+  function preProcess(formSelection, _errors){
     var selection = angular.copy(formSelection);
     if(!selection.id){selection.id = selection.week.toString();}
     DataSrvBuilder.preprocessData(selection);
     delete selection.lazyLoaded;
+    testMergeIngredients(selection, _errors);
     return selection;
   }
   function process1(formSelection){
@@ -130,6 +131,25 @@ angular.module('app')
     }
     selection.recipes = recipesRef;
     return selection;
+  }
+  
+  function testMergeIngredients(selection, _errors){
+    var _ctx = {
+      selection: selection
+    };
+    var ingredients = {};
+    for(var i in selection.recipes){
+      for(var j in selection.recipes[i].ingredients){
+        var ingredient = selection.recipes[i].ingredients[j];
+        if(!ingredients[ingredient.food.id]){ingredients[ingredient.food.id] = [];}
+        ingredients[ingredient.food.id].push(ingredient);
+      }
+    }
+    for(var k in ingredients){
+      if(ingredients[k].length > 1){
+        QuantityCalculator.addIngredients(ingredients[k], _errors, _ctx);
+      }
+    }
   }
 
   return service;

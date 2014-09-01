@@ -1,8 +1,7 @@
-'use strict';
-
 angular.module('app')
 
-.factory('Calculator', function($window){
+.factory('PriceCalculator', function($window){
+  'use strict';
   var service = {
     ingredientPrice: ingredientPrice,
     recipePrice: recipePrice

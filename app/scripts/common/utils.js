@@ -28,6 +28,7 @@ angular.module('app')
   var service = {
     createUuid: createUuid,
     isUrl: isUrl,
+    extendDeep: extendDeep,
     extendsWith: extendsWith,
     sort: sort
   };
@@ -39,6 +40,21 @@ angular.module('app')
 
   function isUrl(text) {
     return (/^(https?):\/\/((?:[a-z0-9.-]|%[0-9A-F]{2}){3,})(?::(\d+))?((?:\/(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})*)*)(?:\?((?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*))?(?:#((?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*))?$/i).test(text);
+  }
+
+  function extendDeep(dest) {
+    angular.forEach(arguments, function (arg) {
+      if (arg !== dest) {
+        angular.forEach(arg, function (value, key) {
+          if (dest[key] && typeof dest[key] === 'object') {
+            _extendDeep(dest[key], value);
+          } else {
+            dest[key] = angular.copy(value);
+          }
+        });
+      }
+    });
+    return dest;
   }
 
   function extendsWith(dest, src){

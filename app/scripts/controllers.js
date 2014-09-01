@@ -657,7 +657,7 @@ angular.module('app')
     }).then(function(res){
       var processedSelections = [];
       for(var i in res.updatedSelections){
-        processedSelections.push(SelectionSrv.process(res.updatedSelections[i]));
+        processedSelections.push(SelectionSrv.process(res.updatedSelections[i], res._errors));
       }
       return {
         _errors: res._errors,
