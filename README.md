@@ -34,3 +34,4 @@ I uglily deploy the `app/` folder but the generated stylesheet needs to be added
 
 - For charts, use : highcharts
 - Export data from mixpanel : https://github.com/michaelcarter/mixpanel-data-export-js
+- Mixpanel api docs : https://mixpanel.com/docs/api-documentation/data-export-api

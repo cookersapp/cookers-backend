@@ -1,6 +1,6 @@
 angular.module('app')
 
-.factory('QuantityCalculator', function(){
+.factory('QuantityCalculator', function($window){
   'use strict';
   var service = {
     addIngredients: addIngredients
@@ -24,6 +24,7 @@ angular.module('app')
           else        { $window.alert(err.message); }
         }
       }
+      return ing;
     }
   }
 
