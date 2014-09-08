@@ -630,7 +630,7 @@ angular.module('app')
 
   function processSelectionsWithRecipes(){
     var recipesPromise = RecipeSrv.getAll();
-    var selectionsPromise = SelectionSrv.getAll();
+    var selectionsPromise = SelectionSrv.getAll(true);
     return $q.all([recipesPromise, selectionsPromise]).then(function(all){
       var recipes = all[0], selections = all[1], _errors = [];
       for(var i in selections){

@@ -43,7 +43,13 @@ angular.module('app')
   function _initForElt(DataSrv, ctx, id, _edit){
     if(id){
       DataSrv.get(id).then(function(elt){
-        _loadElt(ctx, elt, _edit);
+        if(elt){
+          _loadElt(ctx, elt, _edit);
+        } else {
+          console.warn('can\'t load '+ctx.title+' <'+id+'>');
+          ctx.status.loading = false;
+          ctx.status.error = 'Unable to load '+ctx.title+' <'+id+'> :(';
+        }
       }, function(err){
         console.warn('can\'t load '+ctx.title+' <'+id+'>', err);
         ctx.status.loading = false;

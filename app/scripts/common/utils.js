@@ -47,7 +47,7 @@ angular.module('app')
       if (arg !== dest) {
         angular.forEach(arg, function (value, key) {
           if (dest[key] && typeof dest[key] === 'object') {
-            _extendDeep(dest[key], value);
+            extendDeep(dest[key], value);
           } else {
             dest[key] = angular.copy(value);
           }

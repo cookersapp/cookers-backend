@@ -20,8 +20,7 @@ angular.module('app')
     if(_unit){defaultParams.unit = _unit;}
 
     return {
-      events: function(events, _params){ return _events(mixpanel, events, angular.extend({}, defaultParams, _params)); },
-      data: function(){ return _data(mixpanel); }
+      events: function(events, _params){ return _events(mixpanel, events, angular.extend({}, defaultParams, _params)); }
     };
   }
 
