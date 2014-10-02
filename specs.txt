@@ -1,0 +1,39 @@
+Mongo collections :
+
+- events 		: save all user events for tracking
+- users			: save user profiles (updated according to events)
+- subscriptions	: save email subscribed from landing pages or newsletter
+
+
+APIs :
+
+POST	/api/v1/track/event 				(create a tracking event)
+POST	/api/v1/track/events 				(create multiple tracking events)
+
+POST	/api/v1/user						(create or update user)
+
+POST	/api/v1/subscribe					(create subscription)
+POST	/api/v1/unsubscribe/:email/:list	(remove subscription)
+
+
+Data :
+
+Event 		: {_id, _previous, _name, _time, _user, _source: {platform, version, device}, data: {}, debug}
+User		: {_id, _email, _created, _lastSeen, name, firstName, lastName, gravatar, devices:[{uuid, model, platform, version}]}
+Subscribe	: {_email, _source, _list, _unsubscribed}
+
+
+Dashboard :
+
+	- Liste de utilisateurs (email / created / lastSeen)
+	- Graphique du nombre d'utilisateurs actifs / jour et semaine
+	- Pour une semaine, nombre d'interractions pour chaque recette :
+		- affichage des ingrédients
+		- détails de la recettes
+		- ajout de la recette à la liste de courses
+		- écran cuisine de la recette
+		- recette cuisinée
+	- Nombre d'ingrédients achetés par utilisateur
+	- Liste des événements "exception" (regroupés par message & stack trace)
+
+Charts: http://www.highcharts.com/ ou http://www.chartjs.org/

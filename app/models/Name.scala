@@ -9,10 +9,6 @@ import reactivemongo.bson.BSONDocumentWriter
 import reactivemongo.bson.BSONStringHandler
 import reactivemongo.bson.Producer.nameValue2Producer
 
-/*
- * Author: Sari Haj Hussein
- */
-
 case class Name(first: String, last: String)
 
 object Name {

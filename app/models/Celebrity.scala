@@ -14,10 +14,6 @@ import reactivemongo.bson.BSONStringHandler
 import reactivemongo.bson.Producer.nameValue2Producer
 import play.modules.reactivemongo.json.BSONFormats.BSONObjectIDFormat
 
-/*
- * Author: Sari Haj Hussein
- */
-
 case class Celebrity(id: Option[BSONObjectID], name: Name, website: String, bio: String)
 
 object Celebrity {

@@ -21,10 +21,6 @@ import reactivemongo.bson.BSONObjectIDIdentity
 import reactivemongo.bson.BSONStringHandler
 import reactivemongo.bson.Producer.nameValue2Producer
 
-/*
- * Author: Sari Haj Hussein
- */
-
 object Celebrities extends Controller with MongoController {
   val collection = db[BSONCollection]("celebrities")
 
@@ -37,7 +33,7 @@ object Celebrities extends Controller with MongoController {
       futureList.map { celebrities => Ok(Json.toJson(celebrities)) } // convert it to a JSON and return it
     }
   }
-  
+
   /** create a celebrity from the given JSON */
   def create() = Action(parse.json) { request =>
     Async {
@@ -50,7 +46,7 @@ object Celebrities extends Controller with MongoController {
         _ => Ok(Json.toJson(celebrity))) // return the created celebrity in a JSON
     }
   }
-  
+
   /** retrieve the celebrity for the given id as JSON */
   def show(id: String) = Action(parse.empty) { request =>
     Async {
@@ -60,7 +56,7 @@ object Celebrities extends Controller with MongoController {
       futureCelebrity.map { celebrity => Ok(Json.toJson(celebrity)) }
     }
   }
-  
+
   /** update the celebrity for the given id from the JSON body */
   def update(id: String) = Action(parse.json) { request =>
     Async {
@@ -78,7 +74,7 @@ object Celebrities extends Controller with MongoController {
         _ => Ok(Json.toJson(Celebrity(Option(objectID), name, website, bio)))) // return the modified celebrity in a JSON
     }
   }
-  
+
   /** delete a celebrity for the given id */
   def delete(id: String) = Action(parse.empty) { request =>
     Async {
