@@ -2,7 +2,7 @@
  * Author: Sari Haj Hussein
  */
 var app = angular.module("app", ["ngResource"])
-	.constant("apiUrl", "http://localhost:9000\:9000/api") // to tell AngularJS that 9000 is not a dynamic parameter
+	.constant("apiUrl", "/api")
 	.config(["$routeProvider", function($routeProvider) {
 		return $routeProvider.when("/", {
 			templateUrl: "/views/main",
