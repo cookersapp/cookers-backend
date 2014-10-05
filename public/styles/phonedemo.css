@@ -1,0 +1,210 @@
+.phone-demo {
+  display: inline-block; }
+  .phone-demo.affix {
+    top: 5px; }
+  .phone-demo .commands {
+    text-align: center;
+    margin-bottom: 20px; }
+  .phone-demo .phone {
+    background-image: url(../images/nexus4_real.png);
+    width: 428px;
+    height: 830px;
+    padding: 119px 22px 143px 22px; }
+    .phone-demo .phone iframe {
+      border: none;
+      width: 100%;
+      height: 100%; }
+    .phone-demo .phone.ionic ng-include > div {
+      background-color: #eee;
+      margin-top: -10px; }
+    .phone-demo .phone.ionic .row {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -moz-box;
+      display: -moz-flex;
+      display: -ms-flexbox;
+      display: flex;
+      padding: 5px;
+      width: 100%; }
+    .phone-demo .phone.ionic .col {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+      -moz-box-flex: 1;
+      -moz-flex: 1;
+      -ms-flex: 1;
+      flex: 1;
+      display: block;
+      padding: 5px;
+      width: 100%; }
+    .phone-demo .phone.ionic .card {
+      padding-top: 1px;
+      padding-bottom: 1px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      margin: 20px 10px;
+      border-radius: 2px;
+      background-color: #fff; }
+    .phone-demo .phone.ionic .row.card {
+      width: auto; }
+    .phone-demo .phone .screen {
+      background: #eee;
+      width: 100%;
+      height: 100%;
+      overflow: auto; }
+      .phone-demo .phone .screen .cook-screen .card {
+        margin: 10px;
+        padding: 10px; }
+      .phone-demo .phone .screen .cook-screen h1, .phone-demo .phone .screen .cook-screen h2 {
+        font-size: 20px;
+        color: #fff; }
+      .phone-demo .phone .screen .cook-screen .header {
+        padding: 0px;
+        background: #E87151; }
+        .phone-demo .phone .screen .cook-screen .header .col {
+          padding: 0px; }
+        .phone-demo .phone .screen .cook-screen .header .picture img {
+          width: 100%; }
+        .phone-demo .phone .screen .cook-screen .header .text {
+          margin: 10px;
+          position: relative; }
+          .phone-demo .phone .screen .cook-screen .header .text .tags {
+            position: absolute;
+            bottom: 0px; }
+            .phone-demo .phone .screen .cook-screen .header .text .tags span {
+              color: #fff;
+              padding: 4px 10px;
+              background: rgba(0, 0, 0, 0.2);
+              border-radius: 12px; }
+      .phone-demo .phone .screen .cook-screen .requirements {
+        color: #fff;
+        background: #26C0B8; }
+        .phone-demo .phone .screen .cook-screen .requirements ul .accompagnement, .phone-demo .phone .screen .cook-screen .requirements ul .facultatif {
+          float: left;
+          padding-right: 5px;
+          color: rgba(255, 255, 255, 0.7);
+          white-space: nowrap; }
+        .phone-demo .phone .screen .cook-screen .requirements ul .accompagnement:after, .phone-demo .phone .screen .cook-screen .requirements ul .facultatif:after {
+          content: ','; }
+        .phone-demo .phone .screen .cook-screen .requirements ul .accompagnement:last-child:after, .phone-demo .phone .screen .cook-screen .requirements ul .facultatif:last-child:after {
+          content: ''; }
+      .phone-demo .phone .screen .cook-screen .cooking {
+        background-image: linear-gradient(#e9ecf1, #444444);
+        padding-bottom: 1px; }
+        .phone-demo .phone .screen .cook-screen .cooking h2 {
+          margin: 10px;
+          margin-top: 25px;
+          color: #666;
+          margin-top: 0px; }
+        .phone-demo .phone .screen .cook-screen .cooking .step {
+          padding: 10px; }
+          .phone-demo .phone .screen .cook-screen .cooking .step h3 {
+            margin-top: 0px;
+            text-align: center;
+            color: #666;
+            font-weight: bold; }
+          .phone-demo .phone .screen .cook-screen .cooking .step ul, .phone-demo .phone .screen .cook-screen .cooking .step ol {
+            list-style-position: inside;
+            margin: 5px;
+            padding: 0px; }
+            .phone-demo .phone .screen .cook-screen .cooking .step ul li, .phone-demo .phone .screen .cook-screen .cooking .step ol li {
+              padding: 5px 0px; }
+          .phone-demo .phone .screen .cook-screen .cooking .step ul {
+            list-style-type: circle; }
+          .phone-demo .phone .screen .cook-screen .cooking .step ol {
+            list-style-type: decimal; }
+          .phone-demo .phone .screen .cook-screen .cooking .step .help {
+            color: #888; }
+        .phone-demo .phone .screen .cook-screen .cooking .timers {
+          margin: 10px; }
+      .phone-demo .phone .screen .cook-screen .cooked {
+        background: #444; }
+        .phone-demo .phone .screen .cook-screen .cooked img {
+          width: 100%; }
+        .phone-demo .phone .screen .cook-screen .cooked .content button {
+          display: block;
+          margin: 20px auto;
+          min-width: 200px;
+          font-size: 25px; }
+        .phone-demo .phone .screen .cook-screen .cooked .content h1 {
+          padding-bottom: 20px;
+          color: #f62;
+          font-size: 40px;
+          text-align: center; }
+      .phone-demo .phone .screen .timer {
+        padding: 5px;
+        margin: 10px 20px;
+        box-shadow: 0 4px 15px -4px #000;
+        color: #fff; }
+        .phone-demo .phone .screen .timer.alarm {
+          -webkit-animation: blink 1.2s linear infinite;
+          -moz-animation: blink 1.2s linear infinite;
+          -ms-animation: blink 1.2s linear infinite;
+          -o-animation: blink 1.2s linear infinite;
+          animation: blink 1.2s linear infinite; }
+        .phone-demo .phone .screen .timer .label {
+          margin-bottom: 0px;
+          color: #fff;
+          font-size: 20px;
+          text-align: center;
+          display: block;
+          font-weight: normal;
+          white-space: initial; }
+        .phone-demo .phone .screen .timer .time {
+          color: #fff;
+          font-family: 'Source Sans Pro', sans-serif;
+          font-weight: bold;
+          font-size: 35px;
+          line-height: 35px;
+          text-align: center; }
+        .phone-demo .phone .screen .timer .steps {
+          list-style: none;
+          margin-left: 55px;
+          padding: 0px;
+          border-left: 8px solid #eee9dc; }
+          .phone-demo .phone .screen .timer .steps .step {
+            position: relative;
+            margin: 5px 0;
+            padding: 50px 5px 0;
+            border: none; }
+            .phone-demo .phone .screen .timer .steps .step .date {
+              position: absolute;
+              top: 50%;
+              left: -58px;
+              margin-top: -3px; }
+            .phone-demo .phone .screen .timer .steps .step .circle {
+              position: absolute;
+              top: 50%;
+              left: -14px;
+              margin-top: -3px;
+              width: 20px;
+              height: 20px;
+              background: #bbb;
+              border: 5px solid #eee9dc;
+              border-radius: 50%; }
+            .phone-demo .phone .screen .timer .steps .step .label {
+              position: absolute;
+              top: 23px;
+              left: 15px;
+              width: 100%;
+              font-size: 1em;
+              text-align: left; }
+            .phone-demo .phone .screen .timer .steps .step.unselected {
+              color: rgba(255, 255, 255, 0.5); }
+              .phone-demo .phone .screen .timer .steps .step.unselected .label {
+                color: rgba(255, 255, 255, 0.5); }
+              .phone-demo .phone .screen .timer .steps .step.unselected .circle {
+                border-color: rgba(255, 255, 255, 0.5); }
+            .phone-demo .phone .screen .timer .steps .step.selected {
+              font-weight: bold; }
+              .phone-demo .phone .screen .timer .steps .step.selected .circle {
+                background: #bbb; }
+        .phone-demo .phone .screen .timer.green, .phone-demo .phone .screen .timer.green .circle {
+          background: #A3A948 !important; }
+        .phone-demo .phone .screen .timer.yellow, .phone-demo .phone .screen .timer.yellow .circle {
+          background: #EDB92E !important; }
+        .phone-demo .phone .screen .timer.orange, .phone-demo .phone .screen .timer.orange .circle {
+          background: #F85931 !important; }
+        .phone-demo .phone .screen .timer.red, .phone-demo .phone .screen .timer.red .steps .circle {
+          background: #CE1836 !important; }
+        .phone-demo .phone .screen .timer.blue, .phone-demo .phone .screen .timer.blue .circle {
+          background: #009989 !important; }

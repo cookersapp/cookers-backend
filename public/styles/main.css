@@ -1,0 +1,117 @@
+.sort {
+  user-select: none; }
+  .sort.active {
+    font-weight: bold; }
+
+.card {
+  margin: 20px 10px;
+  padding: 10px 7px;
+  overflow: hidden;
+  color: #737373;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25); }
+  .card .card-heading {
+    margin-top: 0px;
+    font-weight: bold;
+    font-size: 13px; }
+  .card.current {
+    background: #f0f0f0; }
+  .card.active {
+    color: #fff;
+    background-color: #428bca; }
+
+.card:first-child {
+  margin-top: 0px; }
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center; }
+
+.media-recipe {
+  background: #fff;
+  box-shadow: 1px 1px 8px #d8d8d8; }
+  .media-recipe .media-body {
+    position: relative;
+    padding: 20px 10px; }
+    .media-recipe .media-body .media-heading:first-letter {
+      text-transform: uppercase; }
+    .media-recipe .media-body .media-separator {
+      height: 2px;
+      width: 26px;
+      background-color: #d9d9d9;
+      margin: 7px 0 7px 0; }
+    .media-recipe .media-body .card {
+      margin: 0px; }
+    .media-recipe .media-body .big-actions {
+      position: absolute;
+      right: 0px;
+      bottom: 10px; }
+  .media-recipe.item .media-object {
+    height: 80px; }
+  .media-recipe.item .media-body {
+    margin-top: 10px;
+    margin-right: 10px;
+    padding: 0px;
+    height: 70px;
+    color: #737373; }
+    .media-recipe.item .media-body .media-heading {
+      font-weight: bold;
+      font-size: 13px; }
+    .media-recipe.item .media-body p {
+      font-size: 12px; }
+
+.ingredients li {
+  border-left: 4px solid black;
+  padding-left: 5px; }
+  .ingredients li.essentiel {
+    border-color: #d9534f; }
+  .ingredients li.secondaire {
+    border-color: #f0ad4e; }
+  .ingredients li.accompagnement {
+    border-color: #5cb85c; }
+  .ingredients li.facultatif {
+    border-color: #5bc0de; }
+
+.selection-details {
+  border-left: 1px solid #ddd; }
+
+[ng-click], [ui-sref] {
+  cursor: pointer; }
+
+a.active {
+  font-weight: bold;
+  text-decoration: underline; }
+
+ul, ol {
+  padding-left: 30px; }
+
+.source {
+  display: block;
+  max-width: 300px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden; }
+
+.input-small {
+  max-width: 80px; }
+
+.input-medium {
+  max-width: 120px; }
+
+.form-group .form-group {
+  margin-bottom: 0px; }
+
+.btn-xxs, .btn-group-xxs > .btn {
+  padding: 0px 4px;
+  font-size: 11px; }
+
+.table {
+  background: #fff; }
+  .table thead {
+    background: #eee; }
+
+.maj:first-letter {
+  text-transform: uppercase !important; }

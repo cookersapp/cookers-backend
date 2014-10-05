@@ -1,0 +1,71 @@
+<ion-view>
+  <ion-header-bar class="bar-custom">
+    <div class="buttons">
+      <button menu-toggle="left" class="button button-icon ion-navicon"></button>
+    </div>
+    <h1 class="title">La sélection Cookers</h1>
+  </ion-header-bar>
+
+  <ion-content class="recipes-screen" ng-class="{empty: !(recipesOfWeek && recipesOfWeek.recipes && recipesOfWeek.recipes.length > 0)}">
+    <div class="screen-empty">
+      <loading ng-if="loading"></loading>
+      <div ng-if="!loading">
+        Aucune recette planifiée cette semaine :(<br>
+        Merci de le signaler à <a href="mailto:loicknuchel@gmail.com">loicknuchel@gmail.com</a>.
+      </div>
+    </div>
+
+    <div class="screen">
+      <div class="list">
+        <div class="item item-recipe-img-full card" ng-class="{'show-ingredients': recipe.showIngredients, 'big-image': ctx.settings.bigImages}" ng-repeat="recipe in recipesOfWeek.recipes">
+          <img class="portrait" ng-src="{{recipe.images.portrait}}" ng-click="toggleIngredients(recipe)">
+          <img class="landing" ng-src="{{recipe.images.landing}}" ng-click="toggleIngredients(recipe)">
+          <div class="legend-top">
+            <div class="price" ng-if="ctx.settings.showPrices">
+              <div class="number">{{recipe.price | price:false}}</div>
+              <div class="detail" ng-if="recipe.price.unit">/{{recipe.price.unit}}</div>
+            </div>
+          </div>
+          <div class="ingredients-overlay" ng-click="toggleIngredients(recipe)">
+            <div class="list">
+              <div class="item item-divider">Ingrédients pour {{recipe.servings | servings}}</div>
+              <div ng-repeat="ingredient in recipe.ingredients" class="item ingredient {{ingredient.role}}">{{ingredient | ingredient}}</div>
+              <a class="fa-stack fa-lg calm details" ui-sref="app.recipe({recipeId: recipe.id})">
+                <i class="fa fa-circle-thin fa-stack-2x"></i>
+                <i class="fa fa-info fa-stack-1x"></i>
+              </a>
+            </div>
+          </div>
+          <div class="legend">
+            <div class="actions">
+              <span ng-show="!cartHasRecipe(recipe)" class="fa-stack fa-lg balanced" ng-click="addRecipeToCart(recipe, $index)">
+                <i class="fa fa-circle-thin fa-stack-2x"></i>
+                <i class="fa fa-plus fa-stack-1x"></i>
+              </span>
+              <span ng-show="cartHasRecipe(recipe)" class="fa-stack fa-lg assertive" ng-click="removeRecipeFromCart(recipe, $index)">
+                <i class="fa fa-circle-thin fa-stack-2x"></i>
+                <i class="fa fa-minus fa-stack-1x"></i>
+              </span>
+            </div>
+            <div class="content" ng-click="toggleIngredients(recipe)">
+              <div class="title">{{recipe.name}}</div>
+              <div class="subtitle">{{recipe.time | cookTime}}, {{recipe.ingredients.length}} ingrédients</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="list card feedback">
+        <div class="item item-text-wrap" ui-sref="app.feedback">
+          C'était notre sélection de la semaine !<br>
+          Tu valides ?
+        </div>
+        <div class="item row">
+          <div class="col" ng-click="recipeFeedback(1)"><img src="images/blah.png"></div>
+          <div class="col" ng-click="recipeFeedback(2)"><img src="images/great.png"></div>
+          <div class="col" ng-click="recipeFeedback(3)"><img src="images/awesome.png"></div>
+        </div>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>
