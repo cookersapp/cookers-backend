@@ -1,4 +1,4 @@
-angular.module('app', ['ui.router', 'ngResource'])
+angular.module('app_old', ['ui.router', 'ngResource'])
 
 .constant('apiUrl', '/api')
 
@@ -7,21 +7,21 @@ angular.module('app', ['ui.router', 'ngResource'])
   .state('app', {
     abstract: true,
     url: '',
-    templateUrl: 'views/main.html'
+    templateUrl: 'views/_main.html'
   })
   .state('app.list', {
     url: '/',
-    templateUrl: 'views/list.html',
+    templateUrl: 'views/_list.html',
     controller: 'ListCtrl'
   })
   .state('app.create', {
     url: '/create',
-    templateUrl: 'views/detail.html',
+    templateUrl: 'views/_detail.html',
     controller: 'CreateCtrl'
   })
   .state('app.edit', {
     url: '/edit/:id',
-    templateUrl: 'views/detail.html',
+    templateUrl: 'views/_detail.html',
     controller: 'EditCtrl'
   });
   $urlRouterProvider.otherwise('/');

@@ -1,0 +1,293 @@
+<div class="row">
+  <div class="col-md-7">
+    <rd-loading ng-if="status.loading && !(model.selected)"></rd-loading>
+    <div class="alert alert-danger" role="alert" ng-if="status.error"><strong>Error!</strong> {{status.error}}</div>
+    <form ng-submit="save()" ng-if="model.selected">
+      <div class="card">
+        <h1 ng-if="model.selected.id">
+          <div class="pull-right">
+            <loading-button btn-type="submit" btn-class="btn-success" btn-loading="status.saving" btn-disabled="data.foods.length === 0" ng-if="model.selected.id">Enregistrer</loading-button>
+            <a class="btn btn-default" ui-sref="user.data.recipe({recipeId: model.selected.id})">Annuler</a>
+          </div>
+          Modification de recette
+        </h1>
+        <h1 ng-if="!model.selected.id">
+          <a class="btn btn-default pull-right" ui-sref="user.data.recipes">Annuler</a>
+          Nouvelle recette
+        </h1>
+      </div>
+
+      <div class="card">
+        <div class="form-group">
+          <label for="name">Nom</label>
+          <input id="name" name="name" type="text" class="form-control" ng-model="model.form.name" placeholder="Ex: tartare de saumon" required>
+        </div>
+        <div class="form-group">
+          <label for="source">Source</label>
+          <input id="source" name="source" type="text" class="form-control" ng-model="model.form.source" placeholder="Ex: http://www.cuisineaz.com/dossiers/cuisine/spaghetti-16278.aspx">
+        </div>
+        <div class="form-group">
+          <label for="category">Catégorie</label>
+          <select id="category" name="category" class="form-control" ng-model="model.form.category" ng-options="category for category in data.recipeCategories" required>
+            <option value="">--</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="servings_value">Pour</label>
+          <div class="row">
+            <div class="col-md-6">
+              <input id="servings_value" name="servings_value" type="number" class="form-control" ng-model="model.form.servings.value" placeholder="Ex: 2" required>
+            </div>
+            <div class="col-md-6">
+              <select id="servings_unit" name="servings_unit" class="form-control" ng-model="model.form.servings.unit" ng-options="serving for serving in data.servingUnits" required>
+                <option value="">--</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="time">Temps</label>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="form-group">
+                <label for="time_preparation">Préparation</label>
+                <input id="time_preparation" name="time_preparation" type="number" class="form-control" ng-model="model.form.time.preparation" placeholder="Ex: 15">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label for="time_cooking">Cuisson</label>
+                <input id="time_cooking" name="time_cooking" type="number" class="form-control" ng-model="model.form.time.cooking" placeholder="Ex: 20">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label for="time_eat">Pour manger</label>
+                <input id="time_eat" name="time_eat" type="number" class="form-control" ng-model="model.form.time.eat" placeholder="Ex: 35" required>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label for="time_unit">Unité</label>
+                <select id="time_unit" name="time_unit" class="form-control" ng-model="model.form.time.unit" ng-options="timeUnit for timeUnit in data.timeUnits" required>
+                  <option value="">--</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="form-group">
+          <label>Ingrédients</label>
+          <div class="form-inline" ng-repeat="ingredient in model.form.ingredients">
+            <div class="form-group">
+              <input id="ingredient_quantity_value_{{$index}}" name="ingredient_quantity_value_{{$index}}" type="number" step="any" class="form-control input-small" ng-model="ingredient.quantity.value" placeholder="Ex: 50" required>
+            </div>
+            <div class="form-group">
+              <select id="ingredient_quantity_unit_{{$index}}" name="ingredient_quantity_unit_{{$index}}" class="form-control" ng-model="ingredient.quantity.unit" ng-options="quantityUnit for quantityUnit in data.quantityUnits" required>
+                <option value="">--</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <input id="ingredient_pre_{{$index}}" name="ingredient_pre_{{$index}}" type="text" class="form-control input-small" ng-model="ingredient.pre" placeholder="Ex: de">
+            </div>
+            <div class="form-group">
+              <select id="ingredient_food_{{$index}}" name="ingredient_food_{{$index}}" class="form-control" ng-model="ingredient.food.id" required>
+                <option value="">--</option>
+                <option ng-repeat="food in data.foods" value="{{food.id}}" ng-selected="ingredient.food.id === food.id">{{food.name}}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <input id="ingredient_post_{{$index}}" name="ingredient_post_{{$index}}" type="text" class="form-control input-small" ng-model="ingredient.post" placeholder="Ex: fin">
+            </div>
+            <div class="form-group">
+              <select id="ingredient_role_{{$index}}" name="ingredient_role_{{$index}}" class="form-control" ng-model="ingredient.role" ng-options="ingredientRole for ingredientRole in data.ingredientRoles" required>
+                <option value="">--</option>
+              </select>
+            </div>
+            <button type="button" class="btn btn-danger" ng-click="removeElt(model.form.ingredients, $index)"><i class="fa fa-trash-o"></i></button>
+            <button type="button" class="btn btn-default" ng-click="moveEltDown(model.form.ingredients, $index)" ng-if="!$last"><i class="fa fa-arrow-down"></i></button>
+          </div>
+          <button type="button" class="btn btn-default btn-xs" ng-click="addElt(model.form, 'ingredients')">Ajouter un ingrédient</button>
+        </div>
+        <div class="form-group">
+          <label>Ustensiles</label>
+          <div class="form-group" ng-repeat="tool in model.form.tools">
+            <div class="row">
+              <div class="col-md-3">
+                <input id="tool_{{$index}}" name="tool_{{$index}}" type="text" class="form-control" ng-model="tool.name" placeholder="Ex: casserole" required>
+              </div>
+              <div class="col-md-1">
+                <button type="button" class="btn btn-danger" ng-click="removeElt(model.form.tools, $index)"><i class="fa fa-trash-o"></i></button>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-default btn-xs" ng-click="addElt(model.form, 'tools')">Ajouter un ustensile</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="form-group">
+          <label>Instructions</label>
+          <div class="form-group" ng-repeat="instruction in model.form.instructions" style="margin-bottom: 15px;">
+            <div class="row">
+              <div class="col-md-10">
+                <input type="text" class="form-control" ng-model="instruction.title" typeahead="t for t in data.instructionTitles" placeholder="Titre">
+              </div>
+              <div class="col-md-1">
+                <button type="button" class="btn" ng-click="addElt(instruction, 'timers')"><i class="fa fa-plus"></i> <i class="fa fa-clock-o"></i></button>
+              </div>
+              <div class="col-md-1">
+                <button type="button" class="btn btn-danger" ng-click="removeElt(model.form.instructions, $index)"><i class="fa fa-trash-o"></i></button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-10">
+                <textarea id="instruction_{{$index}}_summary" name="instruction_{{$index}}_summary" class="form-control" rows="3" ng-model="instruction.summary" placeholder="Résumé" required></textarea>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-10">
+                <textarea id="instruction_{{$index}}_content" name="instruction_{{$index}}_content" class="form-control" rows="5" ng-model="instruction.content" placeholder="Instructions" required></textarea>
+              </div>
+            </div>
+            <div class="row" ng-repeat="timer in instruction.timers">
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="col-md-2">
+                    <label>Timer {{$index+1}}</label>
+                  </div>
+                  <div class="col-md-2">
+                    <input type="text" class="form-control" ng-model="timer.color" typeahead="c for c in data.timerColors" placeholder="couleur" required>
+                  </div>
+                  <div class="col-md-6">
+                    <input type="text" class="form-control" ng-model="timer.label" placeholder="titre (Ex: sors les frites de l'huile)">
+                  </div>
+                  <div class="col-md-1">
+                    <button type="button" class="btn" ng-click="addElt(timer, 'steps')"><i class="fa fa-plus"></i> <i class="fa fa-tag"></i></button>
+                  </div>
+                  <div class="col-md-1">
+                    <button type="button" class="btn btn-danger" ng-click="removeElt(instruction.timers, $index)"><i class="fa fa-trash-o"></i></button>
+                  </div>
+                </div>
+                <div class="row" ng-if="!(timer.steps.length > 0)">
+                  <div class="col-md-2 col-md-offset-2">
+                    <input type="number" class="form-control" ng-model="timer.seconds" placeholder="temps (en secondes)">
+                  </div>
+                </div>
+                <div class="row" ng-repeat="step in timer.steps" ng-if="timer.steps.length > 0">
+                  <div class="col-md-5 col-md-offset-1">
+                    <input type="text" class="form-control" ng-model="step.label" placeholder="étape (Ex: sors les frites de l'huile)" required>
+                  </div>
+                  <div class="col-md-2">
+                    <input type="number" class="form-control" ng-model="step.time" placeholder="temps (en secondes)" required>
+                  </div>
+                  <div class="col-md-1">
+                    <button type="button" class="btn btn-danger" ng-click="removeElt(timer.steps, $index)"><i class="fa fa-trash-o"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-default btn-xs" ng-click="addElt(model.form, 'instructions')">Ajouter une instruction</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="form-group">
+          <label>Images</label>
+          <div class="form-group">
+            <label>Paysage</label>
+            <media-crush-upload ng-model="model.form.images.landing" format="400x225"></media-crush-upload>
+            <p class="help-block">Taille: 400x225 (16:9 format)</p>
+          </div>
+          <div class="form-group">
+            <label>Portrait</label>
+            <media-crush-upload ng-model="model.form.images.portrait" format="384x524"></media-crush-upload>
+            <p class="help-block">Taille: 384x524</p>
+          </div>
+          <div class="form-group">
+            <label>Avatar</label>
+            <media-crush-upload ng-model="model.form.images.thumbnail" format="200x200"></media-crush-upload>
+            <p class="help-block">Taille: 200x200</p>
+          </div>
+          <div class="form-group">
+            <label>Original</label>
+            <media-crush-upload ng-model="model.form.images.original"></media-crush-upload>
+          </div>
+          <p class="help-block">Outils en ligne pour <a href="http://www.croppola.com/" target="croppola">couper</a> et <a href="http://www.fixpicture.org/" target="fixpicture">redimentionner</a> et <a href="https://kraken.io/web-interface" target="kraken">optimiser</a> les images.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="form-group">
+          <label for="notes">Commentaire perso</label>
+          <textarea id="notes" name="notes" class="form-control" ng-model="model.form.privateNotes" placeholder="ex: a ameliorer ..."></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="pull-right">
+          <loading-button btn-type="submit" btn-class="btn-primary" btn-loading="status.saving" btn-disabled="data.foods.length === 0" ng-if="!model.selected.id">Créer</loading-button>
+          <loading-button btn-type="submit" btn-class="btn-success" btn-loading="status.saving" btn-disabled="data.foods.length === 0" ng-if="model.selected.id">Enregistrer</loading-button>
+        </div>
+        <a class="btn btn-default" ui-sref="user.data.recipes" ng-if="!model.selected.id">Annuler</a>
+        <a class="btn btn-default" ui-sref="user.data.recipe({recipeId: model.selected.id})" ng-if="model.selected.id">Annuler</a>
+        <span class="text-danger" ng-if="data.foods.length === 0">Impossible d'enregistrer quand les aliments ne sont pas chargés</span>
+        <div class="clearfix"></div>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-5">
+    <div class="phone-demo" ng-init="phoneView='recipe';" ng-affix offset-top="60">
+      <div class="commands">
+        <div class="btn-group">
+          <button type="button" class="btn btn-default" ng-click="phoneView='recipe';" ng-class="{active: phoneView === 'recipe'}">Recette</button>
+          <button type="button" class="btn btn-default" ng-click="phoneView='cook';" ng-class="{active: phoneView === 'cook'}">Cuisine</button>
+        </div>
+      </div>
+      <div class="phone ionic">
+        <div class="screen" ng-if="phoneView === 'recipe'">
+          <div class="cook-screen">
+            <div class="cooking">
+              <h2 class="title">Etapes</h2>
+              <div ng-repeat="instruction in model.form.instructions">
+                <div class="step card" ng-if="instruction.summary" ng-bind-html="trustHtml(instruction.summary)"></div>
+                <div class="step card" ng-if="!instruction.summary" ng-bind-html="trustHtml(instruction.content)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="screen" ng-if="phoneView === 'cook'">
+          <div class="cook-screen">
+            <div class="cooking">
+              <h2 class="title">Préparation</h2>
+              <div ng-repeat="instruction in model.form.instructions">
+                <div class="step card">
+                  <h3 ng-if="instruction.title" ng-bind-html="trustHtml(instruction.title)"></h3>
+                  <div ng-bind-html="trustHtml(instruction.content)"></div>
+                </div>
+                <div class="timers" ng-if="instruction.timers">
+                  <div class="timer {{timer.color}}" ng-repeat="timer in instruction.timers">
+                    <div class="label" ng-if="timer.label" ng-bind-html="trustHtml(timer.label)"></div>
+                    <div class="time">{{timerDuration(timer) | duration}}</div>
+                    <ul class="steps">
+                      <li class="step" ng-repeat="step in timer.steps">
+                        <div class="date">{{step.time | duration}}</div>
+                        <div class="circle"></div>
+                        <div class="label">{{step.label}}</div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

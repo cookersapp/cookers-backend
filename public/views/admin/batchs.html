@@ -1,0 +1,30 @@
+<div class="row">
+  <div class="col-md-12">
+    <h1>Synchroniser les données</h1>
+    <div class="row">
+      <div class="col-md-6">
+        <loading-button btn-class="btn-default" btn-loading="config.foods2recipes.status.preparing" ng-click="prepare('foods2recipes')">Copier les aliments dans les recettes</loading-button>
+        <div ng-if="config.foods2recipes.model && !config.foods2recipes.status.saved">
+          <div class="alert alert-danger" ng-repeat="err in config.foods2recipes.model._errors"><strong><i class="fa fa-exclamation-triangle"></i></strong> {{err.message}}</div>
+          <loading-button ng-if="config.foods2recipes.model._errors.length === 0" btn-class="btn-success" btn-loading="config.foods2recipes.status.saving" ng-click="save('foods2recipes')">Sauvegarder les recettes :D</loading-button>
+          <loading-button ng-if="config.foods2recipes.model._errors.length !== 0" btn-class="btn-danger" btn-icon="fa fa-exclamation-triangle" btn-loading="config.foods2recipes.status.saving" ng-click="save('foods2recipes')">Sauvegarder les recettes !</loading-button>
+        </div>
+        <div ng-if="config.foods2recipes.status.saved">
+          <button class="btn btn-success" ng-click="close('foods2recipes')"><i class="fa fa-check"></i> Fini !</button>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <loading-button btn-class="btn-default" btn-loading="config.recipes2selections.status.preparing" ng-click="prepare('recipes2selections')">Copier les recettes dans les sélections</loading-button>
+        <div ng-if="config.recipes2selections.model && !config.recipes2selections.status.saved">
+          <div class="alert alert-danger" ng-repeat="err in config.recipes2selections.model._errors"><strong><i class="fa fa-exclamation-triangle"></i></strong> {{err.message}}</div>
+          <loading-button ng-if="config.recipes2selections.model._errors.length === 0" btn-class="btn-success" btn-loading="config.recipes2selections.status.saving" ng-click="save('recipes2selections')">Sauvegarder les sélections :D</loading-button>
+          <loading-button ng-if="config.recipes2selections.model._errors.length !== 0" btn-class="btn-danger" btn-icon="fa fa-exclamation-triangle" btn-loading="config.recipes2selections.status.saving" ng-click="save('recipes2selections')">Sauvegarder les sélections !</loading-button>
+        </div>
+        <div ng-if="config.recipes2selections.status.saved">
+          <button class="btn btn-success" ng-click="close('recipes2selections')"><i class="fa fa-check"></i> Fini !</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

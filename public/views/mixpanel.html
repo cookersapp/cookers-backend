@@ -1,0 +1,61 @@
+<div class="row">
+  <div class="col-md-4"><pre>{{model.data[0] | json}}</pre></div>
+  <div class="col-md-4"><pre>{{model.data[1] | json}}</pre></div>
+  <div class="col-md-4"><pre>{{model.data[2] | json}}</pre></div>
+</div>
+<div class="row">
+  <div class="col-md-6">
+    <div class="widget">
+      <div class="widget-header">
+        <i class="fa fa-flash"></i> Events
+        <input type="text" class="form-control input-sm pull-right" placeholder="Search ..." ng-model="search">
+        <div class="clearfix"></div>
+      </div>
+      <div class="widget-body no-padding">
+        <rd-loading ng-if="status.loading && !(model.elts && model.elts.length > 0)"></rd-loading>
+        <div class="alert alert-danger" role="alert" ng-if="status.error"><strong>Error!</strong> {{status.error}}</div>
+        <div class="table-responsive" ng-if="model.elts && model.elts.length > 0">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th sort="config.sort" name="name" ng-click="sort('name')">Nom ({{filtered.length}})</th>
+                <th sort="config.sort" name="category" ng-click="sort('category')">Catégorie</th>
+                <th>Prix</th>
+                <th sort="config.sort" name="updated" ng-click="sort('updated', true)">Mis à jour</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="food in filtered = (model.elts | filter:search)" ng-click="toggle(food)" ng-class="{active: model.selected && food.id === model.selected.id}">
+                <td>{{food.name}}</td>
+                <td>{{food.category}}</td>
+                <td>
+                  <span ng-repeat="price in food.prices">
+                    <a ng-if="isUrl(price.source)" href="{{price.source}}" target="_blank">{{price | price}}</a>
+                    <span ng-if="!isUrl(price.source)" title="{{price.source}}">{{price | price}}</span>
+                    {{$last ? '' : ', '}}
+                  </span>
+                </td>
+                <td>{{food.updated ? food.updated : food.created | date}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6" ng-if="model.selected">
+    <div class="card">
+      <h4 class="card-heading">
+        <span class="pull-right">
+          <a class="btn btn-xs btn-default" href="{{eltRestUrl(model.selected)}}" target="_blank"><i class="fa fa-external-link"></i></a>
+          <a class="btn btn-xs btn-info" ng-click="edit(model.selected)"><i class="fa fa-pencil-square-o"></i></a>
+          <loading-button btn-class="btn-xs btn-danger" btn-icon="fa fa-trash-o" btn-loading="status.removing" ng-click="remove(model.selected)"></loading-button>
+        </span>
+        <span class="label label-default">{{model.selected.category}}</span> {{model.selected.name}}
+      </h4>
+      <ol>
+        <li ng-repeat="price in model.selected.prices">{{price | price}}</li>
+      </ol>
+    </div>
+  </div>
+</div>

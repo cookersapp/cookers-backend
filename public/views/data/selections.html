@@ -1,0 +1,105 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2 style="margin-top: 0px;">Semaine actuelle: {{data.currentWeek}}</h2>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-3">
+    <rd-loading ng-if="status.loading && !(model.elts && model.elts.length > 0)"></rd-loading>
+    <div class="alert alert-danger" role="alert" ng-if="status.error"><strong>Error!</strong> {{status.error}}</div>
+    <div ng-if="model.elts && model.elts.length > 0">
+      <div class="center">
+        <loading-button btn-class="btn-success" btn-icon="fa fa-plus" btn-loading="status.creating" ng-click="create()">Créer une sélection</loading-button>
+      </div>
+      <div class="card" ng-class="{current: elt.week === data.currentWeek, active: model.selected && model.selected.id === elt.id}"
+           ng-repeat="elt in model.elts" ng-click="toggle(elt)">
+        <h4 class="card-heading">{{elt.week}}. {{elt.week | week:'D MMM'}}</h4>
+        <ol>
+          <li ng-repeat="recipe in elt.recipes">{{recipe.name}}</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3 selection-details" ng-if="model.selected && !model.form">
+    <h3 style="margin-top: 0px;">
+      <span class="pull-right">
+        <a class="btn btn-sm btn-default" href="{{eltRestUrl(model.selected)}}" target="_blank"><i class="fa fa-external-link"></i></a>
+        <a class="btn btn-sm btn-info" ng-click="edit(model.selected)"><i class="fa fa-pencil-square-o"></i></a>
+        <loading-button btn-class="btn-sm btn-danger" btn-icon="fa fa-trash-o" btn-loading="status.removing" ng-click="remove(model.selected)"></loading-button>
+      </span>
+      {{model.selected.week}}. {{model.selected.week | week:'D MMM'}}
+    </h3>
+    <p ng-if="!model.selected.recipes || model.selected.recipes.length === 0">Aucune recette ajouté à la sélection :(</p>
+    <div class="media media-recipe item" ng-repeat="recipe in model.selected.recipes">
+      <a class="pull-left" ui-sref="user.data.recipe({recipeId: recipe.id})">
+        <img class="media-object" ng-src="{{recipe.images.thumbnail}}">
+      </a>
+      <div class="media-body">
+        <h4 class="media-heading">{{recipe.name}}</h4>
+        <p ng-if="recipe.privateNotes">
+          Private note: {{recipe.privateNotes}}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3 selection-details" ng-if="model.form">
+    <h3 style="margin-top: 0px;">
+      <span class="pull-right">
+        <a class="btn btn-sm btn-default" ng-click="cancelEdit()">Annuler</a>
+      </span>
+      {{model.form.week}}. {{model.form.week | week:'D MMM'}}
+    </h3>
+    <div class="media media-recipe item" ng-repeat="recipe in model.form.recipes">
+      <a class="pull-left" ui-sref="user.data.recipe({recipeId: recipe.id})">
+        <img class="media-object" ng-src="{{recipe.images.thumbnail}}">
+      </a>
+      <div class="media-body">
+        <h4 class="media-heading">{{recipe.name}}</h4>
+        <p ng-if="recipe.privateNotes">
+          Private note: {{recipe.privateNotes}}
+        </p>
+        <div class="big-actions">
+          <span class="pull-right">
+            <button type="button" class="btn btn-sm btn-default" ng-click="moveEltDown(model.form.recipes, $index)" ng-if="!$last"><i class="fa fa-arrow-down"></i></button>
+            <button type="button" class="btn btn-sm btn-danger" ng-click="removeElt(model.form.recipes, $index)"><i class="fa fa-trash-o"></i></button>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="pull-right">
+        <loading-button btn-class="btn-primary" btn-loading="status.saving" ng-if="!model.form.id" ng-click="save()">Créer</loading-button>
+        <loading-button btn-class="btn-success" btn-loading="status.saving" ng-if="model.form.id" ng-click="save()">Enregistrer</loading-button>
+      </div>
+      <a class="btn btn-default" ng-click="cancelEdit()">Annuler</a>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+
+  <div class="col-md-3 col-md-offset-1" ng-if="model.form">
+    <form>
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search ..." ng-model="search">
+      </div>
+    </form>
+    <div class="media media-recipe item" ng-repeat="recipe in data.recipes | filter:search" ng-if="!eltExistsIn(model.form.recipes, recipe)">
+      <a class="pull-left" ui-sref="user.data.recipe({recipeId: recipe.id})">
+        <img class="media-object" ng-src="{{recipe.images.thumbnail}}">
+      </a>
+      <div class="media-body">
+        <h4 class="media-heading">{{recipe.name}}</h4>
+        <p ng-if="recipe.privateNotes">
+          Private note: {{recipe.privateNotes}}
+        </p>
+        <div class="big-actions">
+          <span class="pull-right">
+            <button type="button" class="btn btn-sm btn-success" ng-click="addElt(model.form, 'recipes', recipe)"><i class="fa fa-plus"></i></button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
