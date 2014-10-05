@@ -16,6 +16,7 @@ object Application extends Controller {
   /** load an HTML page from public/views */
   def loadPublicHTML(any: String) = Action {
     val uri = Play.application().path() + "/public/views/" + any
+    Logger.info("uri: "+uri)
     var file = new File(uri)
     if (file.exists())
       Ok(scala.io.Source.fromFile(file.getCanonicalPath()).mkString).as("text/html");
