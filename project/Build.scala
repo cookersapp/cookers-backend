@@ -1,9 +1,9 @@
 import sbt._
 import Keys._
 import play.Project._
+import net.litola.SassPlugin
 
 object ApplicationBuild extends Build {
-
   val appName         = "cookers"
   val appVersion      = "1.0-SNAPSHOT"
 
@@ -14,9 +14,8 @@ object ApplicationBuild extends Build {
     "org.reactivemongo" %% "play2-reactivemongo" % "0.9"
   )
 
-
   val main = play.Project(appName, appVersion, appDependencies).settings(
-    // Add your own project settings here      
+    // Add your own project settings here
+    SassPlugin.sassSettings:_*
   )
-
 }
