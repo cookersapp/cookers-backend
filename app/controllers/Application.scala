@@ -12,10 +12,10 @@ object Application extends Controller {
   def index(any: String) = Action {
     Ok(views.html.index())
   }
-
-  /** load an HTML page from public/views */
+  
+  /** load an HTML page from public/html */
   def loadPublicHTML(any: String) = Action {
-    val uri = "public/views/" + any
+    val uri = Play.application().path() + "/public/views/" + any
     Logger.info("uri: "+uri)
     var file = new File(uri)
     if (file.exists())

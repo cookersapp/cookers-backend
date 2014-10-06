@@ -25,4 +25,3 @@ See spec.txt
 - Mixpanel api docs : https://mixpanel.com/docs/api-documentation/data-export-api
 - Dashboard from : https://github.com/Ehesp/Responsive-Dashboard
 - Sample app using heroku : https://github.com/jamesward/play2bars/tree/scala-mongodb
-
