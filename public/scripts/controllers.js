@@ -69,7 +69,7 @@ angular.module('app')
 })
 
 
-.controller('MixpanelCtrl', function($rootScope, $scope, MixpanelSrv){
+.controller('TrackingCtrl', function($rootScope, $scope, TrackingSrv){
   'use strict';
   var ctx = {
     config: {
@@ -79,22 +79,27 @@ angular.module('app')
       }
     },
     model: {
-      data: []
+      elts: []
     }
   };
 
-  $rootScope.config.header.title = 'Mixpanel';
+  $rootScope.config.header.title = 'Tracking';
   $rootScope.config.header.levels = [
     {name: 'Home', state: 'user.home'},
-    {name: 'Mixpanel'}
+    {name: 'Tracking'}
   ];
 
   $scope.model = ctx.model;
+  
+  TrackingSrv.getAllEvents().then(function(events){
+    console.log('events', events);
+    $scope.model.elts = events;
+  });
 
-  var mixpanel = MixpanelSrv.create(ctx.config.cookersApp, 'day');
+  /*var mixpanel = MixpanelSrv.create(ctx.config.cookersApp, 'day');
   mixpanel.events(['exception', 'state'], {type: 'general', interval: 2}).then(function(data){ ctx.model.data[0] = data; });
   mixpanel.events(['exception', 'state'], {type: 'unique'}).then(function(data){ ctx.model.data[1] = data; });
-  mixpanel.events(['exception', 'state'], {type: 'average'}).then(function(data){ ctx.model.data[2] = data; });
+  mixpanel.events(['exception', 'state'], {type: 'average'}).then(function(data){ ctx.model.data[2] = data; });*/
 })
 
 

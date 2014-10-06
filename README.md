@@ -21,6 +21,8 @@ See spec.txt
 
 - Play sass compile : https://github.com/jlitola/play-sass
 - Charts : http://www.highcharts.com/ or http://www.chartjs.org/
+- http://json2caseclass.cleverapps.io/
+- Event sourcing : http://blog.zilverline.com/2012/07/04/simple-event-sourcing-introduction-part-1/ et https://github.com/ubourdon/uno/tree/fonctionnalEventSourcing
 - Export data from mixpanel : https://github.com/michaelcarter/mixpanel-data-export-js
 - Mixpanel api docs : https://mixpanel.com/docs/api-documentation/data-export-api
 - Dashboard from : https://github.com/Ehesp/Responsive-Dashboard

@@ -73,10 +73,10 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
     url: '/tables',
     templateUrl: 'assets/views/tables.html'
   })
-  .state('user.mixpanel', {
-    url: '/mixpanel',
-    templateUrl: 'assets/views/mixpanel.html',
-    controller: 'MixpanelCtrl'
+  .state('user.tracking', {
+    url: '/tracking',
+    templateUrl: 'assets/views/tracking.html',
+    controller: 'TrackingCtrl'
   })
   .state('user.data', {
     abstract: true,

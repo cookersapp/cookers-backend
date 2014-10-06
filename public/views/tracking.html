@@ -1,8 +1,8 @@
-<div class="row">
+<!--<div class="row">
   <div class="col-md-4"><pre>{{model.data[0] | json}}</pre></div>
   <div class="col-md-4"><pre>{{model.data[1] | json}}</pre></div>
   <div class="col-md-4"><pre>{{model.data[2] | json}}</pre></div>
-</div>
+</div>-->
 <div class="row">
   <div class="col-md-6">
     <div class="widget">
@@ -18,24 +18,18 @@
           <table class="table table-hover">
             <thead>
               <tr>
-                <th sort="config.sort" name="name" ng-click="sort('name')">Nom ({{filtered.length}})</th>
-                <th sort="config.sort" name="category" ng-click="sort('category')">Catégorie</th>
-                <th>Prix</th>
-                <th sort="config.sort" name="updated" ng-click="sort('updated', true)">Mis à jour</th>
+                <th name="name">Nom ({{filtered.length}})</th>
+                <th name="category">Utilisateur</th>
+                <th name="date">Date</th>
+                <th name="data">Données</th>
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="food in filtered = (model.elts | filter:search)" ng-click="toggle(food)" ng-class="{active: model.selected && food.id === model.selected.id}">
-                <td>{{food.name}}</td>
-                <td>{{food.category}}</td>
-                <td>
-                  <span ng-repeat="price in food.prices">
-                    <a ng-if="isUrl(price.source)" href="{{price.source}}" target="_blank">{{price | price}}</a>
-                    <span ng-if="!isUrl(price.source)" title="{{price.source}}">{{price | price}}</span>
-                    {{$last ? '' : ', '}}
-                  </span>
-                </td>
-                <td>{{food.updated ? food.updated : food.created | date}}</td>
+              <tr ng-repeat="elt in filtered = (model.elts | filter:search)">
+                <td>{{elt.name}}</td>
+                <td>{{elt.user}}</td>
+                <td>{{elt.time | date}}</td>
+                <td>{{elt.data | json}}</td>
               </tr>
             </tbody>
           </table>

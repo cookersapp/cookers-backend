@@ -78,6 +78,19 @@ angular.module('app')
 })
 
 
+.factory('TrackingSrv', function($q, $http){
+  'use strict';
+  var service = {
+    getAllEvents: function(){
+      return $http.get('/api/v1/track/events').then(function(results){
+        return results && results.data ? results.data : null;
+      });
+    }
+  };
+  
+  return service;
+})
+
 .factory('MixpanelSrv', function($q, $http){
   'use strict';
   // requiert : https://github.com/michaelcarter/mixpanel-data-export-js

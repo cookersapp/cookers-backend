@@ -5,6 +5,11 @@
 # Home page
 GET     /                           controllers.Application.index(any = "none")
 
+# Tracking system
+GET		/api/v1/track/events		controllers.Tracking.getAll
+POST	/api/v1/track/event			controllers.Tracking.add
+POST	/api/v1/track/events		controllers.Tracking.addAll
+
 # Play routes serving JSON to AngularJS start with /api
 GET     /api/celebrities            controllers.Celebrities.index
 POST    /api/celebrities/new		controllers.Celebrities.create
