@@ -45,7 +45,7 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
   })
   .state('anon.login', {
     url: '/login',
-    templateUrl: 'views/login.html',
+    templateUrl: 'assets/views/login.html',
     controller: 'LoginCtrl'
   });
 
@@ -53,7 +53,7 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
   $stateProvider
   .state('user', {
     abstract: true,
-    templateUrl: 'views/layout.html',
+    templateUrl: 'assets/views/layout.html',
     controller: 'MainCtrl',
     data: {
       access: access.user
@@ -61,21 +61,21 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
   })
   .state('user.home', {
     url: '/',
-    templateUrl: 'views/home.html',
+    templateUrl: 'assets/views/home.html',
     controller: 'HomeCtrl'
   })
   .state('user.dashboard', {
     url: '/dashboard',
-    templateUrl: 'views/dashboard.html',
+    templateUrl: 'assets/views/dashboard.html',
     controller: 'DashboardCtrl'
   })
   .state('user.tables', {
     url: '/tables',
-    templateUrl: 'views/tables.html'
+    templateUrl: 'assets/views/tables.html'
   })
   .state('user.mixpanel', {
     url: '/mixpanel',
-    templateUrl: 'views/mixpanel.html',
+    templateUrl: 'assets/views/mixpanel.html',
     controller: 'MixpanelCtrl'
   })
   .state('user.data', {
@@ -84,32 +84,32 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
   })
   .state('user.data.recipes', {
     url: '/recipes',
-    templateUrl: 'views/data/recipes.html',
+    templateUrl: 'assets/views/data/recipes.html',
     controller: 'RecipesCtrl'
   })
   .state('user.data.recipecreate', {
     url: '/recipes/create',
-    templateUrl: 'views/data/recipe-edit.html',
+    templateUrl: 'assets/views/data/recipe-edit.html',
     controller: 'RecipeEditCtrl'
   })
   .state('user.data.recipe', {
     url: '/recipes/:recipeId',
-    templateUrl: 'views/data/recipe.html',
+    templateUrl: 'assets/views/data/recipe.html',
     controller: 'RecipeCtrl'
   })
   .state('user.data.recipeedit', {
     url: '/recipes/:recipeId/edit',
-    templateUrl: 'views/data/recipe-edit.html',
+    templateUrl: 'assets/views/data/recipe-edit.html',
     controller: 'RecipeEditCtrl'
   })
   .state('user.data.selections', {
     url: '/selections',
-    templateUrl: 'views/data/selections.html',
+    templateUrl: 'assets/views/data/selections.html',
     controller: 'SelectionsCtrl'
   })
   .state('user.data.foods', {
     url: '/foods',
-    templateUrl: 'views/data/foods.html',
+    templateUrl: 'assets/views/data/foods.html',
     controller: 'FoodsCtrl'
   })
   .state('user.admin', {
@@ -118,12 +118,12 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
   })
   .state('user.admin.globalmessages', {
     url: '/globalmessages',
-    templateUrl: 'views/admin/globalmessages.html',
+    templateUrl: 'assets/views/admin/globalmessages.html',
     controller: 'GlobalmessagesCtrl'
   })
   .state('user.admin.batchs', {
     url: '/batchs',
-    templateUrl: 'views/admin/batchs.html',
+    templateUrl: 'assets/views/admin/batchs.html',
     controller: 'BatchsCtrl'
   });
 
