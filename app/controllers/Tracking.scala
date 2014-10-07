@@ -15,21 +15,24 @@ import scala.concurrent.Future
 
 object Tracking extends Controller with MongoController {
   def eventsCollection: JSONCollection = db.collection[JSONCollection]("events")
+  def malformedEventsCollection: JSONCollection = db.collection[JSONCollection]("malformedEvents")
 
+  // fire and forget endpoint...
   def add = Action(parse.json) { request =>
     // Logger.info("track event: " + request.body)
     request.body.validate[Event].map { event => saveEvent(event) }.getOrElse {
-      // TODO : event in bad format, store it in an other collection !
+      malformedEventsCollection.insert(request.body)
     }
     Ok
   }
 
+  // fire and forget endpoint...
   def addAll = Action(parse.json) { request =>
     // Logger.info("track events: " + request.body)
     request.body.validate[Array[Event]].map { events =>
       events.map { event => saveEvent(event) }
     }.getOrElse {
-      // TODO : events in bad format, store them in an other collection !
+      malformedEventsCollection.insert(request.body)
     }
     Ok
   }
