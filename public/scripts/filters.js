@@ -1,11 +1,33 @@
 angular.module('app')
 
+.filter('datetime', function(){
+  'use strict';
+  return function(timestamp, format){
+    return timestamp ? moment(timestamp).format(format ? format : 'D MMM YYYY, HH:mm:ss') : '<datetime>';
+  };
+})
+
 .filter('date', function(){
   'use strict';
   return function(timestamp, format){
     return timestamp ? moment(timestamp).format(format ? format : 'll') : '<date>';
   };
 })
+
+.filter('time', function(){
+  'use strict';
+  return function(timestamp, format){
+    return timestamp ? moment(timestamp).format(format ? format : 'LT') : '<time>';
+  };
+})
+
+.filter('humanTime', function(){
+  'use strict';
+  return function(timestamp){
+    return timestamp ? moment(timestamp).fromNow(true) : '<humanTime>';
+  };
+})
+
 
 .filter('week', function(){
   'use strict';

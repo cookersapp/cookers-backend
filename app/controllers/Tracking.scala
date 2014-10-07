@@ -17,27 +17,35 @@ object Tracking extends Controller with MongoController {
   def eventsCollection: JSONCollection = db.collection[JSONCollection]("events")
 
   def add = Action(parse.json) { request =>
-    // Logger.info("request: " + request.body)
-    Async {
-      request.body.validate[Event].map { event =>
-        eventsCollection.insert(event).map { lastError =>
-          // Logger.debug(s"Successfully inserted with LastError: $lastError")
-          Created
-        }
-      }.getOrElse(Future.successful(BadRequest("invalid json")))
+    // Logger.info("track event: " + request.body)
+    request.body.validate[Event].map { event => saveEvent(event) }.getOrElse {
+      // TODO : event in bad format, store it in an other collection !
     }
+    Ok
   }
 
   def addAll = Action(parse.json) { request =>
-    // TODO : add an array of events
+    // Logger.info("track events: " + request.body)
+    request.body.validate[Array[Event]].map { events =>
+      events.map { event => saveEvent(event) }
+    }.getOrElse {
+      // TODO : events in bad format, store them in an other collection !
+    }
     Ok
   }
 
   def getAll = Action { implicit request =>
     Async {
-      val cursor = eventsCollection.find(Json.obj()).cursor[Event] // get all the fields of all the events
+      val cursor = eventsCollection.find(Json.obj()).sort(Json.obj("time" -> -1)).cursor[Event] // get all the fields of all the events
       val futureList = cursor.toList // convert it to a list of Event
       futureList.map { events => Ok(Json.toJson(events)) } // convert it to a JSON and return it
+    }
+  }
+
+  def saveEvent(event: Event) {
+    eventsCollection.insert(event).map { lastError =>
+      // Logger.debug(s"Successfully inserted with LastError: $lastError")
+      // TODO : update appVersion & lastSeen for user
     }
   }
 }

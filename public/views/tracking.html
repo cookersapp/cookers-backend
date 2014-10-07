@@ -27,8 +27,8 @@
             <tbody>
               <tr ng-repeat="elt in filtered = (model.elts | filter:search)">
                 <td>{{elt.name}}</td>
-                <td>{{elt.user}}</td>
-                <td>{{elt.time | date}}</td>
+                <td>{{elt.userId}}</td>
+                <td title="{{elt.time | datetime}}">{{elt.time | humanTime}}</td>
                 <td>{{elt.data | json}}</td>
               </tr>
             </tbody>
