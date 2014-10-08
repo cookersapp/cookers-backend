@@ -10,6 +10,9 @@ GET       /api/v1/track/events   controllers.Tracking.getAll
 POST      /api/v1/track/event    controllers.Tracking.add
 POST      /api/v1/track/events   controllers.Tracking.addAll
 
+# User management
+GET       /api/v1/users/find     controllers.Users.get(email: String)
+
 # Play routes serving JSON to AngularJS start with /api
 GET       /api/celebrities       controllers.Celebrities.index
 POST      /api/celebrities/new   controllers.Celebrities.create

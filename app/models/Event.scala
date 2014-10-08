@@ -6,7 +6,7 @@ case class Event(
   eventId: String,
   previousEventId: Option[String],
   name: String,
-  time: Double,
+  time: Long,
   userId: String,
   source: Option[JsValue],
   data: Option[JsValue],

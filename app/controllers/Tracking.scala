@@ -17,6 +17,7 @@ object Tracking extends Controller with MongoController {
   def eventsCollection: JSONCollection = db.collection[JSONCollection]("events")
   def malformedEventsCollection: JSONCollection = db.collection[JSONCollection]("malformedEvents")
 
+  // save an event
   // fire and forget endpoint...
   def add = Action(parse.json) { request =>
     // Logger.info("track event: " + request.body)
@@ -26,6 +27,7 @@ object Tracking extends Controller with MongoController {
     Ok
   }
 
+  // save an array of events
   // fire and forget endpoint...
   def addAll = Action(parse.json) { request =>
     // Logger.info("track events: " + request.body)
@@ -37,6 +39,7 @@ object Tracking extends Controller with MongoController {
     Ok
   }
 
+  // get all events
   def getAll = Action { implicit request =>
     Async {
       val cursor = eventsCollection.find(Json.obj()).sort(Json.obj("time" -> -1)).cursor[Event] // get all the fields of all the events
