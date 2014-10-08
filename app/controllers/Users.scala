@@ -37,7 +37,6 @@ object Users extends Controller with MongoController {
 
   // get user with mail and create if it does not exists
   def getOrCreate(email: String) = Action { request =>
-    Logger.info("getOrCreate(" + email + ")")
     if (Validator.isEmail(email)) {
       Async {
         usersCollection.find(Json.obj("email" -> email)).one[User].map { maybeUser =>
@@ -55,13 +54,25 @@ object Users extends Controller with MongoController {
     }
   }
 
-  // link a device to an email if not done yet
+  // update a setting for a user
   def setUserSetting(id: String, setting: String) = Action(parse.json) { request =>
-    Ok
+    val selector = Json.obj("id" -> id)
+    val update = Json.obj("$set" -> Json.obj("settings." + setting -> request.body))
+    Async {
+      usersCollection.update(selector, update).map { lastError =>
+        Ok
+      }
+    }
   }
 
-  // link a device to an email if not done yet
+  // link a device to a user if not done yet
   def setUserDevice(id: String) = Action(parse.json) { request =>
-    Ok
+    val selector = Json.obj("id" -> id)
+    val update = Json.obj("$addToSet" -> Json.obj("devices" -> request.body))
+    Async {
+      usersCollection.update(selector, update).map { lastError =>
+        Ok
+      }
+    }
   }
 }
