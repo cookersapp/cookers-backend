@@ -1,33 +1,59 @@
-<!--<div class="row">
-  <div class="col-md-4"><pre>{{model.data[0] | json}}</pre></div>
-  <div class="col-md-4"><pre>{{model.data[1] | json}}</pre></div>
-  <div class="col-md-4"><pre>{{model.data[2] | json}}</pre></div>
-</div>-->
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-4">
     <div class="widget">
       <div class="widget-header">
-        <i class="fa fa-flash"></i> Events
-        <input type="text" class="form-control input-sm pull-right" placeholder="Search ..." ng-model="search">
+        <i class="fa fa-flash"></i> Users
+        <input type="text" class="form-control input-sm pull-right" placeholder="Search ..." ng-model="search.users">
         <div class="clearfix"></div>
       </div>
       <div class="widget-body no-padding">
-        <rd-loading ng-if="status.loading && !(model.elts && model.elts.length > 0)"></rd-loading>
-        <div class="alert alert-danger" role="alert" ng-if="status.error"><strong>Error!</strong> {{status.error}}</div>
-        <div class="table-responsive" ng-if="model.elts && model.elts.length > 0">
+        <rd-loading ng-if="status.loading && !(model.users && model.users.length > 0)"></rd-loading>
+        <div class="table-responsive" ng-if="model.users && model.users.length > 0">
           <table class="table table-hover">
             <thead>
               <tr>
-                <th name="name">Nom ({{filtered.length}})</th>
-                <th name="category">Utilisateur</th>
-                <th name="date">Date</th>
-                <th name="data">Données</th>
+                <th>Email ({{usersFiltered.length}})</th>
+                <th>LastSeen</th>
+                <th>Created</th>
+                <th>Settings</th>
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="elt in filtered = (model.elts | filter:search)">
+              <tr ng-repeat="elt in usersFiltered = (model.users | filter:search.users)">
+                <td>{{elt.email}}</td>
+                <td>{{elt.lastSeen | humanTime}}</td>
+                <td>{{elt.created | datetime}}</td>
+                <td>{{elt.settings | json}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="widget">
+      <div class="widget-header">
+        <i class="fa fa-flash"></i> Events
+        <input type="text" class="form-control input-sm pull-right" placeholder="Search ..." ng-model="search.events">
+        <div class="clearfix"></div>
+      </div>
+      <div class="widget-body no-padding">
+        <rd-loading ng-if="status.loading && !(model.events && model.events.length > 0)"></rd-loading>
+        <div class="table-responsive" ng-if="model.events && model.events.length > 0">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Nom ({{eventsFiltered.length}})</th>
+                <th>Utilisateur</th>
+                <th>Date</th>
+                <th>Données</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="elt in eventsFiltered = (model.events | filter:search.events)">
                 <td>{{elt.name}}</td>
-                <td>{{elt.userId}}</td>
+                <td><user id="elt.userId"></user></td>
                 <td title="{{elt.time | datetime}}">{{elt.time | humanTime}}</td>
                 <td>{{elt.data | json}}</td>
               </tr>
@@ -37,19 +63,30 @@
       </div>
     </div>
   </div>
-  <div class="col-md-6" ng-if="model.selected">
-    <div class="card">
-      <h4 class="card-heading">
-        <span class="pull-right">
-          <a class="btn btn-xs btn-default" href="{{eltRestUrl(model.selected)}}" target="_blank"><i class="fa fa-external-link"></i></a>
-          <a class="btn btn-xs btn-info" ng-click="edit(model.selected)"><i class="fa fa-pencil-square-o"></i></a>
-          <loading-button btn-class="btn-xs btn-danger" btn-icon="fa fa-trash-o" btn-loading="status.removing" ng-click="remove(model.selected)"></loading-button>
-        </span>
-        <span class="label label-default">{{model.selected.category}}</span> {{model.selected.name}}
-      </h4>
-      <ol>
-        <li ng-repeat="price in model.selected.prices">{{price | price}}</li>
-      </ol>
+  <div class="col-md-4">
+    <div class="widget">
+      <div class="widget-header">
+        <i class="fa fa-flash"></i> Malformed Events
+        <input type="text" class="form-control input-sm pull-right" placeholder="Search ..." ng-model="search.malformedEvents">
+        <div class="clearfix"></div>
+      </div>
+      <div class="widget-body no-padding">
+        <rd-loading ng-if="status.loading && !(model.malformedEvents && model.malformedEvents.length > 0)"></rd-loading>
+        <div class="table-responsive" ng-if="model.malformedEvents && model.malformedEvents.length > 0">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Nom ({{malformedEventsFiltered.length}})</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="elt in malformedEventsFiltered = (model.malformedEvents | filter:search.malformedEvents)">
+                <td><pre>{{elt | json}}</pre></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </div>

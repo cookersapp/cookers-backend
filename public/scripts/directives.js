@@ -1,5 +1,22 @@
 angular.module('app')
 
+.directive('user', function(UserSrv){
+  'use strict';
+  return {
+    restrict: 'E',
+    template: '<span>{{username}}</span>',
+    scope: {
+      id: '='
+    },
+    link: function(scope, element, attr){
+      scope.username = scope.id;
+      UserSrv.get(scope.id).then(function(user){
+        scope.username = user.email;
+      });
+    }
+  };
+})
+
 .directive('sort', function(){
   'use strict';
   return {

@@ -1,5 +1,28 @@
 angular.module('app')
 
+.factory('UserSrv', function($q, $http){
+  'use strict';
+  var service = {
+    get: get
+  };
+  var cache = {
+    users: {}
+  };
+  
+  function get(id){
+    if(cache.users[id]){
+      return $q.when(cache.users[id]);
+    } else {
+      return $http.get('/api/v1/users/'+id).then(function(result){
+        cache.users[id] = result.data;
+        return result.data;
+      });
+    }
+  }
+  
+  return service;
+})
+
 .factory('AuthSrv', function($rootScope, $state, $q, StorageSrv, $firebaseSimpleLogin, firebaseUrl){
   'use strict';
   var storageKey = 'user',
@@ -77,19 +100,6 @@ angular.module('app')
   return service;
 })
 
-
-.factory('TrackingSrv', function($q, $http){
-  'use strict';
-  var service = {
-    getAllEvents: function(){
-      return $http.get('/api/v1/track/events').then(function(results){
-        return results && results.data ? results.data : null;
-      });
-    }
-  };
-  
-  return service;
-})
 
 .factory('MixpanelSrv', function($q, $http){
   'use strict';

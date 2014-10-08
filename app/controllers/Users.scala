@@ -16,9 +16,9 @@ object Users extends Controller with MongoController {
   // get all users
   def getAll = Action { implicit request =>
     Async {
-      val cursor = usersCollection.find(Json.obj()).sort(Json.obj("lastSeen" -> -1)).cursor[User] // get all the fields of all the users
-      val futureList = cursor.toList // convert it to a list of User
-      futureList.map { users => Ok(Json.toJson(users)) } // convert it to a JSON and return it
+      val cursor = usersCollection.find(Json.obj()).sort(Json.obj("lastSeen" -> -1)).cursor[User]
+      val futureList = cursor.toList
+      futureList.map { users => Ok(Json.toJson(users)) }
     }
   }
 
