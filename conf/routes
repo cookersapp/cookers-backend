@@ -3,28 +3,32 @@
 # ~~~~
 
 # Home page
-GET       /                      controllers.Application.index(any = "none")
+GET       /                                     controllers.Application.index(any = "none")
 
 # Tracking system
-GET       /api/v1/track/events   controllers.Tracking.getAll
-POST      /api/v1/track/event    controllers.Tracking.add
-POST      /api/v1/track/events   controllers.Tracking.addAll
+GET       /api/v1/track/events                  controllers.Tracking.getAll
+POST      /api/v1/track/event                   controllers.Tracking.add
+POST      /api/v1/track/events                  controllers.Tracking.addAll
 
 # User management
-GET       /api/v1/users/find     controllers.Users.get(email: String)
+GET       /api/v1/users                         controllers.Users.getAll
+GET       /api/v1/users/find                    controllers.Users.getOrCreate(email: String)
+GET       /api/v1/users/:id                     controllers.Users.get(id: String)
+PUT       /api/v1/users/:id/settings/:setting   controllers.Users.setUserSetting(id: String, setting: String)
+PUT       /api/v1/users/:id/device              controllers.Users.setUserDevice(id: String)
 
 # Play routes serving JSON to AngularJS start with /api
-GET       /api/celebrities       controllers.Celebrities.index
-POST      /api/celebrities/new   controllers.Celebrities.create
-GET       /api/celebrities/:id   controllers.Celebrities.show(id: String)
-POST      /api/celebrities/:id   controllers.Celebrities.update(id: String)
-DELETE    /api/celebrities/:id   controllers.Celebrities.delete(id: String)
+GET       /api/celebrities                      controllers.Celebrities.index
+POST      /api/celebrities/new                  controllers.Celebrities.create
+GET       /api/celebrities/:id                  controllers.Celebrities.show(id: String)
+POST      /api/celebrities/:id                  controllers.Celebrities.update(id: String)
+DELETE    /api/celebrities/:id                  controllers.Celebrities.delete(id: String)
 
 # Allow cross-origin
-OPTIONS   /*all                  controllers.Application.corsPreflight(all: String)
+OPTIONS   /*all                                 controllers.Application.corsPreflight(all: String)
 
 # Map static resources from the /public folder to the /assets URL path
-GET       /assets/*file          controllers.Assets.at(path="/public", file)
+GET       /assets/*file                         controllers.Assets.at(path="/public", file)
 
 # Redirect all unknown routes to the index page
-GET       /*any                  controllers.Application.index(any)
+GET       /*any                                 controllers.Application.index(any)
