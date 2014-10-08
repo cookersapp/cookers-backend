@@ -15,6 +15,7 @@ import play.api.libs.json.JsValue
 object Tracking extends Controller with MongoController {
   def eventsCollection: JSONCollection = db.collection[JSONCollection]("events")
   def malformedEventsCollection: JSONCollection = db.collection[JSONCollection]("malformedEvents")
+  def usersCollection: JSONCollection = db.collection[JSONCollection]("users")
 
   // get all events
   def getAll = Action { implicit request =>
@@ -58,8 +59,10 @@ object Tracking extends Controller with MongoController {
 
   def saveEvent(event: Event) {
     eventsCollection.insert(event).map { lastError =>
-      // Logger.debug(s"Successfully inserted with LastError: $lastError")
-      // TODO : update appVersion & lastSeen for user
+      val selector = Json.obj("id" -> event.userId)
+      val update = Json.obj("$set" -> Json.obj("lastSeen" -> event.time))
+      usersCollection.update(selector, update)
+      // TODO : update appVersion
     }
   }
 }
