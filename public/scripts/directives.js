@@ -114,7 +114,7 @@ angular.module('app')
   'use strict';
   return {
     restrict: 'A',
-    templateUrl: 'views/directives/source.html',
+    templateUrl: 'assets/views/directives/source.html',
     scope: {
       data: '=source'
     },
@@ -130,7 +130,7 @@ angular.module('app')
   'use strict';
   return {
     restrict: 'E',
-    templateUrl: 'views/directives/mediaCrushUpload.html',
+    templateUrl: 'assets/views/directives/mediaCrushUpload.html',
     replace: true,
     scope: {
       ngModel: '=',
