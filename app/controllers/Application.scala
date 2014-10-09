@@ -1,14 +1,26 @@
 package controllers
 
-import java.io.File
+import common.Mandrill
 
-import play.Play
-import play.api.mvc.Action
-import play.api.mvc.Controller
+import scala.concurrent._
+import ExecutionContext.Implicits.global
+
+import play.api.mvc._
 
 object Application extends Controller {
   def index(any: String) = Action {
     Ok(views.html.index())
+  }
+
+  def sendFeedback = Action(parse.json) { request =>
+    val from = (request.body \ "from").as[String]
+    val content = (request.body \ "content").as[String]
+    val source = (request.body \ "source").as[String]
+    Async {
+      Mandrill.sendFeedback(from, content, source).map { status =>
+        Ok(status)
+      }
+    }
   }
 
   def corsPreflight(all: String) = Action {

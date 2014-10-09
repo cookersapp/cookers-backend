@@ -7,6 +7,7 @@ import play.api.libs.json._
 import play.api.libs.ws._
 
 object Mandrill {
+  val supportTeamEmail = "loicknuchel@gmail.com"
   val mandrillUrl = "https://mandrillapp.com/api/1.0"
   val mandrillKey = "__YzrUYwZGkqqSM2pe9XFg"
 
@@ -28,6 +29,32 @@ object Mandrill {
           Nil)
 
     WS.url(mandrillUrl + "/messages/send-template.json").post(data).map { response =>
+      val status = (response.json)(0) \ "status"
+      status.as[String]
+    }
+  }
+
+  /**
+   * Send an email to @supportTeamEmail with required params.
+   * It's used to submit feedbacks from the mobile app
+   */
+  def sendFeedback(from: String, content: String, source: String) = {
+    val data = JsObject(
+      "key" -> JsString(mandrillKey) ::
+        "message" -> JsObject(
+          "subject" -> JsString("[Cookers] Feedback from " + source) ::
+            "text" -> JsString(content) ::
+            "from_email" -> JsString(from) ::
+            "to" -> JsArray(JsObject("email" -> JsString(supportTeamEmail) :: Nil) :: JsObject("name" -> JsString("Cookers team") :: Nil) :: Nil) ::
+            "important" -> JsBoolean(false) ::
+            "track_opens" -> JsBoolean(true) ::
+            "track_clicks" -> JsNull ::
+            "preserve_recipients" -> JsNull ::
+            "tags" -> JsArray(JsString("app") :: JsString("feedback") :: Nil) ::
+            Nil) ::
+          Nil)
+
+    WS.url(mandrillUrl + "/messages/send.json").post(data).map { response =>
       val status = (response.json)(0) \ "status"
       status.as[String]
     }
