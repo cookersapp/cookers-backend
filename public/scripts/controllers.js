@@ -86,6 +86,8 @@ angular.module('app')
   ];
 
   $scope.model = ctx.model;
+  $scope.userSelected = null;
+  $scope.eventSelected = null;
 
   $http.get('/api/v1/users').then(function(results){
     if(results && results.data){
@@ -102,6 +104,15 @@ angular.module('app')
       $scope.model.malformedEvents = results.data;
     }
   });
+
+  $scope.toggleUser = function(elt){
+    if($scope.userSelected === elt){$scope.userSelected = null;}
+    else {$scope.userSelected = elt;}
+  };
+  $scope.toggleEvent = function(elt){
+    if($scope.eventSelected === elt){$scope.eventSelected = null;}
+    else {$scope.eventSelected = elt;}
+  };
 })
 
 

@@ -17,6 +17,26 @@ angular.module('app')
   };
 })
 
+.directive('eventData', function(RecipeSrv){
+  'use strict';
+  return {
+    restrict: 'E',
+    template: '<span>{{event.data | json}}</span>',
+    scope: {
+      event: '='
+    },
+    link: function(scope, element, attr){
+      if(scope.event && scope.event.data){
+        if(scope.event.data.recipe){
+          RecipeSrv.get(scope.event.data.recipe).then(function(recipe){
+            scope.event.data.recipe = recipe.name;
+          });
+        }
+      }
+    }
+  };
+})
+
 .directive('sort', function(){
   'use strict';
   return {

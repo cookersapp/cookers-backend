@@ -27,7 +27,7 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-12">
     <div class="widget">
       <div class="widget-header">
         <i class="fa fa-flash"></i> Users
@@ -46,12 +46,17 @@
                 <th>Settings</th>
               </tr>
             </thead>
-            <tbody>
-              <tr ng-repeat="elt in usersFiltered = (model.users | filter:search.users)">
+            <tbody ng-repeat="elt in usersFiltered = (model.users | filter:search.users)">
+              <tr ng-click="toggleUser(elt)">
                 <td>{{elt.email}}</td>
                 <td>{{elt.lastSeen | humanTime}}</td>
                 <td>{{elt.created | datetime}}</td>
                 <td>{{elt.settings | json}}</td>
+              </tr>
+              <tr ng-show="userSelected === elt">
+                <td colspan="4">
+                  <pre>{{elt | json}}</pre>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -59,7 +64,9 @@
       </div>
     </div>
   </div>
-  <div class="col-md-6">
+</div>
+<div class="row">
+  <div class="col-md-12">
     <div class="widget">
       <div class="widget-header">
         <i class="fa fa-flash"></i> Events
@@ -78,12 +85,17 @@
                 <th>Données</th>
               </tr>
             </thead>
-            <tbody>
-              <tr ng-repeat="elt in eventsFiltered = (model.events | filter:search.events)">
+            <tbody ng-repeat="elt in eventsFiltered = (model.events | filter:search.events)">
+              <tr ng-click="toggleEvent(elt)">
                 <td>{{elt.name}}</td>
                 <td><user id="elt.userId"></user></td>
                 <td title="{{elt.time | datetime}}">{{elt.time | humanTime}}</td>
-                <td>{{elt.data | json}}</td>
+                <td><event-data event="elt"></event-data></td>
+              </tr>
+              <tr ng-show="eventSelected === elt">
+                <td colspan="4">
+                  <pre>{{elt | json}}</pre>
+                </td>
               </tr>
             </tbody>
           </table>
