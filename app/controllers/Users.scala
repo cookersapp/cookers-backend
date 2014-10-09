@@ -3,12 +3,13 @@ package controllers
 import models.User
 import models.User._
 import common.Validator
+import common.Mandrill
+
 import play.api.mvc._
-import play.api.libs.json.Json
+import play.api.libs.json._
 import play.api.Logger
 import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
-import org.omg.CosNaming.NamingContextPackage.NotFound
 
 object Users extends Controller with MongoController {
   def usersCollection: JSONCollection = db.collection[JSONCollection]("users")
@@ -46,7 +47,7 @@ object Users extends Controller with MongoController {
             val user = new User(email)
             usersCollection.insert(user)
             if (welcomeEmailSent.isEmpty || (welcomeEmailSent.isDefined && !welcomeEmailSent.get)) {
-              // TODO send welcome email !!!
+              Mandrill.sendWelcomeEmail("loicknuchel@gmail.com")
             }
             Created(Json.toJson(user))
           }
