@@ -13,7 +13,7 @@ POST      /api/v1/track/events                  controllers.Tracking.addAll
 
 # User management
 GET       /api/v1/users                         controllers.Users.getAll
-GET       /api/v1/users/find                    controllers.Users.getOrCreate(email: String)
+GET       /api/v1/users/find                    controllers.Users.getOrCreate(email: String, welcomeEmailSent: Option[Boolean])
 GET       /api/v1/users/:id                     controllers.Users.get(id: String)
 PUT       /api/v1/users/:id/settings/:setting   controllers.Users.setUserSetting(id: String, setting: String)
 PUT       /api/v1/users/:id/device              controllers.Users.setUserDevice(id: String)

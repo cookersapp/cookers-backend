@@ -36,7 +36,7 @@ object Users extends Controller with MongoController {
   }
 
   // get user with mail and create if it does not exists
-  def getOrCreate(email: String) = Action { request =>
+  def getOrCreate(email: String, welcomeEmailSent: Option[Boolean]) = Action { request =>
     if (Validator.isEmail(email)) {
       Async {
         usersCollection.find(Json.obj("email" -> email)).one[User].map { maybeUser =>
@@ -45,6 +45,9 @@ object Users extends Controller with MongoController {
           }.getOrElse {
             val user = new User(email)
             usersCollection.insert(user)
+            if (welcomeEmailSent.isEmpty || (welcomeEmailSent.isDefined && !welcomeEmailSent.get)) {
+              // TODO send welcome email !!!
+            }
             Created(Json.toJson(user))
           }
         }
