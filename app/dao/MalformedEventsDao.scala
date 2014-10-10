@@ -11,6 +11,6 @@ object MalformedEventsDao {
   private val COLLECTION_NAME = "malformedEvents"
   private def collection()(implicit db: DB): JSONCollection = db.collection[JSONCollection](COLLECTION_NAME)
 
-  def all()(implicit db: DB): Future[Set[JsValue]] = collection().find(Json.obj()).cursor[JsValue].collect[Set]()
+  def all()(implicit db: DB): Future[List[JsValue]] = collection().find(Json.obj()).cursor[JsValue].toList
   def insert(event: JsValue)(implicit db: DB): Future[LastError] = collection().insert(event)
 }

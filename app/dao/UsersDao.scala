@@ -14,7 +14,7 @@ object UsersDao {
   private val COLLECTION_NAME = "users"
   private def collection()(implicit db: DB): JSONCollection = db.collection[JSONCollection](COLLECTION_NAME)
 
-  def all()(implicit db: DB): Future[Set[User]] = collection().find(Json.obj()).sort(Json.obj("lastSeen" -> -1)).cursor[User].collect[Set]()
+  def all()(implicit db: DB): Future[List[User]] = collection().find(Json.obj()).sort(Json.obj("lastSeen" -> -1)).cursor[User].toList
   def findById(id: String)(implicit db: DB): Future[Option[User]] = collection().find(Json.obj("id" -> id)).one[User]
   def findByEmail(email: String)(implicit db: DB): Future[Option[User]] = collection().find(Json.obj("email" -> email)).one[User]
 
