@@ -5,7 +5,8 @@ angular.module('app')
   var cache = {};
   var service = {
     getUser   : function(id){ return get('users'    , '/api/v1/users/'+id                 , id);  },
-    getRecipe : function(id){ return get('recipes'  , firebaseUrl+'/recipes/'+id+'.json'  , id);  }
+    getRecipe : function(id){ return get('recipes'  , firebaseUrl+'/recipes/'+id+'.json'  , id);  },
+    getFood   : function(id){ return get('foods'    , firebaseUrl+'/foods/'+id+'.json'    , id);  }
   };
 
   function get(type, url, id){
