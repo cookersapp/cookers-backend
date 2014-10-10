@@ -59,9 +59,11 @@ object Users extends Controller with MongoController {
   }
 
   // update a setting for a user
+  // body format : {value: valueOfSetting}
   def setUserSetting(id: String, setting: String) = Action(parse.json) { request =>
+    val settingValue = request.body \ "value"
     val selector = Json.obj("id" -> id)
-    val update = Json.obj("$set" -> Json.obj("settings." + setting -> request.body))
+    val update = Json.obj("$set" -> Json.obj("settings." + setting -> settingValue))
     Async {
       usersCollection.update(selector, update).map { lastError =>
         Ok

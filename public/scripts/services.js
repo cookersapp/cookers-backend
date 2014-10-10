@@ -1,25 +1,29 @@
 angular.module('app')
 
-.factory('UserSrv', function($q, $http){
+.factory('CacheSrv', function($q, $http, firebaseUrl){
   'use strict';
+  var cache = {};
   var service = {
-    get: get
+    getUser   : function(id){ return get('users'    , '/api/v1/users/'+id                 , id);  },
+    getRecipe : function(id){ return get('recipes'  , firebaseUrl+'/recipes/'+id+'.json'  , id);  }
   };
-  var cache = {
-    users: {}
-  };
-  
-  function get(id){
-    if(cache.users[id]){
-      return $q.when(cache.users[id]);
+
+  function get(type, url, id){
+    if(!cache[type]){ cache[type] = {data: {}, promises: {}}; }
+
+    if(cache[type].data[id]){
+      return $q.when(cache[type].data[id]);
+    } else if(cache[type].promises[id]){
+      return cache[type].promises[id];
     } else {
-      return $http.get('/api/v1/users/'+id).then(function(result){
-        cache.users[id] = result.data;
+      cache[type].promises[id] = $http.get(url).then(function(result){
+        cache[type].data[id] = result.data;
         return result.data;
       });
+      return cache[type].promises[id];
     }
   }
-  
+
   return service;
 })
 

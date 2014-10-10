@@ -69,7 +69,7 @@ angular.module('app')
 })
 
 
-.controller('TrackingCtrl', function($rootScope, $scope, $http){
+.controller('TrackingCtrl', function($rootScope, $scope, $http, env){
   'use strict';
   var ctx = {
     model: {
@@ -85,6 +85,7 @@ angular.module('app')
     {name: 'Tracking'}
   ];
 
+  $scope.env = env;
   $scope.model = ctx.model;
   $scope.userSelected = null;
   $scope.eventSelected = null;

@@ -5,11 +5,14 @@ import common.Mandrill
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 
+import play.api.Play
 import play.api.mvc._
+import play.api.Logger
 
 object Application extends Controller {
   def index(any: String) = Action {
-    Ok(views.html.index())
+    val env = Play.current.configuration.getString("application.env")
+    Ok(views.html.index(env.get))
   }
 
   def sendFeedback = Action(parse.json) { request =>

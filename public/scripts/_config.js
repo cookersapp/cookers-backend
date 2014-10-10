@@ -1,6 +1,8 @@
 var Config = (function(){
   'use strict';
-  return {
-    debug: true
+  var cfg = {
+    env: ENV,
+    debug: ENV !== 'prod'
   };
+  return cfg;
 })();

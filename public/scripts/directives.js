@@ -1,6 +1,6 @@
 angular.module('app')
 
-.directive('user', function(UserSrv){
+.directive('user', function(CacheSrv){
   'use strict';
   return {
     restrict: 'E',
@@ -10,14 +10,14 @@ angular.module('app')
     },
     link: function(scope, element, attr){
       scope.username = scope.id;
-      UserSrv.get(scope.id).then(function(user){
+      CacheSrv.getUser(scope.id).then(function(user){
         scope.username = user.email;
       });
     }
   };
 })
 
-.directive('eventData', function(RecipeSrv){
+.directive('eventData', function(CacheSrv){
   'use strict';
   return {
     restrict: 'E',
@@ -28,7 +28,7 @@ angular.module('app')
     link: function(scope, element, attr){
       if(scope.event && scope.event.data){
         if(scope.event.data.recipe){
-          RecipeSrv.get(scope.event.data.recipe).then(function(recipe){
+          CacheSrv.getRecipe(scope.event.data.recipe).then(function(recipe){
             scope.event.data.recipe = recipe.name;
           });
         }

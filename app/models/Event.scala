@@ -17,8 +17,7 @@ case class Event(
   dateinfo: DateInfo,
   userId: String,
   source: Option[JsValue],
-  data: Option[JsValue],
-  debug: Option[Boolean])
+  data: Option[JsValue])
 
 object Event {
   implicit val eventFormat = Json.format[Event]
