@@ -1,37 +1,31 @@
 package controllers
 
+import scala.Array.canBuildFrom
+
+import dao.EventsDao
+import dao.MalformedEventsDao
+import dao.UsersDao
 import models.Event
-import models.Event._
+import models.Event.eventFormat
+import play.api.libs.json.Json
 import play.api.mvc.Action
 import play.api.mvc.Controller
-import play.api.libs.json.Json
-import play.api.Logger
-import reactivemongo.api._
 import play.modules.reactivemongo.MongoController
-import play.modules.reactivemongo.json.collection.JSONCollection
-import scala.concurrent.Future
-import play.api.libs.json.JsValue
 
 object Tracking extends Controller with MongoController {
-  def eventsCollection: JSONCollection = db.collection[JSONCollection]("events")
-  def malformedEventsCollection: JSONCollection = db.collection[JSONCollection]("malformedEvents")
-  def usersCollection: JSONCollection = db.collection[JSONCollection]("users")
+  implicit val DB = db
 
   // get all events
   def getAll = Action { implicit request =>
     Async {
-      val cursor = eventsCollection.find(Json.obj()).sort(Json.obj("time" -> -1)).cursor[Event] // get all the fields of all the events
-      val futureList = cursor.toList // convert it to a list of Event
-      futureList.map { events => Ok(Json.toJson(events)) } // convert it to a JSON and return it
+      EventsDao.all().map { events => Ok(Json.toJson(events)) }
     }
   }
 
   // get all malformed events
   def getAllMalformed = Action { implicit request =>
     Async {
-      val cursor = malformedEventsCollection.find(Json.obj()).cursor[JsValue]
-      val futureList = cursor.toList
-      futureList.map { events => Ok(Json.toJson(events)) }
+      MalformedEventsDao.all().map { events => Ok(Json.toJson(events)) }
     }
   }
 
@@ -39,8 +33,13 @@ object Tracking extends Controller with MongoController {
   // fire and forget endpoint...
   def add = Action(parse.json) { request =>
     // Logger.info("track event: " + request.body)
-    request.body.validate[Event].map { event => saveEvent(event) }.getOrElse {
-      malformedEventsCollection.insert(request.body)
+    request.body.validate[Event].map { event =>
+      EventsDao.insert(event).map { lastError =>
+        UsersDao.lastSeen(event.userId)
+        // TODO : update appVersion
+      }
+    }.getOrElse {
+      MalformedEventsDao.insert(request.body)
     }
     Ok
   }
@@ -50,19 +49,15 @@ object Tracking extends Controller with MongoController {
   def addAll = Action(parse.json) { request =>
     // Logger.info("track events: " + request.body)
     request.body.validate[Array[Event]].map { events =>
-      events.map { event => saveEvent(event) }
+      events.map { event =>
+        EventsDao.insert(event).map { lastError =>
+          UsersDao.lastSeen(event.userId)
+          // TODO : update appVersion
+        }
+      }
     }.getOrElse {
-      malformedEventsCollection.insert(request.body)
+      MalformedEventsDao.insert(request.body)
     }
     Ok
-  }
-
-  def saveEvent(event: Event) {
-    eventsCollection.insert(event).map { lastError =>
-      val selector = Json.obj("id" -> event.userId)
-      val update = Json.obj("$set" -> Json.obj("lastSeen" -> event.time))
-      usersCollection.update(selector, update)
-      // TODO : update appVersion
-    }
   }
 }

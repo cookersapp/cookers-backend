@@ -1,18 +1,15 @@
 package controllers
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import common.Mandrill
-
-import scala.concurrent._
-import ExecutionContext.Implicits.global
-
-import play.api.Play
-import play.api.mvc._
-import play.api.Logger
+import common.Utils
+import play.api.mvc.Action
+import play.api.mvc.Controller
 
 object Application extends Controller {
   def index(any: String) = Action {
-    val env = Play.current.configuration.getString("application.env")
-    Ok(views.html.index(env.get))
+    Ok(views.html.index(Utils.getEnv()))
   }
 
   def sendFeedback = Action(parse.json) { request =>

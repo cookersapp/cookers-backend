@@ -16,17 +16,15 @@ object Mandrill {
    * Status should be "sent"
    */
   def sendWelcomeEmail(to: String): Future[String] = {
-    val data = JsObject(
-      "key" -> JsString(mandrillKey) ::
-        "template_name" -> JsString("welcome") ::
-        "template_content" -> JsArray() ::
-        "message" -> JsObject(
-          "to" -> JsArray(JsObject("email" -> JsString(to) :: Nil) :: Nil) ::
-            "track_opens" -> JsBoolean(true) ::
-            "preserve_recipients" -> JsBoolean(true) ::
-            "tags" -> JsArray(JsString("app") :: JsString("welcome") :: Nil) ::
-            Nil) ::
-          Nil)
+    val data = Json.obj(
+      "key" -> mandrillKey,
+      "template_name" -> "welcome",
+      "template_content" -> Json.arr(),
+      "message" -> Json.obj(
+        "to" -> Json.arr(Json.obj("email" -> to)),
+        "track_opens" -> true,
+        "preserve_recipients" -> true,
+        "tags" -> Json.arr("app", "welcome")))
 
     WS.url(mandrillUrl + "/messages/send-template.json").post(data).map { response =>
       val status = (response.json)(0) \ "status"
@@ -39,20 +37,18 @@ object Mandrill {
    * It's used to submit feedbacks from the mobile app
    */
   def sendFeedback(from: String, content: String, source: String) = {
-    val data = JsObject(
-      "key" -> JsString(mandrillKey) ::
-        "message" -> JsObject(
-          "subject" -> JsString("[Cookers] Feedback from " + source) ::
-            "text" -> JsString(content) ::
-            "from_email" -> JsString(from) ::
-            "to" -> JsArray(JsObject("email" -> JsString(supportTeamEmail) :: Nil) :: JsObject("name" -> JsString("Cookers team") :: Nil) :: Nil) ::
-            "important" -> JsBoolean(false) ::
-            "track_opens" -> JsBoolean(true) ::
-            "track_clicks" -> JsNull ::
-            "preserve_recipients" -> JsNull ::
-            "tags" -> JsArray(JsString("app") :: JsString("feedback") :: Nil) ::
-            Nil) ::
-          Nil)
+    val data = Json.obj(
+      "key" -> mandrillKey,
+      "message" -> Json.obj(
+        "subject" -> ("[Cookers] Feedback from " + source),
+        "text" -> content,
+        "from_email" -> from,
+        "to" -> Json.arr(Json.obj("email" -> supportTeamEmail), Json.obj("name" -> "Cookers team")),
+        "important" -> false,
+        "track_opens" -> true,
+        "track_clicks" -> JsNull,
+        "preserve_recipients" -> JsNull,
+        "tags" -> Json.arr("app", "feedback")))
 
     WS.url(mandrillUrl + "/messages/send.json").post(data).map { response =>
       val status = (response.json)(0) \ "status"

@@ -1,7 +1,8 @@
 package models
 
 import java.util.Date
-import play.api.libs.json._
+import play.api.libs.json.Json
+import play.api.libs.json.JsValue
 import reactivemongo.bson.BSONObjectID
 
 case class User(
@@ -18,14 +19,13 @@ case class User(
     email,
     new Date().getTime(),
     new Date().getTime(),
-    Some(JsObject(
-      "recipeShiftOffset" -> JsNumber(Math.floor(Math.random() * 10)) ::
-        "defaultServings" -> JsNumber(2) ::
-        "showPrices" -> JsBoolean(false) ::
-        "bigImages" -> JsBoolean(true) ::
-        "skipCookFeatures" -> JsBoolean(false) ::
-        "skipCartFeatures" -> JsBoolean(false) ::
-        Nil)),
+    Some(Json.obj(
+      "recipeShiftOffset" -> Math.floor(Math.random() * 10),
+      "defaultServings" -> 2,
+      "showPrices" -> false,
+      "bigImages" -> true,
+      "skipCookFeatures" -> false,
+      "skipCartFeatures" -> false)),
     None,
     None)
 }

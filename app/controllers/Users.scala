@@ -1,83 +1,89 @@
 package controllers
 
-import models.User
-import models.User._
-import common.Validator
-import common.Mandrill
+import scala.concurrent.Future
 
-import play.api.mvc._
-import play.api.libs.json._
-import play.api.Logger
+import common.Mandrill
+import common.Validator
+import dao.UsersDao
+import models.User
+import models.User.userFormat
+import play.api.libs.json.Json
+import play.api.libs.json.Json.toJsFieldJsValueWrapper
+import play.api.mvc.Action
+import play.api.mvc.Controller
 import play.modules.reactivemongo.MongoController
-import play.modules.reactivemongo.json.collection.JSONCollection
 
 object Users extends Controller with MongoController {
-  def usersCollection: JSONCollection = db.collection[JSONCollection]("users")
+  implicit val DB = db
 
   // get all users
   def getAll = Action { implicit request =>
     Async {
-      val cursor = usersCollection.find(Json.obj()).sort(Json.obj("lastSeen" -> -1)).cursor[User]
-      val futureList = cursor.toList
-      futureList.map { users => Ok(Json.toJson(users)) }
+      UsersDao.all().map { users => Ok(Json.toJson(users)) }
     }
   }
 
   // get user with id
   def get(id: String) = Action { request =>
     Async {
-      usersCollection.find(Json.obj("id" -> id)).one[User].map { maybeUser =>
-        maybeUser.map { user =>
-          Ok(Json.toJson(user))
-        }.getOrElse {
-          NotFound
-        }
+      UsersDao.findById(id).map {
+        case Some(user) => Ok(Json.toJson(user))
+        case None => NotFound(Json.obj("message" -> "User not found !"))
       }
     }
   }
 
-  // get user with mail and create if it does not exists
-  def getOrCreate(email: String, welcomeEmailSent: Option[Boolean]) = Action { request =>
-    if (Validator.isEmail(email)) {
-      Async {
-        usersCollection.find(Json.obj("email" -> email)).one[User].map { maybeUser =>
-          maybeUser.map { user =>
-            Ok(Json.toJson(user))
-          }.getOrElse {
+  // find user with mail and create if it does not exists
+  def findOrCreate(email: String, welcomeEmailSent: Option[Boolean]) = Action { request =>
+    Async {
+      if (Validator.isEmail(email)) {
+        UsersDao.findByEmail(email).flatMap {
+          case Some(user) => Future.successful(Ok(Json.toJson(user)))
+          case None => {
             val user = new User(email)
-            usersCollection.insert(user)
-            if (welcomeEmailSent.isEmpty || (welcomeEmailSent.isDefined && !welcomeEmailSent.get)) {
-              Mandrill.sendWelcomeEmail("loicknuchel@gmail.com")
+            UsersDao.insert(user).map { lastError =>
+              lastError.inError match {
+                case false => {
+                  if (welcomeEmailSent.isEmpty || (welcomeEmailSent.isDefined && !welcomeEmailSent.get)) {
+                    Mandrill.sendWelcomeEmail(email)
+                  }
+                  // TODO : get gravatar profile and update user
+                  Created(Json.toJson(user))
+                }
+                case true => InternalServerError(Json.obj("message" -> lastError.errMsg.getOrElse("").toString()))
+              }
             }
-            Created(Json.toJson(user))
           }
         }
+      } else {
+        Future.successful(BadRequest("invalid email"))
       }
-    } else {
-      BadRequest("invalid email")
     }
   }
 
   // update a setting for a user
   // body format : {value: valueOfSetting}
   def setUserSetting(id: String, setting: String) = Action(parse.json) { request =>
-    val settingValue = request.body \ "value"
-    val selector = Json.obj("id" -> id)
-    val update = Json.obj("$set" -> Json.obj("settings." + setting -> settingValue))
     Async {
-      usersCollection.update(selector, update).map { lastError =>
-        Ok
+      val settingValue = request.body \ "value"
+      UsersDao.updateSetting(id, setting, settingValue).map { lastError =>
+        lastError.inError match {
+          case false => Ok
+          case true => InternalServerError(Json.obj("message" -> lastError.errMsg.getOrElse("").toString()))
+        }
       }
     }
   }
 
   // link a device to a user if not done yet
   def setUserDevice(id: String) = Action(parse.json) { request =>
-    val selector = Json.obj("id" -> id)
-    val update = Json.obj("$addToSet" -> Json.obj("devices" -> request.body))
     Async {
-      usersCollection.update(selector, update).map { lastError =>
-        Ok
+      val device = request.body
+      UsersDao.addDevice(id, device).map { lastError =>
+        lastError.inError match {
+          case false => Ok
+          case true => InternalServerError(Json.obj("message" -> lastError.errMsg.getOrElse("").toString()))
+        }
       }
     }
   }
