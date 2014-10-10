@@ -10,12 +10,12 @@ object DateInfo {
 }
 
 case class Event(
-  eventId: String,
-  previousEventId: Option[String],
+  id: String,
+  prevId: Option[String],
   name: String,
   time: Long,
   dateinfo: DateInfo,
-  userId: String,
+  user: String,
   source: Option[JsValue],
   data: Option[JsValue])
 

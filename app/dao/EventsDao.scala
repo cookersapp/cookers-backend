@@ -14,4 +14,6 @@ object EventsDao {
 
   def all()(implicit db: DB): Future[List[Event]] = collection().find(Json.obj()).sort(Json.obj("time" -> -1)).cursor[Event].toList
   def insert(event: Event)(implicit db: DB): Future[LastError] = collection().insert(event)
+
+  def drop()(implicit db: DB): Future[Boolean] = collection().drop()
 }

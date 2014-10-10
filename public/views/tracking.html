@@ -7,7 +7,7 @@ ENV: {{env}}
         <input type="text" class="form-control input-sm pull-right" placeholder="Search ..." ng-model="search.malformedEvents">
         <div class="clearfix"></div>
       </div>
-      <div class="widget-body no-padding">
+      <div class="widget-body large no-padding">
         <rd-loading ng-if="status.loading && !(model.malformedEvents && model.malformedEvents.length > 0)"></rd-loading>
         <div class="table-responsive" ng-if="model.malformedEvents && model.malformedEvents.length > 0">
           <table class="table table-hover">
@@ -35,7 +35,7 @@ ENV: {{env}}
         <input type="text" class="form-control input-sm pull-right" placeholder="Search ..." ng-model="search.users">
         <div class="clearfix"></div>
       </div>
-      <div class="widget-body no-padding">
+      <div class="widget-body large no-padding">
         <rd-loading ng-if="status.loading && !(model.users && model.users.length > 0)"></rd-loading>
         <div class="table-responsive" ng-if="model.users && model.users.length > 0">
           <table class="table table-hover">
@@ -74,7 +74,7 @@ ENV: {{env}}
         <input type="text" class="form-control input-sm pull-right" placeholder="Search ..." ng-model="search.events">
         <div class="clearfix"></div>
       </div>
-      <div class="widget-body no-padding">
+      <div class="widget-body large no-padding">
         <rd-loading ng-if="status.loading && !(model.events && model.events.length > 0)"></rd-loading>
         <div class="table-responsive" ng-if="model.events && model.events.length > 0">
           <table class="table table-hover">
@@ -89,7 +89,7 @@ ENV: {{env}}
             <tbody ng-repeat="elt in eventsFiltered = (model.events | filter:search.events)">
               <tr ng-click="toggleEvent(elt)">
                 <td>{{elt.name}}</td>
-                <td><user id="elt.userId"></user></td>
+                <td><user id="elt.user"></user></td>
                 <td title="{{elt.time | datetime}}">{{elt.time | humanTime}}</td>
                 <td><event-data event="elt"></event-data></td>
               </tr>
@@ -103,5 +103,10 @@ ENV: {{env}}
         </div>
       </div>
     </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <button class="btn btn-danger" ng-click="resetApp()">Réinitialiser l'application</button>
   </div>
 </div>

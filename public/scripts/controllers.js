@@ -114,6 +114,16 @@ angular.module('app')
     if($scope.eventSelected === elt){$scope.eventSelected = null;}
     else {$scope.eventSelected = elt;}
   };
+
+  $scope.resetApp = function(){
+    if(confirm('Supprimer toutes les données de l\'application ?')){
+      if(confirm('Vraiment ???')){
+        $http.delete('/api/v1/reset-database').then(function(result){
+          alert('Fait !');
+        });
+      }
+    }
+  };
 })
 
 

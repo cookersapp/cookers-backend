@@ -35,7 +35,7 @@ object Tracking extends Controller with MongoController {
     // Logger.info("track event: " + request.body)
     request.body.validate[Event].map { event =>
       EventsDao.insert(event).map { lastError =>
-        UsersDao.lastSeen(event.userId)
+        UsersDao.lastSeen(event.user)
         // TODO : update appVersion
       }
     }.getOrElse {
@@ -51,7 +51,7 @@ object Tracking extends Controller with MongoController {
     request.body.validate[Array[Event]].map { events =>
       events.map { event =>
         EventsDao.insert(event).map { lastError =>
-          UsersDao.lastSeen(event.userId)
+          UsersDao.lastSeen(event.user)
           // TODO : update appVersion
         }
       }

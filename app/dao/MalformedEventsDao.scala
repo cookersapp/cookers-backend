@@ -13,4 +13,6 @@ object MalformedEventsDao {
 
   def all()(implicit db: DB): Future[List[JsValue]] = collection().find(Json.obj()).cursor[JsValue].toList
   def insert(event: JsValue)(implicit db: DB): Future[LastError] = collection().insert(event)
+
+  def drop()(implicit db: DB): Future[Boolean] = collection().drop()
 }

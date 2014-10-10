@@ -1,13 +1,18 @@
 package controllers
 
 import scala.concurrent.ExecutionContext.Implicits.global
-
 import common.Mandrill
 import common.Utils
 import play.api.mvc.Action
 import play.api.mvc.Controller
+import dao.UsersDao
+import play.modules.reactivemongo.MongoController
+import dao.EventsDao
+import dao.MalformedEventsDao
 
-object Application extends Controller {
+object Application extends Controller with MongoController {
+  implicit val DB = db
+
   def index(any: String) = Action {
     Ok(views.html.index(Utils.getEnv()))
   }
@@ -21,6 +26,13 @@ object Application extends Controller {
         Ok(status)
       }
     }
+  }
+
+  def resetDatabase = Action {
+    UsersDao.drop()
+    EventsDao.drop()
+    MalformedEventsDao.drop()
+    Ok
   }
 
   def corsPreflight(all: String) = Action {

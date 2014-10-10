@@ -19,6 +19,7 @@ PUT       /api/v1/users/:id/settings/:setting   controllers.Users.setUserSetting
 PUT       /api/v1/users/:id/device              controllers.Users.setUserDevice(id: String)
 
 POST      /api/v1/app-feedback                  controllers.Application.sendFeedback
+DELETE    /api/v1/reset-database                controllers.Application.resetDatabase
 
 # Play routes serving JSON to AngularJS start with /api
 GET       /api/celebrities                      controllers.Celebrities.index

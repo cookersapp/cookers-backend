@@ -26,7 +26,7 @@ angular.module('app')
       event: '='
     },
     link: function(scope, element, attr){
-      scope.showData = '';
+      scope.showData = undefined;
       if(scope.event && scope.event.data){
         scope.showData = angular.copy(scope.event.data);
         if(scope.showData.recipe){
