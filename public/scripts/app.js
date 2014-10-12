@@ -61,19 +61,30 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
   })
   .state('user.home', {
     url: '/',
-    templateUrl: 'assets/views/home.html',
-    controller: 'HomeCtrl'
+    templateUrl: 'assets/views/dashboard/main.html',
+    controller: 'DashboardCtrl'
   })
   .state('user.dashboard', {
     url: '/dashboard',
-    templateUrl: 'assets/views/dashboard.html',
-    controller: 'DashboardCtrl'
+    abstract: true,
+    template: '<ui-view/>'
   })
-  .state('user.tables', {
-    url: '/tables',
-    templateUrl: 'assets/views/tables.html'
+  .state('user.dashboard.users', {
+    url: '/users',
+    templateUrl: 'assets/views/dashboard/users.html',
+    controller: 'DashboardUsersCtrl'
   })
-  .state('user.tracking', {
+  .state('user.dashboard.user', {
+    url: '/users/:userId',
+    templateUrl: 'assets/views/dashboard/user.html',
+    controller: 'DashboardUserCtrl'
+  })
+  .state('user.dashboard.recipes', {
+    url: '/recipes',
+    templateUrl: 'assets/views/dashboard/recipes.html',
+    controller: 'DashboardRecipesCtrl'
+  })
+  .state('user.dashboard.tracking', {
     url: '/tracking',
     templateUrl: 'assets/views/tracking.html',
     controller: 'TrackingCtrl'
@@ -125,6 +136,15 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
     url: '/batchs',
     templateUrl: 'assets/views/admin/batchs.html',
     controller: 'BatchsCtrl'
+  })
+  .state('user.sample1', {
+    url: '/sample1',
+    templateUrl: 'assets/views/sample1.html',
+    controller: 'Sample1Ctrl'
+  })
+  .state('user.sample2', {
+    url: '/sample2',
+    templateUrl: 'assets/views/sample2.html'
   });
 
   $urlRouterProvider.otherwise('/');

@@ -1,0 +1,105 @@
+<div class="row alerts-container">
+  <div class="col-xs-12">
+    <alert type="danger"><strong>3 exceptions</strong> remontées et non validées !<span class="pull-right"><a>Voir tout »</a></span></alert>
+    <alert type="danger"><strong>10 événements malformés</strong> remontées et non validées !<span class="pull-right"><a>Voir tout »</a></span></alert>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-3 col-md-6 col-xs-12" ui-sref="user.dashboard.users">
+    <div class="widget">
+      <div class="widget-body">
+        <div class="widget-icon green pull-left"><i class="fa fa-users"></i></div>
+        <div class="widget-content pull-left">
+          <div class="title">80</div>
+          <div class="comment">Utilisateurs</div>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-6 col-xs-12" ui-sref="user.dashboard.recipes">
+    <div class="widget">
+      <div class="widget-body">
+        <div class="widget-icon red pull-left"><i class="fa fa-cutlery"></i></div>
+        <div class="widget-content pull-left">
+          <div class="title">16</div>
+          <div class="comment">Recettes cuisinées</div>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-6 col-xs-12">
+    <div class="widget">
+      <div class="widget-body">
+        <div class="widget-icon orange pull-left"><i class="fa fa-shopping-cart"></i></div>
+        <div class="widget-content pull-left">
+          <div class="title">225</div>
+          <div class="comment">Ingrédients achetés</div>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-6 col-xs-12">
+    <div class="widget">
+      <div class="widget-body">
+        <div class="widget-icon blue pull-left"><i class="fa fa-bolt"></i></div>
+        <div class="widget-content pull-left">
+          <div class="title">62</div>
+          <div class="comment">Evénements</div>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="widget">
+      <div class="widget-header">
+        <i class="fa fa-users"></i> Utilisateurs
+        <input type="text" placeholder="Search" class="form-control input-sm pull-right" />
+        <div class="clearfix"></div>
+      </div>
+      <div class="widget-body large no-padding">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr><th>Email</th><th>Vu</th><th>Créé</th><th>Téléphone</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr><td><a href="mailto:loicknuchel@gmail.com">loicknuchel@gmail.com</a></td><td><span class="text-success"><i class="fa fa-check"></i></span> 25 minutes</td><td>11 oct. 2014, 20:24:53</td><td>Nexus 4 (Android 4.4.4)</td><td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.user({userId: 123})"><i class="fa fa-eye"></i></button></td></tr>
+              <tr><td><a href="mailto:loicknuchel@gmail.com">loicknuchel@gmail.com</a></td><td><span class="text-success"><i class="fa fa-check"></i></span> 25 minutes</td><td>11 oct. 2014, 20:24:53</td><td>Nexus 4 (Android 4.4.4)</td><td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.user({userId: 123})"><i class="fa fa-eye"></i></button></td></tr>
+              <tr><td><a href="mailto:loicknuchel@gmail.com">loicknuchel@gmail.com</a></td><td><span tooltip="Could not connect!" class="text-warning ng-scope"><i class="fa fa-flash"></i></span> 25 minutes</td><td>11 oct. 2014, 20:24:53</td><td>Nexus 4 (Android 4.4.4)</td><td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.user({userId: 123})"><i class="fa fa-eye"></i></button></td></tr>
+              <tr><td><a href="mailto:loicknuchel@gmail.com">loicknuchel@gmail.com</a></td><td><span tooltip="Server Down!" class="text-danger ng-scope"><i class="fa fa-warning"></i></span> 25 minutes</td><td>11 oct. 2014, 20:24:53</td><td>Nexus 4 (Android 4.4.4)</td><td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.user({userId: 123})"><i class="fa fa-eye"></i></button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="widget">
+      <div class="widget-header">
+        <i class="fa fa-cutlery"></i> Recettes
+        <input type="text" placeholder="Search" class="form-control input-sm pull-right" />
+        <div class="clearfix"></div>
+      </div>
+      <div class="widget-body large no-padding">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr><th>Recette</th><th>Ingrédients affichés</th><th>Carte de visite</th><th>Ajouté au panier</th><th>Cuisine</th><th>Cuisinée</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Ave salade !</td><td>50 fois</td><td>10 fois</td><td>30 fois</td><td>15 fois</td><td>10 fois</td><td><button class="btn btn-xs btn-info"><i class="fa fa-eye"></i></button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

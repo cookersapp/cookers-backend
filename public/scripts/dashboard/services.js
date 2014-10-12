@@ -1,0 +1,29 @@
+angular.module('app')
+
+.factory('CacheSrv', function($q, $http, firebaseUrl){
+  'use strict';
+  var cache = {};
+  var service = {
+    getUser   : function(id){ return get('users'    , '/api/v1/users/'+id                 , id);  },
+    getRecipe : function(id){ return get('recipes'  , firebaseUrl+'/recipes/'+id+'.json'  , id);  },
+    getFood   : function(id){ return get('foods'    , firebaseUrl+'/foods/'+id+'.json'    , id);  }
+  };
+
+  function get(type, url, id){
+    if(!cache[type]){ cache[type] = {data: {}, promises: {}}; }
+
+    if(cache[type].data[id]){
+      return $q.when(cache[type].data[id]);
+    } else if(cache[type].promises[id]){
+      return cache[type].promises[id];
+    } else {
+      cache[type].promises[id] = $http.get(url).then(function(result){
+        cache[type].data[id] = result.data;
+        return result.data;
+      });
+      return cache[type].promises[id];
+    }
+  }
+
+  return service;
+});

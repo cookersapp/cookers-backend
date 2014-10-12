@@ -40,93 +40,6 @@ angular.module('app')
 })
 
 
-.controller('HomeCtrl', function($rootScope){
-  'use strict';
-  $rootScope.config.header.levels = [
-    {name: 'Home'}
-  ];
-})
-
-.controller('DashboardCtrl', function($rootScope, $scope){
-  'use strict';
-  $rootScope.config.header.levels = [
-    {name: 'Home', state: 'user.home'},
-    {name: 'Dashboard'}
-  ];
-
-  $scope.alerts = [
-    {type: 'success', msg: 'Thanks for visiting! Feel free to create pull requests to improve the dashboard!'},
-    {type: 'danger', msg: 'Found a bug? Create an issue with as many details as you can.'}
-  ];
-
-  $scope.addAlert = function(){
-    $scope.alerts.push({msg: 'Another alert!'});
-  };
-
-  $scope.closeAlert = function(index){
-    $scope.alerts.splice(index, 1);
-  };
-})
-
-
-.controller('TrackingCtrl', function($rootScope, $scope, $http, env){
-  'use strict';
-  var ctx = {
-    model: {
-      users: [],
-      events: [],
-      malformedEvents: []
-    }
-  };
-
-  $rootScope.config.header.title = 'Tracking';
-  $rootScope.config.header.levels = [
-    {name: 'Home', state: 'user.home'},
-    {name: 'Tracking'}
-  ];
-
-  $scope.env = env;
-  $scope.model = ctx.model;
-  $scope.userSelected = null;
-  $scope.eventSelected = null;
-
-  $http.get('/api/v1/users').then(function(results){
-    if(results && results.data){
-      $scope.model.users = results.data;
-    }
-  });
-  $http.get('/api/v1/track/events').then(function(results){
-    if(results && results.data){
-      $scope.model.events = results.data;
-    }
-  });
-  $http.get('/api/v1/track/events/malformed').then(function(results){
-    if(results && results.data){
-      $scope.model.malformedEvents = results.data;
-    }
-  });
-
-  $scope.toggleUser = function(elt){
-    if($scope.userSelected === elt){$scope.userSelected = null;}
-    else {$scope.userSelected = elt;}
-  };
-  $scope.toggleEvent = function(elt){
-    if($scope.eventSelected === elt){$scope.eventSelected = null;}
-    else {$scope.eventSelected = elt;}
-  };
-
-  $scope.resetApp = function(){
-    if(confirm('Supprimer toutes les données de l\'application ?')){
-      if(confirm('Vraiment ???')){
-        $http.delete('/api/v1/reset-database').then(function(result){
-          alert('Fait !');
-        });
-      }
-    }
-  };
-})
-
-
 .controller('RecipesCtrl', function($rootScope, $scope, RecipeSrv, CrudBuilder){
   'use strict';
   if(!$rootScope.config.recipes){
@@ -704,4 +617,25 @@ angular.module('app')
       };
     });
   }
+})
+
+.controller('Sample1Ctrl', function($rootScope, $scope){
+  'use strict';
+  $rootScope.config.header.levels = [
+    {name: 'Home', state: 'user.home'},
+    {name: 'Dashboard'}
+  ];
+
+  $scope.alerts = [
+    {type: 'success', msg: 'Thanks for visiting! Feel free to create pull requests to improve the dashboard!'},
+    {type: 'danger', msg: 'Found a bug? Create an issue with as many details as you can.'}
+  ];
+
+  $scope.addAlert = function(){
+    $scope.alerts.push({msg: 'Another alert!'});
+  };
+
+  $scope.closeAlert = function(index){
+    $scope.alerts.splice(index, 1);
+  };
 });
