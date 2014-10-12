@@ -4,38 +4,56 @@ angular.module('app')
 .directive('chart', function(){
   'use strict';
   // doc : http://api.highcharts.com/highcharts
-  function loadGraph(element, data, type, title){
+  /*
+   * Options values :
+   * {
+   *  type: String (values: 'line', 'area', bar'),
+   *  subtype: String (values: 'stacked'),
+   *  title: String (chart title),
+   *  xAxis: String (values: 'datetime') | Array (names in xAxis) | function (transform index in label),
+   *  tooltip: Object (http://api.highcharts.com/highcharts#tooltip),
+   *  legend: String (values: 'top', 'right', 'bottom', 'left'),
+   *  series: Array (http://api.highcharts.com/highcharts#series)
+   * }
+   */
+  function loadGraph(element, opts){
     var xAxis;
-    if(data){
-      if(Array.isArray(data.xAxis)){ xAxis = {categories: data.xAxis}; }
-      else if(typeof data.xAxis === 'function'){ xAxis = { labels: { formatter: data.xAxis } }; }
+    if(opts){
+      if(Array.isArray(opts.xAxis)){ xAxis = {categories: opts.xAxis}; }
+      else if(typeof opts.xAxis === 'string'){ xAxis = { type: opts.xAxis }; }
+      else if(typeof opts.xAxis === 'function'){ xAxis = { labels: { formatter: opts.xAxis } }; }
     } 
 
     var params = {
-      chart: { type: type },
-      title: { text: title },
+      chart: { type: opts ? opts.type : '' },
+      title: { text: opts ? opts.title : '' },
+      colors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#8085e8', '#8d4653', '#91e8e1'],
       xAxis: xAxis,
       yAxis: {
         title: { text: '' },
         min: 0
       },
-      tooltip: data && data.tooltip ? data.tooltip : {},
+      tooltip: opts && opts.tooltip ? opts.tooltip : {},
       plotOptions: {
+        area: {
+          stacking: opts && opts.subtype === 'stacked' ? 'normal' : null
+        },
         bar: {
           dataLabels: { enabled: true }
         }
       },
-      legend: data && data.legend ? {
-        layout: 'vertical',
-        align: 'right',
-        verticalAlign: 'middle',
+      legend: opts && opts.legend ? {
+        layout: opts.legend === 'bottom' || opts.legend === 'top' ? 'horizontal' : 'vertical',
+        align: opts.legend === 'bottom' || opts.legend === 'top' ? 'center' : opts.legend,
+        verticalAlign: opts.legend === 'bottom' || opts.legend === 'top' ? opts.legend : 'middle',
         borderWidth: 1
       } : {enabled: false},
       credits: { enabled: false },
-      series: data && data.series ? data.series : []
+      series: opts && opts.series ? opts.series : []
     };
     element.highcharts(params);
   }
+  
   function isPromise(p){
     return p && p.then;
   }
@@ -44,19 +62,17 @@ angular.module('app')
     restrict: 'A',
     template: '',
     scope: {
-      data: '=',
-      type: '@',
-      title: '@'
+      opts: '=chart'
     },
     link: function(scope, element, attr){
       element[0].style.height = '100%';
 
-      if(isPromise(scope.data)){
-        scope.data.then(function(data){
-          loadGraph(element, data, scope.type, scope.title);
+      if(isPromise(scope.opts)){
+        scope.opts.then(function(opts){
+          loadGraph(element, opts);
         });
       } else {
-        loadGraph(element, scope.data, scope.type, scope.title);
+        loadGraph(element, scope.opts);
       }
     }
   };

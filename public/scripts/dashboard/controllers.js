@@ -22,23 +22,31 @@ angular.module('app')
   $scope.dailyUsers = defer.promise;
   setTimeout(function(){
     defer.resolve({
-      xAxis: function(){ return 1940+this.value; },
-      tooltip: { pointFormat: '{series.name} produced <b>{point.y:,.0f}</b><br/>warheads in {point.x}' },
-      legend: false,
+      type: 'area',
+      subtype: 'stacked',
+      xAxis: 'datetime',
+      tooltip: {
+        shared: true
+      },
+      legend: 'bottom',
       series: [{
-        name: 'USA',
-        data: [null, null, null, null, null, 6, 11, 32, 110, 235, 369, 640,
-               1005, 1436, 2063, 3057, 4618, 6444, 9822, 15468, 20434, 24126,
-               27387, 29459, 31056, 31982, 32040, 31233, 29224, 27342, 26662,
-               26956, 27912, 28999, 28965, 27826, 25579, 25722, 24826, 24605,
-               24304, 23464, 23708, 24099, 24357, 24237, 24401, 24344, 23586,
-               22380, 21004, 17287, 14747, 13076, 12555, 12144, 11009, 10950,
-               10871, 10824, 10577, 10527, 10475, 10421, 10358, 10295, 10104]
+        name: 'Nouveaux',
+        color: '#90ed7d',
+        data: [[Date.UTC(2014,10,5), 163], [Date.UTC(2014,10,6), 203], [Date.UTC(2014,10,7), 276], [Date.UTC(2014,10,8), 408], [Date.UTC(2014,10,9), 547], [Date.UTC(2014,10,10), 729], [Date.UTC(2014,10,11), 628]]
+      }, {
+        name: 'Actifs',
+        color: '#7cb5ec',
+        data: [[Date.UTC(2014,10,5), 106], [Date.UTC(2014,10,6), 107], [Date.UTC(2014,10,7), 111], [Date.UTC(2014,10,8), 133], [Date.UTC(2014,10,9), 221], [Date.UTC(2014,10,10), 767], [Date.UTC(2014,10,11), 1766]]
+      }, {
+        name: 'Inactifs',
+        color: '#8d4653',
+        data: [[Date.UTC(2014,10,5), 502], [Date.UTC(2014,10,6), 635], [Date.UTC(2014,10,7), 809], [Date.UTC(2014,10,8), 947], [Date.UTC(2014,10,9), 1402], [Date.UTC(2014,10,10), 3634], [Date.UTC(2014,10,11), 5268]]
       }]
     });
-  }, 2000);
+  }, 600);
 
   $scope.weeklyUsers = {
+    type: 'area',
     xAxis: function(){ return 1940+this.value; },
     tooltip: { pointFormat: '{series.name} produced <b>{point.y:,.0f}</b><br/>warheads in {point.x}' },
     legend: false,
@@ -76,6 +84,7 @@ angular.module('app')
   ];
 
   $scope.weekRecipes = {
+    type: 'bar',
     xAxis: ['Recette 1', 'Recette 2', 'Recette 3', 'Recette 4', 'Recette 5', 'Recette 6', 'Recette 7', 'Recette 8', 'Recette 9', 'Recette 10'],
     series: [{
       name: 'Ingrédients',
@@ -96,6 +105,7 @@ angular.module('app')
   };
 
   $scope.recipesThroughWeek = {
+    type: 'line',
     xAxis: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'San', 'Dim'],
     series: [{
       name: 'Ingrédients',
