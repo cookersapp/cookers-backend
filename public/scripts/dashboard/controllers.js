@@ -1,16 +1,36 @@
 angular.module('app')
 
 
-.controller('DashboardCtrl', function($rootScope){
+.controller('DashboardCtrl', function($rootScope, $scope, StatsSrv, UsersSrv, EventsSrv){
   'use strict';
   $rootScope.config.header.title = 'Dashboard';
   $rootScope.config.header.levels = [
     {name: 'Dashboard'}
   ];
+
+  EventsSrv.getAllExceptions().then(function(events){
+    $scope.exceptionEvents = events || [];
+  });
+
+  EventsSrv.getAllErrors().then(function(events){
+    $scope.errorEvents = events || [];
+  });
+
+  EventsSrv.getAllMalformed().then(function(events){
+    $scope.malformedEvents = events || [];
+  });
+
+  StatsSrv.getWeekData().then(function(stats){
+    $scope.stats = stats || {};
+  });
+
+  UsersSrv.getAll().then(function(users){
+    $scope.users = users || [];
+  });
 })
 
 
-.controller('DashboardUsersCtrl', function($rootScope, $scope, $q){
+.controller('DashboardUsersCtrl', function($rootScope, $scope, $q, UsersSrv){
   'use strict';
   $rootScope.config.header.title = 'Users dashboard';
   $rootScope.config.header.levels = [
@@ -61,6 +81,10 @@ angular.module('app')
              21000, 20000, 19000, 18000, 18000, 17000, 16000]
     }]
   };
+
+  UsersSrv.getAll().then(function(users){
+    $scope.users = users || [];
+  });
 })
 
 

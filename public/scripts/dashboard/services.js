@@ -1,5 +1,68 @@
 angular.module('app')
 
+
+.factory('UsersSrv', function($http){
+  'use strict';
+  var service = {
+    getAll: getAll
+  };
+
+  function getAll(){
+    return $http.get('/api/v1/users').then(function(result){
+      return result.data;
+    });
+  }
+
+  return service;
+})
+
+
+.factory('EventsSrv', function($http){
+  'use strict';
+  var service = {
+    getAllExceptions: getAllExceptions,
+    getAllErrors: getAllErrors,
+    getAllMalformed: getAllMalformed
+  };
+
+  function getAllExceptions(){
+    return $http.get('/api/v1/track/events?name=exception').then(function(result){
+      return result.data;
+    });
+  }
+
+  function getAllErrors(){
+    return $http.get('/api/v1/track/events?name=error').then(function(result){
+      return result.data;
+    });
+  }
+
+  function getAllMalformed(){
+    return $http.get('/api/v1/track/events/malformed').then(function(result){
+      return result.data;
+    });
+  }
+
+  return service;
+})
+
+
+.factory('StatsSrv', function($http){
+  'use strict';
+  var service = {
+    getWeekData: getWeekData
+  };
+
+  function getWeekData(){
+    return $http.get('/api/v1/stats/week').then(function(result){
+      return result.data;
+    });
+  }
+
+  return service;
+})
+
+
 .factory('CacheSrv', function($q, $http, firebaseUrl){
   'use strict';
   var cache = {};

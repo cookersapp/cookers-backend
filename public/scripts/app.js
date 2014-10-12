@@ -177,7 +177,7 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
   currencies:       ['€'],
   messageTypes:     ['standard', 'sticky', 'exec'],
   messageDisplay:   ['default', 'success', 'info', 'warning', 'danger'],
-  appVersions:      ['~', '0.1.0', '0.2.0', '0.3.0', '0.3.1', '0.4.0']
+  appVersions:      ['~', '0.1.0', '0.2.0', '0.3.0', '0.3.1', '1.0.0', '1.0.1', '1.0.2', '1.0.3', '1.1.0']
 })
 
 .run(function($rootScope, $sce, $state, $location, $window, AuthSrv){

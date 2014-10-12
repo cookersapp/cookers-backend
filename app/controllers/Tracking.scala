@@ -7,6 +7,7 @@ import dao.MalformedEventsDao
 import dao.UsersDao
 import models.Event
 import models.Event.eventFormat
+import scala.concurrent._
 import play.api.libs.json.Json
 import play.api.mvc.Action
 import play.api.mvc.Controller
@@ -16,9 +17,10 @@ object Tracking extends Controller with MongoController {
   implicit val DB = db
 
   // get all events
-  def getAll = Action { implicit request =>
+  def getAll(name: Option[String]) = Action { implicit request =>
     Async {
-      EventsDao.all().map { events => Ok(Json.toJson(events)) }
+      val results: Future[List[Event]] = if(name.isEmpty) EventsDao.all() else EventsDao.findByName(name.get)
+      results.map { events => Ok(Json.toJson(events)) }
     }
   }
 

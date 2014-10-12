@@ -76,21 +76,25 @@
   <div class="col-md-12">
     <div class="widget">
       <div class="widget-header">
-        <i class="fa fa-users"></i> Tous les utilisateurs
-        <input type="text" placeholder="Search" class="form-control input-sm pull-right" />
+        <i class="fa fa-users"></i> Utilisateurs <span ng-if="users !== undefined">({{usersFiltered.length}})</span>
+        <input type="text" class="form-control input-sm pull-right" placeholder="Search" ng-model="userSearch" />
         <div class="clearfix"></div>
       </div>
       <div class="widget-body large no-padding">
-        <div class="table-responsive">
+        <rd-loading ng-if="users === undefined"></rd-loading>
+        <div class="table-responsive" ng-show="users !== undefined">
           <table class="table">
             <thead>
               <tr><th>Email</th><th>Vu</th><th>Créé</th><th>Téléphone</th><th></th></tr>
             </thead>
             <tbody>
-              <tr><td><a href="mailto:loicknuchel@gmail.com">loicknuchel@gmail.com</a></td><td><span class="text-success"><i class="fa fa-check"></i></span> 25 minutes</td><td>11 oct. 2014, 20:24:53</td><td>Nexus 4 (Android 4.4.4)</td><td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.user({userId: 123})"><i class="fa fa-eye"></i></button></td></tr>
-              <tr><td><a href="mailto:loicknuchel@gmail.com">loicknuchel@gmail.com</a></td><td><span class="text-success"><i class="fa fa-check"></i></span> 25 minutes</td><td>11 oct. 2014, 20:24:53</td><td>Nexus 4 (Android 4.4.4)</td><td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.user({userId: 123})"><i class="fa fa-eye"></i></button></td></tr>
-              <tr><td><a href="mailto:loicknuchel@gmail.com">loicknuchel@gmail.com</a></td><td><span tooltip="Could not connect!" class="text-warning ng-scope"><i class="fa fa-flash"></i></span> 25 minutes</td><td>11 oct. 2014, 20:24:53</td><td>Nexus 4 (Android 4.4.4)</td><td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.user({userId: 123})"><i class="fa fa-eye"></i></button></td></tr>
-              <tr><td><a href="mailto:loicknuchel@gmail.com">loicknuchel@gmail.com</a></td><td><span tooltip="Server Down!" class="text-danger ng-scope"><i class="fa fa-warning"></i></span> 25 minutes</td><td>11 oct. 2014, 20:24:53</td><td>Nexus 4 (Android 4.4.4)</td><td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.user({userId: 123})"><i class="fa fa-eye"></i></button></td></tr>
+              <tr ng-repeat="user in usersFiltered = (users | filter:userSearch)">
+                <td><a href="mailto:{{user.email}}">{{user.email}}</a></td>
+                <td><span last-seen="user.lastSeen"></span></td>
+                <td>{{user.created | datetime}}</td>
+                <td><span ng-repeat="device in user.devices" ng-if="device.model">{{device.model}} ({{device.platform}} {{device.version}}){{$last ? '' : ', '}}</span></td>
+                <td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.user({userId: user.id})"><i class="fa fa-eye"></i></button></td>
+              </tr>
             </tbody>
           </table>
         </div>

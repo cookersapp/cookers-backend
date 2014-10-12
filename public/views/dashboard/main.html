@@ -1,7 +1,8 @@
-<div class="row alerts-container">
+<div class="row alerts-container" ng-if="exceptionEvents.length > 0 || errorEvents.length > 0 || malformedEvents.length > 0">
   <div class="col-xs-12">
-    <alert type="danger"><strong>3 exceptions</strong> remontées et non validées !<span class="pull-right"><a>Voir tout »</a></span></alert>
-    <alert type="danger"><strong>10 événements malformés</strong> remontées et non validées !<span class="pull-right"><a>Voir tout »</a></span></alert>
+    <alert type="danger" ng-if="exceptionEvents.length > 0"><strong>{{exceptionEvents.length}} exceptions</strong> remontées et non validées !<span class="pull-right"><a>Voir tout »</a></span></alert>
+    <alert type="warning" ng-if="errorEvents.length > 0"><strong>{{errorEvents.length}} erreurs</strong> remontées et non validées !<span class="pull-right"><a>Voir tout »</a></span></alert>
+    <alert type="danger" ng-if="malformedEvents.length > 0"><strong>{{malformedEvents.length}} événements malformés</strong> remontées et non validées !<span class="pull-right"><a>Voir tout »</a></span></alert>
   </div>
 </div>
 
@@ -11,8 +12,8 @@
       <div class="widget-body">
         <div class="widget-icon green pull-left"><i class="fa fa-users"></i></div>
         <div class="widget-content pull-left">
-          <div class="title">80</div>
-          <div class="comment">Utilisateurs</div>
+          <div class="title"><span ng-if="stats">{{stats.users.new+stats.users.active}}</span><span ng-if="!stats"><i class="fa fa-spinner fa-spin"></i></span></div>
+          <div class="comment">Utilisateurs actifs en 7 jours </div>
         </div>
         <div class="clearfix"></div>
       </div>
@@ -23,8 +24,8 @@
       <div class="widget-body">
         <div class="widget-icon red pull-left"><i class="fa fa-cutlery"></i></div>
         <div class="widget-content pull-left">
-          <div class="title">16</div>
-          <div class="comment">Recettes cuisinées</div>
+          <div class="title"><span ng-if="stats">{{stats.recipes.cooked}}</span><span ng-if="!stats"><i class="fa fa-spinner fa-spin"></i></span></div>
+          <div class="comment">Recettes cuisinées en 7 jours</div>
         </div>
         <div class="clearfix"></div>
       </div>
@@ -35,8 +36,8 @@
       <div class="widget-body">
         <div class="widget-icon orange pull-left"><i class="fa fa-shopping-cart"></i></div>
         <div class="widget-content pull-left">
-          <div class="title">225</div>
-          <div class="comment">Ingrédients achetés</div>
+          <div class="title"><span ng-if="stats">{{stats.items.bought}}</span><span ng-if="!stats"><i class="fa fa-spinner fa-spin"></i></span></div>
+          <div class="comment">Ingrédients achetés en 7 jours</div>
         </div>
         <div class="clearfix"></div>
       </div>
@@ -47,8 +48,8 @@
       <div class="widget-body">
         <div class="widget-icon blue pull-left"><i class="fa fa-bolt"></i></div>
         <div class="widget-content pull-left">
-          <div class="title">62</div>
-          <div class="comment">Evénements</div>
+          <div class="title"><span ng-if="stats">{{stats.events.sent}}</span><span ng-if="!stats"><i class="fa fa-spinner fa-spin"></i></span></div>
+          <div class="comment">Evénements reçus en 7 jours</div>
         </div>
         <div class="clearfix"></div>
       </div>
@@ -60,21 +61,25 @@
   <div class="col-md-6">
     <div class="widget">
       <div class="widget-header">
-        <i class="fa fa-users"></i> Utilisateurs
-        <input type="text" placeholder="Search" class="form-control input-sm pull-right" />
+        <i class="fa fa-users"></i> Utilisateurs <span ng-if="users !== undefined">({{usersFiltered.length}})</span>
+        <input type="text" class="form-control input-sm pull-right" placeholder="Search" ng-model="userSearch" />
         <div class="clearfix"></div>
       </div>
       <div class="widget-body large no-padding">
-        <div class="table-responsive">
+        <rd-loading ng-if="users === undefined"></rd-loading>
+        <div class="table-responsive" ng-show="users !== undefined">
           <table class="table">
             <thead>
               <tr><th>Email</th><th>Vu</th><th>Créé</th><th>Téléphone</th><th></th></tr>
             </thead>
             <tbody>
-              <tr><td><a href="mailto:loicknuchel@gmail.com">loicknuchel@gmail.com</a></td><td><span class="text-success"><i class="fa fa-check"></i></span> 25 minutes</td><td>11 oct. 2014, 20:24:53</td><td>Nexus 4 (Android 4.4.4)</td><td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.user({userId: 123})"><i class="fa fa-eye"></i></button></td></tr>
-              <tr><td><a href="mailto:loicknuchel@gmail.com">loicknuchel@gmail.com</a></td><td><span class="text-success"><i class="fa fa-check"></i></span> 25 minutes</td><td>11 oct. 2014, 20:24:53</td><td>Nexus 4 (Android 4.4.4)</td><td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.user({userId: 123})"><i class="fa fa-eye"></i></button></td></tr>
-              <tr><td><a href="mailto:loicknuchel@gmail.com">loicknuchel@gmail.com</a></td><td><span tooltip="Could not connect!" class="text-warning ng-scope"><i class="fa fa-flash"></i></span> 25 minutes</td><td>11 oct. 2014, 20:24:53</td><td>Nexus 4 (Android 4.4.4)</td><td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.user({userId: 123})"><i class="fa fa-eye"></i></button></td></tr>
-              <tr><td><a href="mailto:loicknuchel@gmail.com">loicknuchel@gmail.com</a></td><td><span tooltip="Server Down!" class="text-danger ng-scope"><i class="fa fa-warning"></i></span> 25 minutes</td><td>11 oct. 2014, 20:24:53</td><td>Nexus 4 (Android 4.4.4)</td><td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.user({userId: 123})"><i class="fa fa-eye"></i></button></td></tr>
+              <tr ng-repeat="user in usersFiltered = (users | filter:userSearch)">
+                <td><a href="mailto:{{user.email}}">{{user.email}}</a></td>
+                <td><span last-seen="user.lastSeen"></span></td>
+                <td>{{user.created | datetime}}</td>
+                <td><span ng-repeat="device in user.devices" ng-if="device.model">{{device.model}} ({{device.platform}} {{device.version}}){{$last ? '' : ', '}}</span></td>
+                <td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.user({userId: user.id})"><i class="fa fa-eye"></i></button></td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -84,11 +89,17 @@
   <div class="col-md-6">
     <div class="widget">
       <div class="widget-header">
-        <i class="fa fa-cutlery"></i> Recettes
+        <i class="fa fa-cutlery"></i> FAKE: Recettes
         <input type="text" placeholder="Search" class="form-control input-sm pull-right" />
         <div class="clearfix"></div>
       </div>
       <div class="widget-body large no-padding">
+        <!-- Mongo query (to terminate...) :
+db.events.aggregate([
+{$match: {"data.recipe":{$regex:".*"}}},
+{$group: {_id: {name:"$name",recipe:"$data.recipe"}, count: {$sum: 1}}}
+])
+-->
         <div class="table-responsive">
           <table class="table">
             <thead>
@@ -101,5 +112,16 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    Usefull questions :
+    <ul>
+      <li><a href="http://klinger.io/post/77712761215/the-simplest-and-most-important-dashboard-for-early">Simple dashboard for early startups</a></li>
+      <li>How many people are actually using each of our product’s features? (from <a href="https://twitter.com/joelgascoigne/status/521286915950387200">Buffer</a>)</li>
+      <li>Tableaux de rétention et analyse de cohortes</li>
+    </ul>
   </div>
 </div>

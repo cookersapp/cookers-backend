@@ -6,10 +6,13 @@
 GET       /                                     controllers.Application.index(any = "none")
 
 # Tracking system
-GET       /api/v1/track/events                  controllers.Tracking.getAll
+GET       /api/v1/track/events                  controllers.Tracking.getAll(name: Option[String])
 GET       /api/v1/track/events/malformed        controllers.Tracking.getAllMalformed
 POST      /api/v1/track/event                   controllers.Tracking.add
 POST      /api/v1/track/events                  controllers.Tracking.addAll
+
+# Stats for dashboard
+GET       /api/v1/stats/week                    controllers.Stats.weekData(week: Option[Int])
 
 # User management
 GET       /api/v1/users                         controllers.Users.getAll

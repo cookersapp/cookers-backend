@@ -53,7 +53,7 @@ angular.module('app')
     };
     element.highcharts(params);
   }
-  
+
   function isPromise(p){
     return p && p.then;
   }
@@ -73,6 +73,31 @@ angular.module('app')
         });
       } else {
         loadGraph(element, scope.opts);
+      }
+    }
+  };
+})
+
+
+.directive('lastSeen', function(){
+  'use strict';
+  return {
+    restrict: 'A',
+    template: '<span class="{{status}}"><i class="{{icon}}"></i></span> {{lastSeen | humanTime}}',
+    scope: {
+      lastSeen: '='
+    },
+    link: function(scope, element, attr){
+      var daysAgo = moment().diff(moment(scope.lastSeen), 'days');
+      if(daysAgo < 5){
+        scope.status = 'text-success';
+        scope.icon = 'fa fa-check';
+      } else if(daysAgo < 10){
+        scope.status = 'text-warning';
+        scope.icon = 'fa fa-flash';
+      } else {
+        scope.status = 'text-danger';
+        scope.icon = 'fa fa-warning';
       }
     }
   };
