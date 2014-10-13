@@ -1,19 +1,18 @@
-<ion-view>
+<ion-view bindonce="cart">
   <ion-header-bar class="bar-custom">
     <div class="buttons">
       <button menu-toggle="left" class="button button-icon ion-navicon"></button>
     </div>
-    <h1 class="title">{{cart.name}}</h1>
+    <h1 class="title" bo-bind="cart.name"></h1>
     <div class="buttons">
-      <button class="button button-icon ion-more" ng-if="cart && !cart.archived" ng-click="popover.show($event)"></button>
-      <button class="button button-icon ion-archive" ng-if="cart && cart.archived"></button>
+      <button class="button button-icon ion-more" ng-click="popover.show($event)"></button>
     </div>
   </ion-header-bar>
-  <ion-content class="cart-screen" ng-class="{empty: isCartEmpty()}">
-    <div class="cart-chooser padding hide-on-keyboard-open">
+  <ion-content class="cart-screen" ng-class="{empty: cart.$formated.isEmpty}">
+    <div class="cart-chooser padding">
       <div class="button-bar bar-light">
-        <a class="button" ng-class="{active: isActive('.*recipes')}" ui-sref="app.cart.recipes">Recettes</a>
-        <a class="button" ng-class="{active: isActive('.*ingredients')}" ui-sref="app.cart.ingredients">Ingrédients</a>
+        <a class="button" href="#/app/cart/recipes" ng-class="{active: isActive('.*recipes')}">Recettes</a>
+        <a class="button" href="#/app/cart/ingredients" ng-class="{active: isActive('.*ingredients')}">Ingrédients</a>
       </div>
     </div>
     <ui-view></ui-view>

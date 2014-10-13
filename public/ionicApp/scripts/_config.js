@@ -1,13 +1,15 @@
 var Config = (function(){
   'use strict';
-  var mixpanelDebugToken = '077c04989e06fd2e89eea5e22960f73e';
-  var mixpanelProdToken = '41df619f80b556df0ac508e39860dd1d';
-  return {
-    appVersion: '0.3.1',
+  var cfg = {
+    appVersion: '1.1.0',
+    verbose: false,
     debug: false,
-    getMixpanelToken: function(){
-      if(Config.debug){return mixpanelDebugToken;}
-      else {return mixpanelProdToken;}
-    }
+    track: false
   };
+  var localBackendUrl = 'http://localhost:9000';
+  var devBackendUrl = 'http://dev-cookers.herokuapp.com';
+  var prodBackendUrl = 'http://cookers.herokuapp.com';
+  cfg.backendUrl = localBackendUrl;//cfg.debug ? devBackendUrl : prodBackendUrl;
+
+  return cfg;
 })();

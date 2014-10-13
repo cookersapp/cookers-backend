@@ -12,7 +12,7 @@
         <button class="btn btn-success" ng-click="close('foods2recipes')"><i class="fa fa-check"></i> Fini !</button>
       </div>
     </div>
-    <br>
+    <hr>
     <div>
       <loading-button btn-class="btn-default" btn-loading="config.recipes2selections.status.preparing" ng-click="prepare('recipes2selections')">Copier les recettes dans les sélections</loading-button>
       <div ng-if="config.recipes2selections.model && !config.recipes2selections.status.saved">
@@ -24,7 +24,7 @@
         <button class="btn btn-success" ng-click="close('recipes2selections')"><i class="fa fa-check"></i> Fini !</button>
       </div>
     </div>
-    <br>
+    <hr>
     <div ng-if="!config.isProd">
       <loading-button btn-class="btn-default" btn-loading="config.loadDb.status.preparing" ng-click="prepare('loadDb')">Copier la base de prod !</loading-button>
       <div ng-if="config.loadDb.model && !config.loadDb.status.saved">

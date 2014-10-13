@@ -1,162 +1,185 @@
+// Define Logger
 var Logger = (function(){
   'use strict';
-  function loadEvents(){ if(localStorage){ config.events = JSON.parse(localStorage.getItem(config.eventsStorageKey)) || []; } }
-  function saveEvents(){ if(localStorage){ localStorage.setItem(config.eventsStorageKey, JSON.stringify(config.events)); } }
-  function addEvent(event){
-    if(!config.events){config.events = [];}
-    config.events.push(event);
-    saveEvents();
-    if(config.identified){ startSendEvents(); }
-  }
-  function removeEvent(event){
-    if(!config.events){config.events = [];}
-    for(var i=0; i<config.events.length; i++){
-      if(config.events[i].id === event.id){
-        config.events.splice(i, 1);
-        break;
-      }
-    }
-    saveEvents();
-  }
   function createUuid(){
     function S4(){ return (((1+Math.random())*0x10000)|0).toString(16).substring(1); }
     return (S4() + S4() + '-' + S4() + '-4' + S4().substr(0,3) + '-' + S4() + '-' + S4() + S4() + S4()).toLowerCase();
   }
 
+  var Scheduler = (function(){
+    var events = [];
+    var eventSender = null;
+
+    function init(){
+      if(localStorage){
+        events = _getEvents() || [];
+        if(events.length > 0){ _startScheduler(); }
+      }
+    }
+
+    function schedule(event){
+      _addEvent(event);
+      _startScheduler();
+    }
+
+    function send(event, callback){
+      $.ajax({
+        type: 'POST',
+        url: config.backendUrl+'/api/v1/track/event',
+        data: JSON.stringify(event),
+        contentType: 'application/json'
+      })
+      .done(function(data, textStatus, jqXHR)       { if(callback){callback('ok');} })
+      .fail(function(jqXHR, textStatus, errorThrown){ if(callback){callback('ko');} });
+    }
+
+    function sendAll(events, callback){
+      $.ajax({
+        type: 'POST',
+        url: config.backendUrl+'/api/v1/track/events',
+        data: JSON.stringify(events),
+        contentType: 'application/json'
+      })
+      .done(function(data, textStatus, jqXHR)       { if(callback){callback('ok');} })
+      .fail(function(jqXHR, textStatus, errorThrown){ if(callback){callback('ko');} });
+    }
+
+    function _startScheduler(){
+      if(eventSender === null && events.length > 0){
+        // when scheduler starts, all events are not sending !
+        for(var i=0; i<events.length; i++){
+          events[i].sending = false;
+        }
+        eventSender = window.setInterval(function(){
+          if(events.length === 0){
+            _stopScheduler();
+          } else if(events.length === 1){
+            var event = events[0];
+            _resetEvents();
+            send(event, function(status){
+              if(status === 'ko'){
+                _addEvent(event);
+                _stopScheduler();
+              }
+            });
+          } else {
+            var toSend = events;
+            _resetEvents();
+            sendAll(toSend, function(status){
+              if(status === 'ko'){
+                _addEvents(toSend);
+                _stopScheduler();
+              }
+            });
+          }
+        }, config.scheduler.interval);
+      }
+    }
+
+    function _stopScheduler(){
+      if(eventSender !== null){
+        window.clearInterval(eventSender);
+        eventSender = null;
+      }
+    }
+
+    function _addEvent(event){
+      events.push(event);
+      _setEvents(events);
+    }
+    function _addEvents(eventsToAdd){
+      events = events.concat(eventsToAdd);
+      _setEvents(events);
+    }
+    function _resetEvents(){
+      events = [];
+      _setEvents(events);
+    }
+
+    function _setEvents(events){ if(localStorage){ localStorage.setItem(config.scheduler.storageKey, JSON.stringify(events)); } }
+    function _getEvents(){ if(localStorage){ return JSON.parse(localStorage.getItem(config.scheduler.storageKey)); } }
+
+    return {
+      init: init,
+      schedule: schedule,
+      send: send
+    };
+  })();
+
   var config = {
+    backendUrl: Config ? Config.backendUrl : '',
+    verbose: Config ? Config.verbose : true,
     debug: Config ? Config.debug : true,
-    noTrack: false,
+    track: Config ? Config.track : true,
     async: true,
-    identified: false,
-    eventsStorageKey: 'tracking-events-cache',
-    events: [],
-    eventSender: null,
-    currentEventId: null
+    scheduler: {
+      storageKey: 'tracking-events-cache',
+      interval: 3000
+    }
   };
-  loadEvents();
+  var currentEventId = null;
+  Scheduler.init();
 
-  function identify(id){
-    if(config.debug){ console.log('$[identify]', id); }
-    if(!config.noTrack){
-      mixpanel.identify(id);
-      config.identified = true;
-      if(config.events.length > 0){ startSendEvents(); }
-    }
-  }
-
-  function setProfile(profile){
-    if(config.debug){ console.log('$[register]', profile); }
-    if(!config.noTrack){
-      var event = {
-        id: createUuid(),
-        action: 'register',
-        data: profile
+  function track(name, event){
+    if(!event.name)                                     { event.name = name;                            }
+    if(!event.time)                                     { event.time = Date.now();                      }
+    if(!event.user)                                     { event.user = _getUserId();                    }
+    if(!event.source)                                   { event.source = {};                            }
+    if(!event.source.url && window && window.location)  { event.source.url = window.location.href;      }
+    if(!event.source.appVersion && Config)              { event.source.appVersion = Config.appVersion;  }
+    if(!event.dateinfo){
+      event.dateinfo = {
+        year: moment().year(),
+        month: moment().month(),
+        week: moment().week(),
+        dayOfYear: moment().dayOfYear(),
+        dayOfWeek: moment().weekday()
       };
-      if(config.async){
-        addEvent(event);
-      } else {
-        sendEvent(event);
-      }
     }
-  }
-
-  function track(type, data){
-    if(!data){data = {};}
-    if(!data.url && window && window.location){data.url = window.location.href;}
-    if(!data.time){data.time = Date.now()/1000;} // special mixpanel property
-    if(!data.localtime){data.localtime = Date.now();}
-    if(!data.appVersion && Config){data.appVersion = Config.appVersion;}
-    if(!data.email){data.email = getUserMailIfSetted();}
-    if(!data.eventId){data.eventId = createUuid();}
-    if(!data.previousEventId){data.previousEventId = config.currentEventId;}
-    config.currentEventId = data.eventId;
-
-    if(config.debug){ console.log('$[track] '+type, data); }
-    if(!config.noTrack){
-      var event = {
-        id: createUuid(),
-        action: 'track',
-        type: type,
-        data: data
-      };
-      if(config.async && type !== 'exception') {
-        addEvent(event);
-      } else {
-        sendEvent(event);
-      }
+    if(!event.id){
+      event.id = createUuid();
+      event.prevId = currentEventId;
+      currentEventId = event.eventId;
     }
-  }
 
-  function startSendEvents(){
-    if(config.eventSender === null){
-      for(var i=0; i<config.events.length; i++){
-        config.events[i].sending = false;
-      }
-      config.eventSender = window.setInterval(function(){
-        var eventsToSend = [];
-        for(var j=0; j<config.events.length; j++){
-          if(!config.events[j].sending && eventsToSend.length < 10){
-            config.events[j].sending = true;
-            eventsToSend.push(config.events[j]);
-          }
-        }
-        if(eventsToSend.length > 0){
-          var callback = function(event, status){
-            if(status !== 'ko'){ removeEvent(event); }
-            else { event.sending = false; }
-          };
-          for(var k=0; k<eventsToSend.length; k++){
-            sendEvent(eventsToSend[k], callback);
-          }
-        } else {
-          stopSendEvents();
-        }
-      }, 1000);
-    }
-  }
-
-  function stopSendEvents(){
-    if(config.eventSender !== null){
-      window.clearInterval(config.eventSender);
-      config.eventSender = null;
-    }
-  }
-
-  function sendEvent(event, callback){
-    if(event.action === 'register'){
-      mixpanel.people.set(event.data, function(success, data){
-        if(callback){callback(event, success ? 'ok' : 'ko');}
-      });
-    } else if(event.action === 'track'){
-      mixpanel.track(event.type, event.data, function(success, data){
-        if(callback){callback(event, success ? 'ok' : 'ko');}
-      });
-      if(event.type === 'error' && config.debug && event.data.error){window.alert('Error: '+event.data.error.message+'\nPlease contact: loic@cookers.io');}
-      if(event.type === 'exception'){window.alert('Exception: '+event.data.message+'\nPlease contact: loic@cookers.io');}
+    if(!event.user){
+      window.setTimeout(function(){
+        track(name, event);
+      }, 2000);
     } else {
-      if(callback){callback(event, 'unknown');}
+      if(config.verbose){ console.log('$[track] '+name, event); }
+      if(config.track){
+        if(config.async && event.name !== 'exception'){
+          Scheduler.schedule(event);
+        } else {
+          Scheduler.send(event, function(status){
+            if(status === 'ko'){Scheduler.schedule(event);}
+          });
+        }
+      }
+      if(name === 'error' && config.debug && event.data.error){
+        window.alert('Error: '+event.data.type+'\n'+event.data.error.message+'\nPlease contact: loic@cookers.io');
+      }
+      if(name === 'exception'){
+        window.alert('Exception: '+event.data.message+'\nPlease contact: loic@cookers.io');
+      }
     }
   }
 
-  function getUserMailIfSetted(){
+  function _getUserId(){
     if(localStorage){
       var user = JSON.parse(localStorage.getItem('ionic-user'));
-      if(user && user.email && typeof user.email === 'string' && user.email.contains('@')){
-        return user.email;
+      if(user && user.id){
+        return user.id;
       }
     }
   }
 
   return {
-    async: config.async,
-    noTrack: config.noTrack,
-    setAsync: function(a){ config.async = a; },
-    setNoTrack: function(d){ config.noTrack = d; },
-    identify: identify,
-    setProfile: setProfile,
     track: track
   };
 })();
+
 
 
 // catch exceptions
@@ -184,6 +207,6 @@ window.onerror = function(message, url, line, col, error){
     if(navigator.product)     { data['navigator.product']       = navigator.product;      }
   }
 
-  Logger.track('exception', data);
+  Logger.track('exception', {data: data});
   return stopPropagation;
 };
