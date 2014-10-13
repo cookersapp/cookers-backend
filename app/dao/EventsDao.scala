@@ -16,6 +16,7 @@ import reactivemongo.core.commands.GetLastError
 import common.Utils
 
 object EventsDao {
+  private val removeMongoId = (__ \ '_id).json.prune
   private val COLLECTION_NAME = "events"
   private def collection()(implicit db: DB): JSONCollection = db.collection[JSONCollection](COLLECTION_NAME)
 
@@ -48,16 +49,14 @@ object EventsDao {
     collection().db.command(Count(COLLECTION_NAME, Some(bsonQuery)))
   }
 
-  def export()(implicit db: DB): Future[List[JsValue]] = collection().find(Json.obj()).cursor[JsValue].toList
+  def export()(implicit db: DB): Future[List[JsValue]] = collection().find(Json.obj()).cursor[JsValue].toList.map(elts => elts.map(elt => elt.transform(removeMongoId).get))
   def importCollection(docs: List[JsValue])(implicit db: DB): Future[List[LastError]] = {
     if (Utils.isProd()) {
       Future.failed(new Exception("Can't do this in production !"))
     } else {
       val errors = docs.map { doc =>
-        val removeMongoId = (__ \ '_id).json.prune
-        val mongoDoc = doc.transform(removeMongoId).get
-        val id = (mongoDoc \ "id").asOpt[String].getOrElse(null)
-        collection().update(Json.obj("id" -> id), Json.obj("$set" -> mongoDoc), GetLastError(), true, false)
+        val id = (doc \ "id").asOpt[String].getOrElse(null)
+        collection().update(Json.obj("id" -> id), Json.obj("$set" -> doc), GetLastError(), true, false)
       }
       Future.sequence(errors)
     }

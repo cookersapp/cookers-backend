@@ -70,10 +70,11 @@
         <div class="table-responsive" ng-show="users !== undefined">
           <table class="table">
             <thead>
-              <tr><th>Email</th><th>Vu</th><th>Créé</th><th>Téléphone</th><th></th></tr>
+              <tr><th>#</th><th>Email</th><th>Vu</th><th>Créé</th><th>Téléphone</th><th></th></tr>
             </thead>
             <tbody>
               <tr ng-repeat="user in usersFiltered = (users | filter:userSearch)">
+                <td>#{{$index+1}}</td>
                 <td><a href="mailto:{{user.email}}">{{user.email}}</a></td>
                 <td><span last-seen="user.lastSeen"></span></td>
                 <td>{{user.created | datetime}}</td>
