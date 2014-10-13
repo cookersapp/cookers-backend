@@ -7,6 +7,7 @@ import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.api.DB
 import reactivemongo.core.commands.LastError
 import reactivemongo.core.commands.GetLastError
+import common.Utils
 
 object MalformedEventsDao {
   private val COLLECTION_NAME = "malformedEvents"
@@ -17,13 +18,23 @@ object MalformedEventsDao {
 
   def export()(implicit db: DB): Future[List[JsValue]] = collection().find(Json.obj()).cursor[JsValue].toList
   def importCollection(docs: List[JsValue])(implicit db: DB): Future[List[LastError]] = {
-    val errors = docs.map { doc =>
-      val removeMongoId = (__ \ '_id).json.prune
-      val mongoDoc = doc.transform(removeMongoId).get
-      val id = (mongoDoc \ "id").asOpt[String].getOrElse(null)
-      collection().update(Json.obj("id" -> id), Json.obj("$set" -> mongoDoc), GetLastError(), true, false)
+    if (Utils.isProd()) {
+      Future.failed(new Exception("Can't do this in production !"))
+    } else {
+      val errors = docs.map { doc =>
+        val removeMongoId = (__ \ '_id).json.prune
+        val mongoDoc = doc.transform(removeMongoId).get
+        val id = (mongoDoc \ "id").asOpt[String].getOrElse(null)
+        collection().update(Json.obj("id" -> id), Json.obj("$set" -> mongoDoc), GetLastError(), true, false)
+      }
+      Future.sequence(errors)
     }
-    Future.sequence(errors)
   }
-  def drop()(implicit db: DB): Future[Boolean] = collection().drop().recover { case err => false }
+  def drop()(implicit db: DB): Future[Boolean] = {
+    if (Utils.isProd()) {
+      Future.failed(new Exception("Can't do this in production !"))
+    } else {
+      collection().drop().recover { case err => false }
+    }
+  }
 }
