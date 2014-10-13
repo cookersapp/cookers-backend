@@ -469,7 +469,7 @@ angular.module('app')
   $scope.eltRestUrl = crud.eltRestUrl;
 })
 
-.controller('BatchsCtrl', function($rootScope, $scope, $q, $window, FoodSrv, RecipeSrv, SelectionSrv){
+.controller('BatchsCtrl', function($rootScope, $scope, $http, $q, $window, FoodSrv, RecipeSrv, SelectionSrv, isProd){
   'use strict';
   var ctx = {
     title: 'Batchs',
@@ -479,6 +479,7 @@ angular.module('app')
     ],
     header: $rootScope.config.header,
     config: {
+      isProd: isProd,
       foods2recipes: {
         service: RecipeSrv,
         fn: processRecipesWithFoods,
@@ -492,6 +493,17 @@ angular.module('app')
       recipes2selections: {
         service: SelectionSrv,
         fn: processSelectionsWithRecipes,
+        model: null,
+        status: {
+          preparing: false,
+          saving: false,
+          saved: false
+        }
+      },
+      loadDb: {
+        fn: function(){
+          return $http.get('http://cookers.herokuapp.com/api/export').then(function(result){return result.data;});
+        },
         model: null,
         status: {
           preparing: false,
@@ -527,6 +539,20 @@ angular.module('app')
   $scope.close = function(attr){
     ctx.config[attr].status.saved = false;
     ctx.config[attr].model = null;
+  };
+
+  $scope.saveDb = function(){
+    if(isProd){
+      $window.alert('Impossible à faire en prod !!!')
+    } else {
+      var attr = 'loadDb';
+      ctx.config[attr].status.saving = true;
+      return $http.post('/api/clearAndImport', ctx.config[attr].model).then(function(result){
+        ctx.config[attr].status.saving = false;
+        ctx.config[attr].status.saved = true;
+      });
+
+    }
   };
 
 

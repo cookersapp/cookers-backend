@@ -34,14 +34,17 @@ object Application extends Controller with MongoController {
   }
 
   def resetDatabase = Action {
-    UsersDao.drop()
-    EventsDao.drop()
-    MalformedEventsDao.drop()
-    Ok
+    if (Utils.isProd()) {
+      Forbidden(Json.obj("message" -> "Illegal operation in Prod !"))
+    } else {
+      UsersDao.drop()
+      EventsDao.drop()
+      MalformedEventsDao.drop()
+      Ok(Json.obj("message" -> "success"))
+    }
   }
 
   def export(exportUsers: Option[Boolean], exportEvents: Option[Boolean], exportMalformedEvents: Option[Boolean]) = Action {
-    Logger.debug("export data")
     Async {
       val results: Future[(List[JsValue], List[JsValue], List[JsValue])] = for {
         users <- if (exportUsers.isEmpty || exportUsers.get) UsersDao.export() else Future.successful(List())
@@ -56,51 +59,61 @@ object Application extends Controller with MongoController {
     }
   }
 
-  def importAndMerge = Action(parse.json) { request =>
+  // Accept json of 10 Mo
+  def importAndMerge = Action(parse.json(maxLength = 1024 * 1024 * 10)) { request =>
     Async {
-      val emptyList: List[JsValue] = List()
-      val users = (request.body \ "users").asOpt[List[JsValue]].getOrElse(null)
-      val events = (request.body \ "events").asOpt[List[JsValue]].getOrElse(null)
-      val malformedEvents = (request.body \ "malformedEvents").asOpt[List[JsValue]].getOrElse(null)
+      if (Utils.isProd()) {
+        Future.successful(Forbidden(Json.obj("message" -> "Illegal operation in Prod !")))
+      } else {
+        val emptyList: List[JsValue] = List()
+        val users = (request.body \ "users").asOpt[List[JsValue]].getOrElse(null)
+        val events = (request.body \ "events").asOpt[List[JsValue]].getOrElse(null)
+        val malformedEvents = (request.body \ "malformedEvents").asOpt[List[JsValue]].getOrElse(null)
 
-      val results: Future[(List[LastError], List[LastError], List[LastError])] = for {
-        usersErrors <- UsersDao.importCollection(users)
-        eventsErrors <- EventsDao.importCollection(events)
-        malformedEventsErrors <- MalformedEventsDao.importCollection(malformedEvents)
-      } yield (usersErrors, eventsErrors, malformedEventsErrors)
+        val results: Future[(List[LastError], List[LastError], List[LastError])] = for {
+          usersErrors <- UsersDao.importCollection(users)
+          eventsErrors <- EventsDao.importCollection(events)
+          malformedEventsErrors <- MalformedEventsDao.importCollection(malformedEvents)
+        } yield (usersErrors, eventsErrors, malformedEventsErrors)
 
-      results.map {
-        case (usersErrors, eventsErrors, malformedEventsErrors) => {
-          Ok(Json.obj("message" -> "success"))
+        results.map {
+          case (usersErrors, eventsErrors, malformedEventsErrors) => {
+            Ok(Json.obj("message" -> "success"))
+          }
         }
       }
     }
   }
 
-  def clearAndImport = Action(parse.json) { request =>
+  // Accept json of 10 Mo
+  def clearAndImport = Action(parse.json(maxLength = 1024 * 1024 * 10)) { request =>
     Async {
-      val emptyList: List[JsValue] = List()
-      val users = (request.body \ "users").asOpt[List[JsValue]].getOrElse(null)
-      val events = (request.body \ "events").asOpt[List[JsValue]].getOrElse(null)
-      val malformedEvents = (request.body \ "malformedEvents").asOpt[List[JsValue]].getOrElse(null)
+      if (Utils.isProd()) {
+        Future.successful(Forbidden(Json.obj("message" -> "Illegal operation in Prod !")))
+      } else {
+        val emptyList: List[JsValue] = List()
+        val users = (request.body \ "users").asOpt[List[JsValue]].getOrElse(null)
+        val events = (request.body \ "events").asOpt[List[JsValue]].getOrElse(null)
+        val malformedEvents = (request.body \ "malformedEvents").asOpt[List[JsValue]].getOrElse(null)
 
-      val dropResults: Future[(Boolean, Boolean, Boolean)] = for {
-        usersDrop <- UsersDao.drop()
-        eventsDrop <- EventsDao.drop()
-        malformedEventsDrop <- MalformedEventsDao.drop()
-      } yield (usersDrop, eventsDrop, malformedEventsDrop)
+        val dropResults: Future[(Boolean, Boolean, Boolean)] = for {
+          usersDrop <- UsersDao.drop()
+          eventsDrop <- EventsDao.drop()
+          malformedEventsDrop <- MalformedEventsDao.drop()
+        } yield (usersDrop, eventsDrop, malformedEventsDrop)
 
-      dropResults.flatMap {
-        case (usersDrop, eventsDrop, malformedEventsDrop) => {
-          val results: Future[(List[LastError], List[LastError], List[LastError])] = for {
-            usersErrors <- UsersDao.importCollection(users)
-            eventsErrors <- EventsDao.importCollection(events)
-            malformedEventsErrors <- MalformedEventsDao.importCollection(malformedEvents)
-          } yield (usersErrors, eventsErrors, malformedEventsErrors)
+        dropResults.flatMap {
+          case (usersDrop, eventsDrop, malformedEventsDrop) => {
+            val results: Future[(List[LastError], List[LastError], List[LastError])] = for {
+              usersErrors <- UsersDao.importCollection(users)
+              eventsErrors <- EventsDao.importCollection(events)
+              malformedEventsErrors <- MalformedEventsDao.importCollection(malformedEvents)
+            } yield (usersErrors, eventsErrors, malformedEventsErrors)
 
-          results.map {
-            case (usersErrors, eventsErrors, malformedEventsErrors) => {
-              Ok(Json.obj("message" -> "success"))
+            results.map {
+              case (usersErrors, eventsErrors, malformedEventsErrors) => {
+                Ok(Json.obj("message" -> "success"))
+              }
             }
           }
         }

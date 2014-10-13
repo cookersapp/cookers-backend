@@ -162,6 +162,7 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
 })
 
 .constant('env', Config.env)
+.constant('isProd', Config.env === 'prod')
 .constant('debug', Config.debug)
 .constant('firebaseUrl', 'https://crackling-fire-7710.firebaseio.com')
 
