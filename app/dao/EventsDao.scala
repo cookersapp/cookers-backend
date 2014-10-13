@@ -12,6 +12,7 @@ import reactivemongo.core.commands.Count
 import reactivemongo.core.commands.LastError
 import reactivemongo.core.commands.RawCommand
 import reactivemongo.bson.BSONDocument
+import reactivemongo.core.commands.GetLastError
 
 object EventsDao {
   private val COLLECTION_NAME = "events"
@@ -46,5 +47,13 @@ object EventsDao {
     collection().db.command(Count(COLLECTION_NAME, Some(bsonQuery)))
   }
 
+  def export()(implicit db: DB): Future[List[JsValue]] = collection().find(Json.obj()).cursor[JsValue].toList
+  def importCollection(docs: List[JsValue])(implicit db: DB): Future[List[LastError]] = {
+    val errors = docs.map { doc =>
+      val id = (doc \ "id").asOpt[String].getOrElse(null)
+      collection().update(Json.obj("id" -> id), Json.obj("$set" -> doc), GetLastError(), true, false)
+    }
+    Future.sequence(errors)
+  }
   def drop()(implicit db: DB): Future[Boolean] = collection().drop()
 }

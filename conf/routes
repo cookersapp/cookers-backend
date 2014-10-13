@@ -23,6 +23,9 @@ PUT       /api/v1/users/:id/device              controllers.Users.setUserDevice(
 
 POST      /api/v1/app-feedback                  controllers.Application.sendFeedback
 DELETE    /api/v1/reset-database                controllers.Application.resetDatabase
+GET       /api/export                           controllers.Application.export(exportUsers:Option[Boolean], exportEvents:Option[Boolean], exportMalformedEvents:Option[Boolean])
+POST      /api/importAndMerge                   controllers.Application.importAndMerge
+POST      /api/clearAndImport                   controllers.Application.clearAndImport
 
 # Play routes serving JSON to AngularJS start with /api
 GET       /api/celebrities                      controllers.Celebrities.index

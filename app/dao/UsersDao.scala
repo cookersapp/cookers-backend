@@ -4,10 +4,12 @@ import models.User
 import java.util.Date
 import scala.concurrent._
 import ExecutionContext.Implicits.global
+import play.api.Logger
 import play.api.libs.json._
 import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.api.DB
 import reactivemongo.core.commands.LastError
+import reactivemongo.core.commands.GetLastError
 import reactivemongo.core.commands.Count
 import play.modules.reactivemongo.json.BSONFormats
 import reactivemongo.bson.BSONDocument
@@ -32,5 +34,13 @@ object UsersDao {
     collection().db.command(Count(COLLECTION_NAME, Some(bsonQuery)))
   }
 
+  def export()(implicit db: DB): Future[List[JsValue]] = collection().find(Json.obj()).cursor[JsValue].toList
+  def importCollection(docs: List[JsValue])(implicit db: DB): Future[List[LastError]] = {
+    val errors = docs.map { doc =>
+      val id = (doc \ "id").asOpt[String].getOrElse(null)
+      collection().update(Json.obj("id" -> id), Json.obj("$set" -> doc), GetLastError(), true, false)
+    }
+    Future.sequence(errors)
+  }
   def drop()(implicit db: DB): Future[Boolean] = collection().drop()
 }

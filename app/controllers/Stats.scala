@@ -20,7 +20,9 @@ object Stats extends Controller with MongoController {
 
   def weekData(week: Option[Int]) = Action {
     Async {
-      val to: Long = if (week.isEmpty) System.currentTimeMillis else 0 // TODO get timestamp of last day of week (dimanche minuit)
+      // TODO get timestamp of last day of week (dimanche minuit)
+      // see : http://stackoverflow.com/questions/3941700/how-to-get-dates-of-a-week-i-know-week-number
+      val to: Long = if (week.isEmpty) System.currentTimeMillis else 0
       val from: Long = to - weekInMillis
 
       val future: Future[(Int, Int, Int, Int, Int, Int, Int, Int, Int, Int)] = for {

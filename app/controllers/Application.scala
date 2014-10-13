@@ -1,14 +1,18 @@
 package controllers
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import common.Mandrill
 import common.Utils
-import play.api.mvc.Action
-import play.api.mvc.Controller
 import dao.UsersDao
-import play.modules.reactivemongo.MongoController
 import dao.EventsDao
 import dao.MalformedEventsDao
+import scala.concurrent._
+import scala.concurrent.ExecutionContext.Implicits.global
+import play.api.Logger
+import play.api.mvc.Action
+import play.api.mvc.Controller
+import play.api.libs.json.Json
+import play.api.libs.json.JsValue
+import play.modules.reactivemongo.MongoController
 
 object Application extends Controller with MongoController {
   implicit val DB = db
@@ -32,6 +36,36 @@ object Application extends Controller with MongoController {
     UsersDao.drop()
     EventsDao.drop()
     MalformedEventsDao.drop()
+    Ok
+  }
+
+  def export(exportUsers: Option[Boolean], exportEvents: Option[Boolean], exportMalformedEvents: Option[Boolean]) = Action {
+    Logger.debug("export data")
+    Async {
+      val results: Future[(List[JsValue], List[JsValue], List[JsValue])] = for {
+        users <- if (exportUsers.isEmpty || exportUsers.get) UsersDao.export() else Future.successful(List())
+        events <- if (exportEvents.isEmpty || exportEvents.get) EventsDao.export() else Future.successful(List())
+        malformedEvents <- if (exportMalformedEvents.isEmpty || exportMalformedEvents.get) MalformedEventsDao.export() else Future.successful(List())
+      } yield (users, events, malformedEvents)
+
+      results.map {
+        case (users, events, malformedEvents) =>
+          Ok(Json.obj("users" -> users, "events" -> events, "malformedEvents" -> malformedEvents))
+      }
+    }
+  }
+
+  def importAndMerge = Action(parse.json) { request =>
+    Async {
+      val emptyList: List[JsValue] = List()
+      val users = (request.body \ "users").asOpt[List[JsValue]].getOrElse(emptyList)
+      UsersDao.importCollection(users).map { lastErrors =>
+        Ok
+      }
+    }
+  }
+
+  def clearAndImport = Action {
     Ok
   }
 
