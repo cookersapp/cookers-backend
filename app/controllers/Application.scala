@@ -13,6 +13,7 @@ import play.api.mvc.Controller
 import play.api.libs.json.Json
 import play.api.libs.json.JsValue
 import play.modules.reactivemongo.MongoController
+import reactivemongo.core.commands.LastError
 
 object Application extends Controller with MongoController {
   implicit val DB = db
@@ -58,15 +59,53 @@ object Application extends Controller with MongoController {
   def importAndMerge = Action(parse.json) { request =>
     Async {
       val emptyList: List[JsValue] = List()
-      val users = (request.body \ "users").asOpt[List[JsValue]].getOrElse(emptyList)
-      UsersDao.importCollection(users).map { lastErrors =>
-        Ok
+      val users = (request.body \ "users").asOpt[List[JsValue]].getOrElse(null)
+      val events = (request.body \ "events").asOpt[List[JsValue]].getOrElse(null)
+      val malformedEvents = (request.body \ "malformedEvents").asOpt[List[JsValue]].getOrElse(null)
+
+      val results: Future[(List[LastError], List[LastError], List[LastError])] = for {
+        usersErrors <- UsersDao.importCollection(users)
+        eventsErrors <- EventsDao.importCollection(events)
+        malformedEventsErrors <- MalformedEventsDao.importCollection(malformedEvents)
+      } yield (usersErrors, eventsErrors, malformedEventsErrors)
+
+      results.map {
+        case (usersErrors, eventsErrors, malformedEventsErrors) => {
+          Ok(Json.obj("message" -> "success"))
+        }
       }
     }
   }
 
-  def clearAndImport = Action {
-    Ok
+  def clearAndImport = Action(parse.json) { request =>
+    Async {
+      val emptyList: List[JsValue] = List()
+      val users = (request.body \ "users").asOpt[List[JsValue]].getOrElse(null)
+      val events = (request.body \ "events").asOpt[List[JsValue]].getOrElse(null)
+      val malformedEvents = (request.body \ "malformedEvents").asOpt[List[JsValue]].getOrElse(null)
+
+      val dropResults: Future[(Boolean, Boolean, Boolean)] = for {
+        usersDrop <- UsersDao.drop()
+        eventsDrop <- EventsDao.drop()
+        malformedEventsDrop <- MalformedEventsDao.drop()
+      } yield (usersDrop, eventsDrop, malformedEventsDrop)
+
+      dropResults.flatMap {
+        case (usersDrop, eventsDrop, malformedEventsDrop) => {
+          val results: Future[(List[LastError], List[LastError], List[LastError])] = for {
+            usersErrors <- UsersDao.importCollection(users)
+            eventsErrors <- EventsDao.importCollection(events)
+            malformedEventsErrors <- MalformedEventsDao.importCollection(malformedEvents)
+          } yield (usersErrors, eventsErrors, malformedEventsErrors)
+
+          results.map {
+            case (usersErrors, eventsErrors, malformedEventsErrors) => {
+              Ok(Json.obj("message" -> "success"))
+            }
+          }
+        }
+      }
+    }
   }
 
   def corsPreflight(all: String) = Action {

@@ -18,10 +18,12 @@ object MalformedEventsDao {
   def export()(implicit db: DB): Future[List[JsValue]] = collection().find(Json.obj()).cursor[JsValue].toList
   def importCollection(docs: List[JsValue])(implicit db: DB): Future[List[LastError]] = {
     val errors = docs.map { doc =>
-      val id = (doc \ "id").asOpt[String].getOrElse(null)
-      collection().update(Json.obj("id" -> id), Json.obj("$set" -> doc), GetLastError(), true, false)
+      val removeMongoId = (__ \ '_id).json.prune
+      val mongoDoc = doc.transform(removeMongoId).get
+      val id = (mongoDoc \ "id").asOpt[String].getOrElse(null)
+      collection().update(Json.obj("id" -> id), Json.obj("$set" -> mongoDoc), GetLastError(), true, false)
     }
     Future.sequence(errors)
   }
-  def drop()(implicit db: DB): Future[Boolean] = collection().drop()
+  def drop()(implicit db: DB): Future[Boolean] = collection().drop().recover { case err => false }
 }
