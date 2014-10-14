@@ -76,7 +76,7 @@
   <div class="col-md-12">
     <div class="widget">
       <div class="widget-header">
-        <i class="fa fa-users"></i> Utilisateurs <span ng-if="users !== undefined">({{usersFiltered.length}})</span>
+        <i class="fa fa-users"></i> Utilisateurs <span ng-show="users">({{usersFiltered.length}})</span>
         <input type="text" class="form-control input-sm pull-right" placeholder="Search" ng-model="userSearch" />
         <div class="clearfix"></div>
       </div>

@@ -184,6 +184,63 @@ angular.module('app')
 })
 
 
+.controller('DashboardExceptionsCtrl', function($rootScope, $scope, EventsSrv){
+  'use strict';
+  $rootScope.config.header.title = 'Exceptions dashboard';
+  $rootScope.config.header.levels = [
+    {name: 'Dashboard', state: 'user.home'},
+    {name: 'Exceptions'}
+  ];
+
+  EventsSrv.getAllExceptions().then(function(events){
+    $scope.events = events || [];
+  });
+
+  $scope.toggleEvent = function(elt){
+    if($scope.eventSelected === elt){$scope.eventSelected = null;}
+    else {$scope.eventSelected = elt;}
+  };
+})
+
+
+.controller('DashboardErrorsCtrl', function($rootScope, $scope, EventsSrv){
+  'use strict';
+  $rootScope.config.header.title = 'Errors dashboard';
+  $rootScope.config.header.levels = [
+    {name: 'Dashboard', state: 'user.home'},
+    {name: 'Errors'}
+  ];
+
+  EventsSrv.getAllErrors().then(function(events){
+    $scope.events = events || [];
+  });
+
+  $scope.toggleEvent = function(elt){
+    if($scope.eventSelected === elt){$scope.eventSelected = null;}
+    else {$scope.eventSelected = elt;}
+  };
+})
+
+
+.controller('DashboardMalformedCtrl', function($rootScope, $scope, EventsSrv){
+  'use strict';
+  $rootScope.config.header.title = 'Malformed dashboard';
+  $rootScope.config.header.levels = [
+    {name: 'Dashboard', state: 'user.home'},
+    {name: 'Malformed'}
+  ];
+
+  EventsSrv.getAllMalformed().then(function(events){
+    $scope.events = events || [];
+  });
+
+  $scope.toggleEvent = function(elt){
+    if($scope.eventSelected === elt){$scope.eventSelected = null;}
+    else {$scope.eventSelected = elt;}
+  };
+})
+
+
 .controller('DashboardEventCtrl', function($rootScope, $scope, $stateParams, EventsSrv){
   'use strict';
   var eventId = $stateParams.eventId;

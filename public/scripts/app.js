@@ -84,6 +84,21 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
     templateUrl: 'assets/views/dashboard/events.html',
     controller: 'DashboardEventsCtrl'
   })
+  .state('user.dashboard.exceptions', {
+    url: '/exceptions',
+    templateUrl: 'assets/views/dashboard/exceptions.html',
+    controller: 'DashboardExceptionsCtrl'
+  })
+  .state('user.dashboard.errors', {
+    url: '/errors',
+    templateUrl: 'assets/views/dashboard/errors.html',
+    controller: 'DashboardErrorsCtrl'
+  })
+  .state('user.dashboard.malformed', {
+    url: '/malformed',
+    templateUrl: 'assets/views/dashboard/malformed.html',
+    controller: 'DashboardMalformedCtrl'
+  })
   .state('user.dashboard.event', {
     url: '/events/:eventId',
     templateUrl: 'assets/views/dashboard/event.html',
