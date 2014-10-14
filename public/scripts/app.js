@@ -79,6 +79,16 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
     templateUrl: 'assets/views/dashboard/user.html',
     controller: 'DashboardUserCtrl'
   })
+  .state('user.dashboard.events', {
+    url: '/events',
+    templateUrl: 'assets/views/dashboard/events.html',
+    controller: 'DashboardEventsCtrl'
+  })
+  .state('user.dashboard.event', {
+    url: '/events/:eventId',
+    templateUrl: 'assets/views/dashboard/event.html',
+    controller: 'DashboardEventCtrl'
+  })
   .state('user.dashboard.recipes', {
     url: '/recipes',
     templateUrl: 'assets/views/dashboard/recipes.html',

@@ -17,17 +17,25 @@ object Tracking extends Controller with MongoController {
   implicit val DB = db
 
   // get all events
-  def getAll(name: Option[String]) = Action { implicit request =>
+  def getAll(name: Option[String]) = Action {
     Async {
-      val results: Future[List[Event]] = if(name.isEmpty) EventsDao.all() else EventsDao.findByName(name.get)
+      val results: Future[List[Event]] = if (name.isEmpty) EventsDao.all() else EventsDao.findByName(name.get)
       results.map { events => Ok(Json.toJson(events)) }
     }
   }
 
   // get all malformed events
-  def getAllMalformed = Action { implicit request =>
+  def getAllMalformed = Action {
     Async {
       MalformedEventsDao.all().map { events => Ok(Json.toJson(events)) }
+    }
+  }
+
+  // get event
+  def get(id: String) = Action {
+    Async {
+      val result: Future[Option[Event]] = EventsDao.findById(id)
+      result.map { eventOpt => if (eventOpt.isEmpty) NotFound else Ok(Json.toJson(eventOpt.get)) }
     }
   }
 

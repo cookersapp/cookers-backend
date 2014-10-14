@@ -20,10 +20,24 @@ angular.module('app')
 .factory('EventsSrv', function($http){
   'use strict';
   var service = {
+    get: get,
+    getAll: getAll,
     getAllExceptions: getAllExceptions,
     getAllErrors: getAllErrors,
     getAllMalformed: getAllMalformed
   };
+
+  function get(id){
+    return $http.get('/api/v1/track/events/'+id).then(function(result){
+      return result.data;
+    });
+  }
+
+  function getAll(){
+    return $http.get('/api/v1/track/events').then(function(result){
+      return result.data;
+    });
+  }
 
   function getAllExceptions(){
     return $http.get('/api/v1/track/events?name=exception').then(function(result){

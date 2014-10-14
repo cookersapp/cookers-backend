@@ -11,7 +11,8 @@ import reactivemongo.core.commands._
 object DaoUtils {
   // examples : https://gist.github.com/almeidap/5685801
   private val removeMongoId = (__ \ '_id).json.prune
-  private def removeUnwantedFields(json: JsValue): JsValue = json.transform(removeMongoId).getOrElse(Json.obj())
+  private val removeFormatedField = (__ \ 'data \ 'error \ 'ingredient \ 'sources \ 'recipe \ '$formated).json.prune
+  private def removeUnwantedFields(json: JsValue): JsValue = json.transform(removeMongoId /*andThen removeFormatedField*/).getOrElse(Json.obj())
 
   def export(db: DB, collection: JSONCollection): Future[List[JsValue]] = collection.find(Json.obj()).cursor[JsValue].toList.map(elts => elts.map(elt => removeUnwantedFields(elt)))
   def importCollection(db: DB, collection: JSONCollection, docs: List[JsValue]): Future[List[LastError]] = {

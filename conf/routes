@@ -8,6 +8,7 @@ GET       /                                     controllers.Application.index(an
 # Tracking system
 GET       /api/v1/track/events                  controllers.Tracking.getAll(name: Option[String])
 GET       /api/v1/track/events/malformed        controllers.Tracking.getAllMalformed
+GET       /api/v1/track/events/:id              controllers.Tracking.get(id: String)
 POST      /api/v1/track/event                   controllers.Tracking.add
 POST      /api/v1/track/events                  controllers.Tracking.addAll
 

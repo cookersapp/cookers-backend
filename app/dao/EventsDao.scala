@@ -18,6 +18,7 @@ object EventsDao {
 
   def all()(implicit db: DB): Future[List[Event]] = collection().find(Json.obj()).sort(Json.obj("time" -> -1)).cursor[Event].toList
   def findByName(name: String)(implicit db: DB): Future[List[Event]] = collection().find(Json.obj("name" -> name)).sort(Json.obj("time" -> -1)).cursor[Event].toList
+  def findById(id: String)(implicit db: DB): Future[Option[Event]] = collection().find(Json.obj("id" -> id)).one[Event]
   def insert(event: Event)(implicit db: DB): Future[LastError] = collection().insert(event)
 
   def getActiveUsers(from: Long, to: Long)(implicit db: DB): Future[List[String]] = {

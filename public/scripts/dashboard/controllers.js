@@ -38,6 +38,10 @@ angular.module('app')
     {name: 'Users'}
   ];
 
+  UsersSrv.getAll().then(function(users){
+    $scope.users = users || [];
+  });
+
   var defer = $q.defer();
   $scope.dailyUsers = defer.promise;
   setTimeout(function(){
@@ -81,10 +85,6 @@ angular.module('app')
              21000, 20000, 19000, 18000, 18000, 17000, 16000]
     }]
   };
-
-  UsersSrv.getAll().then(function(users){
-    $scope.users = users || [];
-  });
 })
 
 
@@ -148,6 +148,41 @@ angular.module('app')
       data: [24.1, 20.1, 14.1, 8.6, 2.5]
     }]
   };
+})
+
+
+.controller('DashboardEventsCtrl', function($rootScope, $scope, EventsSrv){
+  'use strict';
+  $rootScope.config.header.title = 'Events dashboard';
+  $rootScope.config.header.levels = [
+    {name: 'Dashboard', state: 'user.home'},
+    {name: 'Events'}
+  ];
+
+  EventsSrv.getAll().then(function(events){
+    $scope.events = events || [];
+  });
+
+  $scope.toggleEvent = function(elt){
+    if($scope.eventSelected === elt){$scope.eventSelected = null;}
+    else {$scope.eventSelected = elt;}
+  };
+})
+
+
+.controller('DashboardEventCtrl', function($rootScope, $scope, $stateParams, EventsSrv){
+  'use strict';
+  var eventId = $stateParams.eventId;
+  $rootScope.config.header.title = 'Event profile';
+  $rootScope.config.header.levels = [
+    {name: 'Dashboard', state: 'user.home'},
+    {name: 'Events', state: 'user.dashboard.events'},
+    {name: 'Event details'}
+  ];
+
+  EventsSrv.get(eventId).then(function(event){
+    $scope.event = event || {};
+  });
 })
 
 
