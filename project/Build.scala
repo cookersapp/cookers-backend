@@ -6,10 +6,6 @@ object ApplicationBuild extends Build {
   val appName         = "cookers"
   val appVersion      = "1.0-SNAPSHOT"
 
-  val mandubianRepo = Seq(
-    "mandubian maven bintray" at "http://dl.bintray.com/mandubian/maven"
-  )
-
   val appDependencies = Seq(
     // ReactiveMongo dependencies
     "org.reactivemongo" %% "reactivemongo" % "0.9",
@@ -18,9 +14,5 @@ object ApplicationBuild extends Build {
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
-    resolvers ++= mandubianRepo,
-    libraryDependencies ++= Seq(
-      "com.mandubian"     %% "play-json-zipper"    % "1.2"
-    )
   )
 }
