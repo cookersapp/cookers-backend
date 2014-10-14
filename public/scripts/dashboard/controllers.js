@@ -88,14 +88,28 @@ angular.module('app')
 })
 
 
-.controller('DashboardUserCtrl', function($rootScope){
+.controller('DashboardUserCtrl', function($rootScope, $scope, $stateParams, UsersSrv, EventsSrv){
   'use strict';
+  var userId = $stateParams.userId;
+
   $rootScope.config.header.title = 'User profile';
   $rootScope.config.header.levels = [
     {name: 'Dashboard', state: 'user.home'},
     {name: 'Users', state: 'user.dashboard.users'},
     {name: 'User profile'}
   ];
+
+  UsersSrv.get(userId).then(function(user){
+    $scope.user = user;
+  });
+  EventsSrv.getForUser(userId).then(function(events){
+    $scope.events = events;
+  });
+
+  $scope.toggleEvent = function(elt){
+    if($scope.eventSelected === elt){$scope.eventSelected = null;}
+    else {$scope.eventSelected = elt;}
+  };
 })
 
 

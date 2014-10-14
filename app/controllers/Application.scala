@@ -56,9 +56,18 @@ object Application extends Controller with MongoController {
           Ok(Json.obj("users" -> users, "events" -> events, "malformedEvents" -> malformedEvents))
       }
     }
-    /*val removeUnwantedFields = (__ \ '_id).json.prune andThen (__ \ 'd \ 'a).json.prune
-    val json = Json.obj("_id" -> Json.obj(), "a" -> "a", "b" -> Json.obj("ba" -> "ba", "$bb" -> "bb"), "c" -> Json.arr(Json.obj(), Json.obj("$ca" -> "ca", "cb" -> "cb")))
-    Ok(json.transform(removeUnwantedFields).get)*/
+    /*val json = Json.obj(
+      "_id" -> Json.obj(),
+      "a" -> "a",
+      "b" -> Json.obj(
+        "ba" -> "ba",
+        "$bb" -> "bb"),
+      "c" -> Json.arr(
+        Json.obj(),
+        Json.obj(
+          "$ca" -> "ca",
+          "cb" -> "cb")))
+    Ok(json.delete((__ \ "_id")))*/
   }
 
   // Accept json of 10 Mo

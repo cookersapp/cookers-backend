@@ -39,6 +39,12 @@ object Tracking extends Controller with MongoController {
     }
   }
 
+  def getForUser(id: String) = Action {
+    Async {
+      EventsDao.findByUser(id).map { events => Ok(Json.toJson(events)) }
+    }
+  }
+
   // save an event
   // fire and forget endpoint...
   def add = Action(parse.json) { request =>

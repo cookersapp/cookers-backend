@@ -4,8 +4,15 @@ angular.module('app')
 .factory('UsersSrv', function($http){
   'use strict';
   var service = {
+    get: get,
     getAll: getAll
   };
+
+  function get(id){
+    return $http.get('/api/v1/users/'+id).then(function(result){
+      return result.data;
+    });
+  }
 
   function getAll(){
     return $http.get('/api/v1/users').then(function(result){
@@ -22,6 +29,7 @@ angular.module('app')
   var service = {
     get: get,
     getAll: getAll,
+    getForUser: getForUser,
     getAllExceptions: getAllExceptions,
     getAllErrors: getAllErrors,
     getAllMalformed: getAllMalformed
@@ -35,6 +43,12 @@ angular.module('app')
 
   function getAll(){
     return $http.get('/api/v1/track/events').then(function(result){
+      return result.data;
+    });
+  }
+
+  function getForUser(id){
+    return $http.get('/api/v1/users/'+id+'/events').then(function(result){
       return result.data;
     });
   }
