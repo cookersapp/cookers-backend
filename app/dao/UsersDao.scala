@@ -1,23 +1,19 @@
 package dao
 
+import common.Utils
 import models.User
 import java.util.Date
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 import play.api.Logger
 import play.api.libs.json._
-import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.api.DB
-import reactivemongo.core.commands.LastError
-import reactivemongo.core.commands.GetLastError
-import reactivemongo.core.commands.Count
-import play.modules.reactivemongo.json.BSONFormats
+import reactivemongo.core.commands._
 import reactivemongo.bson.BSONDocument
-import common.Utils
+import play.modules.reactivemongo.json.BSONFormats
+import play.modules.reactivemongo.json.collection.JSONCollection
 
 object UsersDao {
-  // examples : https://gist.github.com/almeidap/5685801
-  private val removeMongoId = (__ \ '_id).json.prune
   private val COLLECTION_NAME = "users"
   private def collection()(implicit db: DB): JSONCollection = db.collection[JSONCollection](COLLECTION_NAME)
 
@@ -36,23 +32,7 @@ object UsersDao {
     collection().db.command(Count(COLLECTION_NAME, Some(bsonQuery)))
   }
 
-  def export()(implicit db: DB): Future[List[JsValue]] = collection().find(Json.obj()).cursor[JsValue].toList.map(elts => elts.map(elt => elt.transform(removeMongoId).get))
-  def importCollection(docs: List[JsValue])(implicit db: DB): Future[List[LastError]] = {
-    if (Utils.isProd()) {
-      Future.failed(new Exception("Can't do this in production !"))
-    } else {
-      val errors = docs.map { doc =>
-        val id = (doc \ "id").asOpt[String].getOrElse(null)
-        collection().update(Json.obj("id" -> id), Json.obj("$set" -> doc), GetLastError(), true, false)
-      }
-      Future.sequence(errors)
-    }
-  }
-  def drop()(implicit db: DB): Future[Boolean] = {
-    if (Utils.isProd()) {
-      Future.failed(new Exception("Can't do this in production !"))
-    } else {
-      collection().drop().recover { case err => false }
-    }
-  }
+  def export()(implicit db: DB): Future[List[JsValue]] = DaoUtils.export(db, collection())
+  def importCollection(docs: List[JsValue])(implicit db: DB): Future[List[LastError]] = DaoUtils.importCollection(db, collection(), docs)
+  def drop()(implicit db: DB): Future[Boolean] = DaoUtils.drop(db, collection())
 }

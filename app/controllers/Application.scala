@@ -10,8 +10,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.Logger
 import play.api.mvc.Action
 import play.api.mvc.Controller
-import play.api.libs.json.Json
-import play.api.libs.json.JsValue
+import play.api.libs.json._
 import play.modules.reactivemongo.MongoController
 import reactivemongo.core.commands.LastError
 
@@ -57,6 +56,9 @@ object Application extends Controller with MongoController {
           Ok(Json.obj("users" -> users, "events" -> events, "malformedEvents" -> malformedEvents))
       }
     }
+    /*val removeUnwantedFields = (__ \ '_id).json.prune andThen (__ \ 'a).json.prune
+    val json = Json.obj("_id" -> Json.obj(), "a" -> "a", "b" -> Json.obj("ba" -> "ba", "$bb" -> "bb"), "c" -> Json.arr(Json.obj(), Json.obj("$ca" -> "ca", "cb" -> "cb")))
+    Ok(json.transform(removeUnwantedFields).get)*/
   }
 
   // Accept json of 10 Mo
