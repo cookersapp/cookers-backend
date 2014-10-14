@@ -1,6 +1,40 @@
 angular.module('app')
 
 
+.directive('usersTableWidget', function(){
+  'use strict';
+  return {
+    restrict: 'E',
+    templateUrl: 'assets/views/directives/usersTableWidget.html',
+    scope: {
+      name: '@',
+      users: '='
+    },
+    link: function(scope, element, attr){
+    }
+  };
+})
+
+
+.directive('eventsTableWidget', function(){
+  'use strict';
+  return {
+    restrict: 'E',
+    templateUrl: 'assets/views/directives/eventsTableWidget.html',
+    scope: {
+      name: '@',
+      events: '='
+    },
+    link: function(scope, element, attr){
+      scope.toggleEvent = function(elt){
+        if(scope.eventSelected === elt){scope.eventSelected = null;}
+        else {scope.eventSelected = elt;}
+      };
+    }
+  };
+})
+
+
 .directive('sort', function(){
   'use strict';
   return {

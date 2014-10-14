@@ -59,33 +59,7 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="widget">
-      <div class="widget-header">
-        <i class="fa fa-users"></i> Utilisateurs <span ng-show="users">({{usersFiltered.length}})</span>
-        <input type="text" class="form-control input-sm pull-right" placeholder="Search" ng-model="userSearch" />
-        <div class="clearfix"></div>
-      </div>
-      <div class="widget-body large no-padding">
-        <rd-loading ng-show="!users"></rd-loading>
-        <div class="table-responsive" ng-show="users !== undefined">
-          <table class="table">
-            <thead>
-              <tr><th>#</th><th>Email</th><th>Vu</th><th>Créé</th><th>Téléphone</th><th></th></tr>
-            </thead>
-            <tbody>
-              <tr ng-repeat="user in usersFiltered = (users | filter:userSearch)">
-                <td>#{{$index+1}}</td>
-                <td><a href="mailto:{{user.email}}">{{user.email}}</a></td>
-                <td><span last-seen="user.lastSeen"></span></td>
-                <td>{{user.created | datetime}}</td>
-                <td><span ng-repeat="device in user.devices" ng-show="device.model">{{device.model}} ({{device.platform}} {{device.version}}){{$last ? '' : ', '}}</span></td>
-                <td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.user({userId: user.id})"><i class="fa fa-eye"></i></button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    <users-table-widget name="Utilisateurs" users="users"></users-table-widget>
   </div>
   <div class="col-md-6">
     <div class="widget">

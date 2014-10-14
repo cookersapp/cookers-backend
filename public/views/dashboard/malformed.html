@@ -12,25 +12,14 @@
           <table class="table table-hover">
             <thead>
               <tr>
-                <th>Nom</th>
-                <th>Utilisateur</th>
-                <th>Date</th>
-                <th>Données</th>
+                <th>Evénement</th>
                 <th></th>
               </tr>
             </thead>
-            <tbody ng-repeat="event in eventsFiltered = (events | filter:eventSearch)">
-              <tr ng-click="toggleEvent(event)">
-                <td>{{event.name}}</td>
-                <td><user id="event.user"></user></td>
-                <td title="{{event.time | datetime}}">{{event.time | humanTime}}</td>
-                <td><event-data event="event"></event-data></td>
+            <tbody>
+              <tr ng-repeat="event in eventsFiltered = (events | filter:eventSearch)">
+                <td><pre>{{event | json}}</pre></td>
                 <td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.event({eventId: event.id})"><i class="fa fa-eye"></i></button></td>
-              </tr>
-              <tr ng-show="eventSelected === event">
-                <td colspan="5">
-                  <pre>{{event | json}}</pre>
-                </td>
               </tr>
             </tbody>
           </table>

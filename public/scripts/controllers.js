@@ -555,6 +555,16 @@ angular.module('app')
     }
   };
 
+  $scope.resetApp = function(){
+    if(confirm('Supprimer toutes les données de l\'application ?')){
+      if(confirm('Vraiment ???')){
+        $http.delete('/api/v1/reset-database').then(function(result){
+          alert('Fait !');
+        });
+      }
+    }
+  };
+
 
   function saveProcessedData(attr, DataSrv){
     var savePromises = [];

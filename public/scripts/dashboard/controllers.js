@@ -105,11 +105,6 @@ angular.module('app')
   EventsSrv.getForUser(userId).then(function(events){
     $scope.events = events;
   });
-
-  $scope.toggleEvent = function(elt){
-    if($scope.eventSelected === elt){$scope.eventSelected = null;}
-    else {$scope.eventSelected = elt;}
-  };
 })
 
 
@@ -176,11 +171,6 @@ angular.module('app')
   EventsSrv.getAll().then(function(events){
     $scope.events = events || [];
   });
-
-  $scope.toggleEvent = function(elt){
-    if($scope.eventSelected === elt){$scope.eventSelected = null;}
-    else {$scope.eventSelected = elt;}
-  };
 })
 
 
@@ -195,11 +185,6 @@ angular.module('app')
   EventsSrv.getAllExceptions().then(function(events){
     $scope.events = events || [];
   });
-
-  $scope.toggleEvent = function(elt){
-    if($scope.eventSelected === elt){$scope.eventSelected = null;}
-    else {$scope.eventSelected = elt;}
-  };
 })
 
 
@@ -214,11 +199,6 @@ angular.module('app')
   EventsSrv.getAllErrors().then(function(events){
     $scope.events = events || [];
   });
-
-  $scope.toggleEvent = function(elt){
-    if($scope.eventSelected === elt){$scope.eventSelected = null;}
-    else {$scope.eventSelected = elt;}
-  };
 })
 
 
@@ -293,23 +273,4 @@ angular.module('app')
       $scope.model.malformedEvents = results.data;
     }
   });
-
-  $scope.toggleUser = function(elt){
-    if($scope.userSelected === elt){$scope.userSelected = null;}
-    else {$scope.userSelected = elt;}
-  };
-  $scope.toggleEvent = function(elt){
-    if($scope.eventSelected === elt){$scope.eventSelected = null;}
-    else {$scope.eventSelected = elt;}
-  };
-
-  $scope.resetApp = function(){
-    if(confirm('Supprimer toutes les données de l\'application ?')){
-      if(confirm('Vraiment ???')){
-        $http.delete('/api/v1/reset-database').then(function(result){
-          alert('Fait !');
-        });
-      }
-    }
-  };
 });

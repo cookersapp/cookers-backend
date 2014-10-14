@@ -1,41 +1,5 @@
 <div class="row">
   <div class="col-md-12">
-    <div class="widget">
-      <div class="widget-header">
-        <i class="fa fa-flash"></i> Errors <span ng-show="events">({{eventsFiltered.length}})</span>
-        <input type="text" class="form-control input-sm pull-right" placeholder="Search ..." ng-model="eventSearch">
-        <div class="clearfix"></div>
-      </div>
-      <div class="widget-body large no-padding">
-        <rd-loading ng-if="status.loading && !(events && events.length > 0)"></rd-loading>
-        <div class="table-responsive" ng-show="events && events.length > 0">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>Nom</th>
-                <th>Utilisateur</th>
-                <th>Date</th>
-                <th>Données</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody ng-repeat="event in eventsFiltered = (events | filter:eventSearch)">
-              <tr ng-click="toggleEvent(event)">
-                <td>{{event.name}}</td>
-                <td><user id="event.user"></user></td>
-                <td title="{{event.time | datetime}}">{{event.time | humanTime}}</td>
-                <td><event-data event="event"></event-data></td>
-                <td><button class="btn btn-xs btn-info" ui-sref="user.dashboard.event({eventId: event.id})"><i class="fa fa-eye"></i></button></td>
-              </tr>
-              <tr ng-show="eventSelected === event">
-                <td colspan="5">
-                  <pre>{{event | json}}</pre>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    <events-table-widget name="Errors" events="events"></events-table-widget>
   </div>
 </div>
