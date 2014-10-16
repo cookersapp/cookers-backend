@@ -1,7 +1,7 @@
 package services
 
 import common.DateUtils
-import models.UserActivity
+import models.stats.UserActivity
 import dao.EventsDao
 import dao.UsersDao
 import scala.concurrent._

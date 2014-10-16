@@ -3,6 +3,8 @@ package common
 import java.util.Calendar
 
 object DateUtils {
+  val weekInMillis = 1000 * 60 * 60 * 24 * 7
+
   def timestampToStartOfDay(timestamp: Long): Long = {
     val cal = Calendar.getInstance();
     cal.setTimeInMillis(timestamp)
@@ -32,6 +34,13 @@ object DateUtils {
     cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
     setStartOfDay(cal)
     cal.getTime().getTime()
+  }
+
+  // zero based : 0->lundi, 1->mardi...
+  def dayOfWeek(timestamp: Long): Int = {
+    val cal = Calendar.getInstance();
+    cal.setTimeInMillis(timestamp)
+    cal.get(Calendar.DAY_OF_WEEK) - 2
   }
 
   private def setStartOfDay(cal: Calendar) = {

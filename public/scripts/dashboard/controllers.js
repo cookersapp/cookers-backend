@@ -30,7 +30,7 @@ angular.module('app')
 })
 
 
-.controller('DashboardUsersCtrl', function($rootScope, $scope, $q, $http, UsersSrv){
+.controller('DashboardUsersCtrl', function($rootScope, $scope, $q, $http, UsersSrv, StatsSrv, GraphSrv){
   'use strict';
   $rootScope.config.header.title = 'Users dashboard';
   $rootScope.config.header.levels = [
@@ -42,62 +42,28 @@ angular.module('app')
     $scope.users = users || [];
   });
 
-  var dailyUsersDefer = $q.defer();
-  $scope.dailyUsers = dailyUsersDefer.promise;
-  $http.get('/api/v1/stats/users/activity?interval=day').then(function(res){
-    var data = res.data.activity;
-    data.sort(function(a,b){
-      return a.date - b.date;
-    });
-    var dayOffset = 1000 * 60 * 60 * 2; // to get points aligned with dates in graphs
-    var registeredSerie = {name: 'Nouveaux', color: '#90ed7d', data: [] };
-    var activeSerie = {name: 'Récurrents', color: '#7cb5ec', data: [] };
-    var inactiveSerie = {name: 'Inactifs', color: '#8d4653', data: [] };
-    for(var i in data){
-      registeredSerie.data.push([data[i].date+dayOffset, data[i].registered]);
-      activeSerie.data.push([data[i].date+dayOffset, data[i].recurring]);
-      inactiveSerie.data.push([data[i].date+dayOffset, data[i].inactive]);
-    }
-
-    dailyUsersDefer.resolve({
+  $scope.dailyUsers = StatsSrv.getUserActivity('day').then(function(data){
+    var series = GraphSrv.formatUserActivitySeries(data);
+    return {
       type: 'area',
       subtype: 'stacked',
-      xAxis: 'datetime',
-      tooltip: {
-        shared: true
-      },
       legend: 'bottom',
-      series: [registeredSerie, activeSerie, inactiveSerie]
-    });
+      tooltip: { shared: true },
+      xAxis: 'datetime',
+      series: series
+    };
   });
 
-  var weeklyUsersDefer = $q.defer();
-  $scope.weeklyUsers = weeklyUsersDefer.promise;
-  $http.get('/api/v1/stats/users/activity?interval=week').then(function(res){
-    var data = res.data.activity;
-    data.sort(function(a,b){
-      return a.date - b.date;
-    });
-    var dayOffset = 1000 * 60 * 60 * 2; // to get points aligned with dates in graphs
-    var registeredSerie = {name: 'Nouveaux', color: '#90ed7d', data: [] };
-    var activeSerie = {name: 'Récurrents', color: '#7cb5ec', data: [] };
-    var inactiveSerie = {name: 'Inactifs', color: '#8d4653', data: [] };
-    for(var i in data){
-      registeredSerie.data.push([data[i].date+dayOffset, data[i].registered]);
-      activeSerie.data.push([data[i].date+dayOffset, data[i].recurring]);
-      inactiveSerie.data.push([data[i].date+dayOffset, data[i].inactive]);
-    }
-
-    weeklyUsersDefer.resolve({
+  $scope.weeklyUsers = StatsSrv.getUserActivity('week').then(function(data){
+    var series = GraphSrv.formatUserActivitySeries(data);
+    return {
       type: 'area',
       subtype: 'stacked',
-      xAxis: 'datetime',
-      tooltip: {
-        shared: true
-      },
       legend: 'bottom',
-      series: [registeredSerie, activeSerie, inactiveSerie]
-    });
+      tooltip: { shared: true },
+      xAxis: 'datetime',
+      series: series
+    };
   });
 })
 
@@ -122,7 +88,7 @@ angular.module('app')
 })
 
 
-.controller('DashboardRecipesCtrl', function($rootScope, $scope){
+.controller('DashboardRecipesCtrl', function($rootScope, $scope, StatsSrv, GraphSrv){
   'use strict';
   $rootScope.config.header.title = 'Recipes dashboard';
   $rootScope.config.header.levels = [
@@ -130,49 +96,27 @@ angular.module('app')
     {name: 'Recipes'}
   ];
 
-  $scope.weekRecipes = {
-    type: 'bar',
-    legend: 'bottom',
-    xAxis: ['Recette 1', 'Recette 2', 'Recette 3', 'Recette 4', 'Recette 5', 'Recette 6', 'Recette 7', 'Recette 8', 'Recette 9', 'Recette 10'],
-    series: [{
-      name: 'Ingrédients',
-      data: [107, 31, 635, 203, 2, 133, 156, 947, 408, 6]
-    }, {
-      name: 'Carte de visite',
-      data: [133, 156, 947, 408, 6, 973, 914, 4054, 732, 34]
-    }, {
-      name: 'Ajouté au panier',
-      data: [973, 914, 4054, 732, 34, 107, 31, 635, 203, 2]
-    }, {
-      name: 'Cuisine',
-      data: [107, 31, 635, 203, 2, 133, 156, 947, 408, 6]
-    }, {
-      name: 'Cuisinée',
-      data: [133, 156, 947, 408, 6, 973, 914, 4054, 732, 34]
-    }]
-  };
+  $scope.weekRecipes = StatsSrv.getRecipesStats('recipes').then(function(data){
+    var ret = GraphSrv.formatRecipeStatsSeries(data);
+    return {
+      type: 'bar',
+      legend: 'bottom',
+      tooltip: { shared: true },
+      xAxis: ret.labels,
+      series: ret.series
+    };
+  });
 
-  $scope.recipesThroughWeek = {
-    type: 'line',
-    legend: 'bottom',
-    xAxis: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'San', 'Dim'],
-    series: [{
-      name: 'Ingrédients',
-      data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2]
-    }, {
-      name: 'Carte de visite',
-      data: [0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8]
-    }, {
-      name: 'Ajouté au panier',
-      data: [0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6]
-    }, {
-      name: 'Cuisine',
-      data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0]
-    }, {
-      name: 'Cuisinée',
-      data: [24.1, 20.1, 14.1, 8.6, 2.5]
-    }]
-  };
+  $scope.recipesThroughWeek = StatsSrv.getRecipesStats('days').then(function(data){
+    var ret = GraphSrv.formatRecipeStatsDaysSeries(data);
+    return {
+      type: 'line',
+      legend: 'bottom',
+      tooltip: { shared: true },
+      xAxis: ret.labels,
+      series: ret.series
+    };
+  });
 })
 
 

@@ -15,6 +15,7 @@ POST      /api/v1/track/events                  controllers.Tracking.addAll
 # Stats for dashboard
 GET       /api/v1/stats/week                    controllers.Stats.weekData(week: Option[Int])
 GET       /api/v1/stats/users/activity          controllers.Stats.userActivity(interval: Option[String])
+GET       /api/v1/stats/recipes/week/:week      controllers.Stats.recipeStats(week: Int, graph: Option[String])
 
 # User management
 GET       /api/v1/users                         controllers.Users.getAll

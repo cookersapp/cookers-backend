@@ -11,6 +11,7 @@ import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.api.DB
 import reactivemongo.core.commands._
 import reactivemongo.bson.BSONDocument
+import models.stats.RecipeEvent
 
 object EventsDao {
   private val COLLECTION_NAME = "events"
@@ -53,6 +54,36 @@ object EventsDao {
       .map { list =>
         list.map { res =>
           ((res \ "user").as[String], (res \ "time").as[Long])
+        }
+      }
+  }
+  def getRecipeEvents(from: Long, to: Long)(implicit db: DB): Future[List[RecipeEvent]] = {
+    val selector = Json.obj("$and" -> Json.arr(
+      Json.obj("time" -> Json.obj("$gt" -> from)),
+      Json.obj("time" -> Json.obj("$lt" -> to)),
+      Json.obj("$or" -> Json.arr(
+        Json.obj("name" -> "recipe-ingredients-showed"),
+        Json.obj("name" -> "recipe-details-showed"),
+        Json.obj("name" -> "recipe-added-to-cart"),
+        Json.obj("name" -> "recipe-cook-showed"),
+        Json.obj("name" -> "recipe-cooked")))))
+    val projection = Json.obj(
+      "_id" -> false,
+      "name" -> true,
+      "time" -> true,
+      "user" -> true,
+      "data.recipe" -> true,
+      "data.index" -> true)
+    collection()
+      .find(selector, projection).cursor[JsValue].toList
+      .map { list =>
+        list.map { res =>
+          RecipeEvent(
+            (res \ "time").as[Long],
+            (res \ "name").as[String],
+            (res \ "user").as[String],
+            (res \ "data" \ "recipe").as[String],
+            (res \ "data" \ "index").asOpt[Int].getOrElse(0))
         }
       }
   }
