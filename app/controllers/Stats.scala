@@ -6,6 +6,7 @@ import dao.MalformedEventsDao
 import dao.UsersDao
 import models.Event
 import models.Event.eventFormat
+import models.UserActivity
 import services.DashboardSrv
 import scala.Array.canBuildFrom
 import scala.concurrent._
@@ -68,7 +69,8 @@ object Stats extends Controller with MongoController {
   // interval could be 'day' or 'week'
   def userActivity(interval: Option[String]) = Action {
     Async {
-      DashboardSrv.getDailyUserActivity().map { activity =>
+      val result: Future[List[UserActivity]] = DashboardSrv.getUserActivity(interval.getOrElse("week"))
+      result.map { activity =>
         Ok(Json.obj("activity" -> activity))
       }
     }

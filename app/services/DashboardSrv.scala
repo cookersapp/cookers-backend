@@ -12,15 +12,7 @@ import java.util.Calendar
 import play.api.Logger
 
 object DashboardSrv {
-
-  def main(args: Array[String]) {
-    val map = Map(1413064800000L -> 29, 1413151200000L -> 15, 1413237600000L -> 6)
-    println(map)
-    val res = map.scanLeft(0) { case (acc, elt) => acc + elt._2 }
-    println(res.tail)
-  }
-
-  def getDailyUserActivity()(implicit db: DB): Future[List[UserActivity]] = {
+  def getUserActivity(interval: String)(implicit db: DB): Future[List[UserActivity]] = {
     // TODO : do this in mongodb...
     /*
      * http://java.dzone.com/articles/mongodb-time-series
@@ -36,8 +28,8 @@ object DashboardSrv {
 
     future.map {
       case (users, events) => {
-        val registeredUsersByDate = groupByDateAndKeepUniques(users).map { case (date, list) => (date, list.size) }
-        val eventsByDate = groupByDateAndKeepUniques(events).map { case (date, list) => (date, list.size) }
+        val registeredUsersByDate = groupByDateAndKeepUniques(users, interval).map { case (date, list) => (date, list.size) }
+        val eventsByDate = groupByDateAndKeepUniques(events, interval).map { case (date, list) => (date, list.size) }
         val usersEventsByDate = mergeLists(registeredUsersByDate, eventsByDate)
         val usersEventsByDateList = usersEventsByDate.toList.sortBy(e => e._1)
         val totalUsersByDate = usersEventsByDateList.scanLeft((0L, 0)) { case (acc, (date, values)) => (date, acc._2 + values._1) }.tail.toMap
@@ -50,9 +42,9 @@ object DashboardSrv {
     }
   }
 
-  private def groupByDateAndKeepUniques(list: List[(String, Long)]): Map[Long, List[String]] = {
+  private def groupByDateAndKeepUniques(list: List[(String, Long)], interval: String): Map[Long, List[String]] = {
     list
-      .groupBy(elt => DateUtils.timestampToStartOfDay(elt._2)) // get Map[Long, List[(String, Long)]]
+      .groupBy(elt => if ("day".equals(interval)) DateUtils.timestampToStartOfDay(elt._2) else DateUtils.timestampToStartOfWeek(elt._2)) // get Map[Long, List[(String, Long)]]
       .map {
         case (date, elts) => (date, elts.map { u => u._1 }.distinct)
       }

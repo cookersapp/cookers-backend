@@ -44,7 +44,7 @@ angular.module('app')
 
   var dailyUsersDefer = $q.defer();
   $scope.dailyUsers = dailyUsersDefer.promise;
-  $http.get('/api/v1/stats/users/activity').then(function(res){
+  $http.get('/api/v1/stats/users/activity?interval=day').then(function(res){
     var data = res.data.activity;
     data.sort(function(a,b){
       return a.date - b.date;
@@ -60,6 +60,35 @@ angular.module('app')
     }
 
     dailyUsersDefer.resolve({
+      type: 'area',
+      subtype: 'stacked',
+      xAxis: 'datetime',
+      tooltip: {
+        shared: true
+      },
+      legend: 'bottom',
+      series: [registeredSerie, activeSerie, inactiveSerie]
+    });
+  });
+
+  var weeklyUsersDefer = $q.defer();
+  $scope.weeklyUsers = weeklyUsersDefer.promise;
+  $http.get('/api/v1/stats/users/activity?interval=week').then(function(res){
+    var data = res.data.activity;
+    data.sort(function(a,b){
+      return a.date - b.date;
+    });
+    var dayOffset = 1000 * 60 * 60 * 2; // to get points aligned with dates in graphs
+    var registeredSerie = {name: 'Nouveaux', color: '#90ed7d', data: [] };
+    var activeSerie = {name: 'Récurrents', color: '#7cb5ec', data: [] };
+    var inactiveSerie = {name: 'Inactifs', color: '#8d4653', data: [] };
+    for(var i in data){
+      registeredSerie.data.push([data[i].date+dayOffset, data[i].registered]);
+      activeSerie.data.push([data[i].date+dayOffset, data[i].recurring]);
+      inactiveSerie.data.push([data[i].date+dayOffset, data[i].inactive]);
+    }
+
+    weeklyUsersDefer.resolve({
       type: 'area',
       subtype: 'stacked',
       xAxis: 'datetime',
