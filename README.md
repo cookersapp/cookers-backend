@@ -19,6 +19,7 @@ See spec.txt
 
 ## Notes
 
+- Autentification : https://github.com/mohiva/play-silhouette
 - Play sass compile : https://github.com/jlitola/play-sass
 - Charts : http://www.highcharts.com/ or http://www.chartjs.org/
 - http://json2caseclass.cleverapps.io/

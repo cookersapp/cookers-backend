@@ -1,12 +1,13 @@
 package controllers
 
-import scala.Array.canBuildFrom
-
+import common.DateUtils
 import dao.EventsDao
 import dao.MalformedEventsDao
 import dao.UsersDao
 import models.Event
 import models.Event.eventFormat
+import services.DashboardSrv
+import scala.Array.canBuildFrom
 import scala.concurrent._
 import play.api.libs.json.Json
 import play.api.mvc.Action
@@ -20,9 +21,7 @@ object Stats extends Controller with MongoController {
 
   def weekData(week: Option[Int]) = Action {
     Async {
-      // TODO get timestamp of last day of week (dimanche minuit)
-      // see : http://stackoverflow.com/questions/3941700/how-to-get-dates-of-a-week-i-know-week-number
-      val to: Long = if (week.isEmpty) System.currentTimeMillis else 0
+      val to: Long = if (week.isEmpty) System.currentTimeMillis else DateUtils.timestampToEndOfWeek(DateUtils.weekTimestamp(week.get))
       val from: Long = to - weekInMillis
 
       val future: Future[(Int, Int, Int, Int, Int, Int, Int, Int, Int, Int)] = for {
@@ -62,6 +61,15 @@ object Stats extends Controller with MongoController {
               "bought" -> bought),
             "events" -> Json.obj(
               "sent" -> all)))
+      }
+    }
+  }
+
+  // interval could be 'day' or 'week'
+  def userActivity(interval: Option[String]) = Action {
+    Async {
+      DashboardSrv.getDailyUserActivity().map { activity =>
+        Ok(Json.obj("activity" -> activity))
       }
     }
   }

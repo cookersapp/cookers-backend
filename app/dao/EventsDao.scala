@@ -46,6 +46,16 @@ object EventsDao {
     val bsonQuery: BSONDocument = BSONFormats.toBSON(selector).get.asInstanceOf[BSONDocument]
     collection().db.command(Count(COLLECTION_NAME, Some(bsonQuery)))
   }
+  def getActiveUsersByDay()(implicit db: DB): Future[List[(String, Long)]] = {
+    collection()
+      .find(Json.obj(), Json.obj("_id" -> false, "user" -> true, "time" -> true))
+      .sort(Json.obj("time" -> 1)).cursor[JsValue].toList
+      .map { list =>
+        list.map { res =>
+          ((res \ "user").as[String], (res \ "time").as[Long])
+        }
+      }
+  }
 
   def export()(implicit db: DB): Future[List[JsValue]] = DaoUtils.export(db, collection())
   def importCollection(docs: List[JsValue])(implicit db: DB): Future[List[LastError]] = DaoUtils.importCollection(db, collection(), docs)

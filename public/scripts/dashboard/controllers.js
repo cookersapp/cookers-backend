@@ -30,7 +30,7 @@ angular.module('app')
 })
 
 
-.controller('DashboardUsersCtrl', function($rootScope, $scope, $q, UsersSrv){
+.controller('DashboardUsersCtrl', function($rootScope, $scope, $q, $http, UsersSrv){
   'use strict';
   $rootScope.config.header.title = 'Users dashboard';
   $rootScope.config.header.levels = [
@@ -42,10 +42,24 @@ angular.module('app')
     $scope.users = users || [];
   });
 
-  var defer = $q.defer();
-  $scope.dailyUsers = defer.promise;
-  setTimeout(function(){
-    defer.resolve({
+  var dailyUsersDefer = $q.defer();
+  $scope.dailyUsers = dailyUsersDefer.promise;
+  $http.get('/api/v1/stats/users/activity').then(function(res){
+    var data = res.data.activity;
+    data.sort(function(a,b){
+      return a.date - b.date;
+    });
+    var dayOffset = 1000 * 60 * 60 * 2; // to get points aligned with dates in graphs
+    var registeredSerie = {name: 'Nouveaux', color: '#90ed7d', data: [] };
+    var activeSerie = {name: 'Récurrents', color: '#7cb5ec', data: [] };
+    var inactiveSerie = {name: 'Inactifs', color: '#8d4653', data: [] };
+    for(var i in data){
+      registeredSerie.data.push([data[i].date+dayOffset, data[i].registered]);
+      activeSerie.data.push([data[i].date+dayOffset, data[i].recurring]);
+      inactiveSerie.data.push([data[i].date+dayOffset, data[i].inactive]);
+    }
+
+    dailyUsersDefer.resolve({
       type: 'area',
       subtype: 'stacked',
       xAxis: 'datetime',
@@ -53,38 +67,9 @@ angular.module('app')
         shared: true
       },
       legend: 'bottom',
-      series: [{
-        name: 'Nouveaux',
-        color: '#90ed7d',
-        data: [[Date.UTC(2014,10,5), 163], [Date.UTC(2014,10,6), 203], [Date.UTC(2014,10,7), 276], [Date.UTC(2014,10,8), 408], [Date.UTC(2014,10,9), 547], [Date.UTC(2014,10,10), 729], [Date.UTC(2014,10,11), 628]]
-      }, {
-        name: 'Actifs',
-        color: '#7cb5ec',
-        data: [[Date.UTC(2014,10,5), 106], [Date.UTC(2014,10,6), 107], [Date.UTC(2014,10,7), 111], [Date.UTC(2014,10,8), 133], [Date.UTC(2014,10,9), 221], [Date.UTC(2014,10,10), 767], [Date.UTC(2014,10,11), 1766]]
-      }, {
-        name: 'Inactifs',
-        color: '#8d4653',
-        data: [[Date.UTC(2014,10,5), 502], [Date.UTC(2014,10,6), 635], [Date.UTC(2014,10,7), 809], [Date.UTC(2014,10,8), 947], [Date.UTC(2014,10,9), 1402], [Date.UTC(2014,10,10), 3634], [Date.UTC(2014,10,11), 5268]]
-      }]
+      series: [registeredSerie, activeSerie, inactiveSerie]
     });
-  }, 600);
-
-  $scope.weeklyUsers = {
-    type: 'area',
-    xAxis: function(){ return 1940+this.value; },
-    tooltip: { pointFormat: '{series.name} produced <b>{point.y:,.0f}</b><br/>warheads in {point.x}' },
-    legend: false,
-    series: [{
-      name: 'USSR/Russia',
-      data: [null, null, null, null, null, null, null, null, null, null,
-             5, 25, 50, 120, 150, 200, 426, 660, 869, 1060, 1605, 2471, 3322,
-             4238, 5221, 6129, 7089, 8339, 9399, 10538, 11643, 13092, 14478,
-             15915, 17385, 19055, 21205, 23044, 25393, 27935, 30062, 32049,
-             33952, 35804, 37431, 39197, 45000, 43000, 41000, 39000, 37000,
-             35000, 33000, 31000, 29000, 27000, 25000, 24000, 23000, 22000,
-             21000, 20000, 19000, 18000, 18000, 17000, 16000]
-    }]
-  };
+  });
 })
 
 
@@ -118,6 +103,7 @@ angular.module('app')
 
   $scope.weekRecipes = {
     type: 'bar',
+    legend: 'bottom',
     xAxis: ['Recette 1', 'Recette 2', 'Recette 3', 'Recette 4', 'Recette 5', 'Recette 6', 'Recette 7', 'Recette 8', 'Recette 9', 'Recette 10'],
     series: [{
       name: 'Ingrédients',
@@ -139,6 +125,7 @@ angular.module('app')
 
   $scope.recipesThroughWeek = {
     type: 'line',
+    legend: 'bottom',
     xAxis: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'San', 'Dim'],
     series: [{
       name: 'Ingrédients',

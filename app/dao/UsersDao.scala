@@ -31,6 +31,16 @@ object UsersDao {
     val bsonQuery: BSONDocument = BSONFormats.toBSON(query).get.asInstanceOf[BSONDocument]
     collection().db.command(Count(COLLECTION_NAME, Some(bsonQuery)))
   }
+  def getUsersCreationDate()(implicit db: DB): Future[List[(String, Long)]] = {
+    collection()
+      .find(Json.obj(), Json.obj("_id" -> false, "id" -> true, "created" -> true))
+      .sort(Json.obj("created" -> 1)).cursor[JsValue].toList
+      .map { list =>
+        list.map { res =>
+          ((res \ "id").as[String], (res \ "created").as[Long])
+        }
+      }
+  }
 
   def export()(implicit db: DB): Future[List[JsValue]] = DaoUtils.export(db, collection())
   def importCollection(docs: List[JsValue])(implicit db: DB): Future[List[LastError]] = DaoUtils.importCollection(db, collection(), docs)
