@@ -164,43 +164,4 @@ angular.module('app')
   EventsSrv.get(eventId).then(function(event){
     $scope.event = event || {};
   });
-})
-
-
-.controller('TrackingCtrl', function($rootScope, $scope, $http, env){
-  'use strict';
-  var ctx = {
-    model: {
-      users: [],
-      events: [],
-      malformedEvents: []
-    }
-  };
-
-  $rootScope.config.header.title = 'Tracking';
-  $rootScope.config.header.levels = [
-    {name: 'Home', state: 'user.home'},
-    {name: 'Tracking'}
-  ];
-
-  $scope.env = env;
-  $scope.model = ctx.model;
-  $scope.userSelected = null;
-  $scope.eventSelected = null;
-
-  $http.get('/api/v1/users').then(function(results){
-    if(results && results.data){
-      $scope.model.users = results.data;
-    }
-  });
-  $http.get('/api/v1/track/events').then(function(results){
-    if(results && results.data){
-      $scope.model.events = results.data;
-    }
-  });
-  $http.get('/api/v1/track/events/malformed').then(function(results){
-    if(results && results.data){
-      $scope.model.malformedEvents = results.data;
-    }
-  });
 });

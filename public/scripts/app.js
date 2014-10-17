@@ -109,11 +109,6 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
     templateUrl: 'assets/views/dashboard/recipes.html',
     controller: 'DashboardRecipesCtrl'
   })
-  .state('user.dashboard.tracking', {
-    url: '/tracking',
-    templateUrl: 'assets/views/tracking.html',
-    controller: 'TrackingCtrl'
-  })
   .state('user.data', {
     abstract: true,
     template: '<ui-view/>'
