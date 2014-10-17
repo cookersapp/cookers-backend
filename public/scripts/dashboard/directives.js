@@ -30,8 +30,7 @@ angular.module('app')
       colors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#8085e8', '#8d4653', '#91e8e1'],
       xAxis: xAxis,
       yAxis: {
-        title: { text: '' },
-        min: 0
+        title: { text: '' }
       },
       tooltip: opts && opts.tooltip ? opts.tooltip : {},
       plotOptions: {

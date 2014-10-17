@@ -59,35 +59,45 @@
 
 <div class="row">
   <div class="col-md-6">
-    <users-table-widget name="Utilisateurs" users="users"></users-table-widget>
-  </div>
-  <div class="col-md-6">
     <div class="widget">
       <div class="widget-header">
-        <i class="fa fa-cutlery"></i> FAKE: Recettes
-        <input type="text" placeholder="Search" class="form-control input-sm pull-right" />
-        <div class="clearfix"></div>
+        <i class="fa fa-users"></i> Croissance par jour
       </div>
       <div class="widget-body large no-padding">
-        <!-- Mongo query (to terminate...) :
+        <div chart="dailyGrowth"></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <users-table-widget name="Utilisateurs" users="users"></users-table-widget>
+  </div>
+  <!-- Mongo query (to terminate...) :
 db.events.aggregate([
 {$match: {"data.recipe":{$regex:".*"}}},
 {$group: {_id: {name:"$name",recipe:"$data.recipe"}, count: {$sum: 1}}}
 ])
 -->
-        <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr><th>Recette</th><th>Ingrédients affichés</th><th>Carte de visite</th><th>Ajouté au panier</th><th>Cuisine</th><th>Cuisinée</th><th></th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Ave salade !</td><td>50 fois</td><td>10 fois</td><td>30 fois</td><td>15 fois</td><td>10 fois</td><td><button class="btn btn-xs btn-info"><i class="fa fa-eye"></i></button></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!--<div class="col-md-6">
+<div class="widget">
+<div class="widget-header">
+<i class="fa fa-cutlery"></i> FAKE: Recettes
+<input type="text" placeholder="Search" class="form-control input-sm pull-right" />
+<div class="clearfix"></div>
+</div>
+<div class="widget-body large no-padding">
+<div class="table-responsive">
+<table class="table">
+<thead>
+<tr><th>Recette</th><th>Ingrédients affichés</th><th>Carte de visite</th><th>Ajouté au panier</th><th>Cuisine</th><th>Cuisinée</th><th></th></tr>
+</thead>
+<tbody>
+<tr><td>Ave salade !</td><td>50 fois</td><td>10 fois</td><td>30 fois</td><td>15 fois</td><td>10 fois</td><td><button class="btn btn-xs btn-info"><i class="fa fa-eye"></i></button></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>-->
 </div>
 
 <div class="row">

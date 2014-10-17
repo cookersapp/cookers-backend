@@ -139,6 +139,7 @@ angular.module('app')
   'use strict';
   var service = {
     formatUserActivitySeries: formatUserActivitySeries,
+    formatUserActivityGrowthSeries: formatUserActivityGrowthSeries,
     formatRecipeStatsGraph: formatRecipeStatsGraph,
     formatRecipeStatsDaysGraph: formatRecipeStatsDaysGraph
   };
@@ -163,6 +164,26 @@ angular.module('app')
       tooltip: { shared: true },
       xAxis: 'datetime',
       series: [registeredSerie, activeSerie, inactiveSerie]
+    });
+  }
+
+  function formatUserActivityGrowthSeries(data){
+    data.sort(function(a,b){
+      return a.date - b.date;
+    });
+    var dayOffset = 1000 * 60 * 60 * 2; // to get points aligned with dates in graphs
+    var growthSerie = {name: 'Croissance', color: '#90ed7d', data: [] };
+    for(var i=1; i<data.length; i++){
+      var growth = data[i].active - data[i-1].active;
+      var growthPc = Math.round((growth / data[i-1].active) * 100 * 100) / 100;
+      growthSerie.data.push([data[i].date+dayOffset, growthPc]);
+    }
+    return $q.when({
+      type: 'area',
+      legend: 'bottom',
+      tooltip: { shared: true },
+      xAxis: 'datetime',
+      series: [growthSerie]
     });
   }
 

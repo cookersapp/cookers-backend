@@ -1,7 +1,7 @@
 angular.module('app')
 
 
-.controller('DashboardCtrl', function($rootScope, $scope, StatsSrv, UsersSrv, EventsSrv){
+.controller('DashboardCtrl', function($rootScope, $scope, UsersSrv, EventsSrv, StatsSrv, GraphSrv){
   'use strict';
   $rootScope.config.header.title = 'Dashboard';
   $rootScope.config.header.levels = [
@@ -26,6 +26,10 @@ angular.module('app')
 
   UsersSrv.getAll().then(function(users){
     $scope.users = users || [];
+  });
+
+  $scope.dailyGrowth = StatsSrv.getUserActivity('day').then(function(data){
+    return GraphSrv.formatUserActivityGrowthSeries(data);
   });
 })
 
