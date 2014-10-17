@@ -1,21 +1,21 @@
 angular.module('app')
 
-.factory('FoodSrv', function(DataSrvBuilder){
+.factory('FoodSrv', function(_FirebaseCrudBuilder){
   'use strict';
   function process(formFood){
     var food = angular.copy(formFood);
-    DataSrvBuilder.preprocessData(food);
+    _FirebaseCrudBuilder.preprocessData(food);
     return food;
   }
-  return DataSrvBuilder.createDataService('foods', process);
+  return _FirebaseCrudBuilder.createDataService('foods', process);
 })
 
-.factory('RecipeSrv', function(DataSrvBuilder, PriceCalculator){
+.factory('RecipeSrv', function(_FirebaseCrudBuilder, PriceCalculator){
   'use strict';
   function process(formRecipe, foods, _errors){
     var recipe = angular.copy(formRecipe);
     var _ctx = {recipe: recipe};
-    DataSrvBuilder.preprocessData(recipe);
+    _FirebaseCrudBuilder.preprocessData(recipe);
     delete recipe.difficulty;
     if(recipe.ingredients){
       for(var i in recipe.ingredients){
@@ -32,26 +32,27 @@ angular.module('app')
     return recipe;
   }
 
-  return DataSrvBuilder.createDataService('recipes', process);
+  return _FirebaseCrudBuilder.createDataService('recipes', process);
 })
 
-.factory('SelectionSrv', function($q, DataSrvBuilder, RecipeSrv, QuantityCalculator){
+.factory('SelectionSrv', function($q, _FirebaseCrudBuilder, RecipeSrv, QuantityCalculator){
   'use strict';
-  var srv1 = DataSrvBuilder.createDataService('weekrecipes', process1);
-  var srv2 = DataSrvBuilder.createDataService('selections', process2);
+  var srv1 = _FirebaseCrudBuilder.createDataService('weekrecipes', process1);
+  var srv2 = _FirebaseCrudBuilder.createDataService('selections', process2);
   var service = {
-    cache: [],
-    get: function(id, _lazy, _errors){
-      return srv2.get(id, _errors).then(function(selection){
+    cache: {},
+    cacheArr: [],
+    get: function(id, backgroundUpdate, _lazy, _errors){
+      return srv2.get(id, backgroundUpdate, _errors).then(function(selection){
         if(_lazy){ return selection; }
         else { return fullLoad(selection); }
       });
     },
-    getAll: function(_lazy, _errors){
-      return srv2.getAll().then(function(selections){
-        if(_lazy){ service.cache = selections; }
-        else { service.cache = fullLoadAll(selections, _errors); }
-        return service.cache;
+    getAll: function(backgroundUpdate, _lazy, _errors){
+      return srv2.getAll(backgroundUpdate, _errors).then(function(selections){
+        if(_lazy){ service.cacheArr = selections; }
+        else { service.cacheArr = fullLoadAll(selections, _errors); }
+        return service.cacheArr;
       });
     },
     save: function(data, _errors){
@@ -78,7 +79,7 @@ angular.module('app')
             if(!_recipePromiseCache[recipeId]){ _recipePromiseCache[recipeId] = RecipeSrv.get(recipeId); }
             return _recipePromiseCache[recipeId];
           } else {
-            return RecipeSrv.get(recipeId, _errors);
+            return RecipeSrv.get(recipeId, true, _errors);
           }
         }));
       }
@@ -110,7 +111,7 @@ angular.module('app')
   function preProcess(formSelection, _errors){
     var selection = angular.copy(formSelection);
     if(!selection.id){selection.id = selection.week.toString();}
-    DataSrvBuilder.preprocessData(selection);
+    _FirebaseCrudBuilder.preprocessData(selection);
     delete selection.lazyLoaded;
     testMergeIngredients(selection, _errors);
     return selection;
@@ -118,14 +119,14 @@ angular.module('app')
   function process1(formSelection, _errors){
     var selection = angular.copy(formSelection);
     if(!selection.id){selection.id = selection.week.toString();}
-    DataSrvBuilder.preprocessData(selection);
+    _FirebaseCrudBuilder.preprocessData(selection);
     delete selection.lazyLoaded;
     return selection;
   }
   function process2(formSelection, _errors){
     var selection = angular.copy(formSelection);
     if(!selection.id){selection.id = selection.week.toString();}
-    DataSrvBuilder.preprocessData(selection);
+    _FirebaseCrudBuilder.preprocessData(selection);
     delete selection.lazyLoaded;
     var recipesRef = [];
     for(var i in selection.recipes){
@@ -160,17 +161,17 @@ angular.module('app')
   return service;
 })
 
-.factory('GlobalmessageSrv', function(DataSrvBuilder){
+.factory('GlobalmessageSrv', function(_FirebaseCrudBuilder){
   'use strict';
   function process(formMessage){
     var message = angular.copy(formMessage);
-    DataSrvBuilder.preprocessData(message);
+    _FirebaseCrudBuilder.preprocessData(message);
     return message;
   }
-  return DataSrvBuilder.createDataService('globalmessages', process);
+  return _FirebaseCrudBuilder.createDataService('globalmessages', process);
 })
 
-.factory('DataSrvBuilder', function($q, $http, firebaseUrl, Utils, CollectionUtils){
+.factory('_FirebaseCrudBuilder', function($q, $http, firebaseUrl, Utils, CollectionUtils){
   'use strict';
   var service = {
     preprocessData: preprocessData,
@@ -187,9 +188,12 @@ angular.module('app')
 
   function createDataService(dataName, processDataFn){
     var service = {
-      cache: [],
+      cache: {},
+      cacheArr: [],
+      promiseCache: {},
       get: get,
       getAll: getAll,
+      getWithIds: getWithIds,
       save: save,
       remove: remove,
       process: processDataFn,
@@ -198,35 +202,77 @@ angular.module('app')
     var collectionUrl = firebaseUrl+'/'+dataName;
     var collectionRef = new Firebase(collectionUrl);
 
-    function get(id, _errors){
-      return $http.get(getUrl(id)).then(function(result){
-        if(result.data !== 'null'){
-          return result.data;
-        } else {
-          var err = {
-            message: 'Can\'t find '+dataName+' <'+id+'>',
-            type: dataName,
-            id: id
-          };
-          if(_errors){_errors.push(err);}
-          console.warn(err.message, err);
-          return null;
-        }
-      });
+    // get(id, backgroundUpdate, _errors)
+    function get(id, backgroundUpdate, _errors){
+      function update(){
+        service.promiseCache[id] = $http.get(getUrl(id)).then(function(result){
+          if(result.data !== 'null'){
+            if(service.cache[id]){
+              angular.copy(result.data, service.cache[id]);
+            } else {
+              service.cache[id] = angular.copy(result.data);
+              service.cacheArr.push(service.cache[id]);
+            }
+          } else {
+            var err = {
+              message: 'Can\'t find '+dataName+' <'+id+'>',
+              type: dataName,
+              id: id
+            };
+            if(_errors){_errors.push(err);}
+            console.warn(err.message, err);
+          }
+          delete service.promiseCache[id];
+          return service.cache[id] ? service.cache[id] : null;
+        });
+        return service.promiseCache[id];
+      }
+
+      if(service.cache[id]){
+        if(backgroundUpdate === undefined || backgroundUpdate){update();}
+        return $q.when(service.cache[id]);
+      } else if(service.promiseCache[id]){
+        return service.promiseCache[id];
+      } else {
+        return update();
+      }
     }
 
-    function getAll(){
-      return $http.get(getUrl()).then(function(result){
-        var arr = [];
-        if(result && result.data && typeof result.data === 'object'){
-          for(var i in result.data){
-            arr.push(result.data[i]);
+    // getAll(backgroundUpdate, _errors)
+    function getAll(backgroundUpdate, _errors){
+      function update(){
+        return $http.get(getUrl()).then(function(result){
+          if(result && result.data && typeof result.data === 'object'){
+            angular.copy(result.data, service.cache);
+            CollectionUtils.clear(service.cacheArr);
+            CollectionUtils.toArray(service.cache, service.cacheArr);
+          } else {
+            var err = {
+              message: 'Can\'t find all '+dataName,
+              type: dataName
+            };
+            if(_errors){_errors.push(err);}
+            console.warn(err.message, err);
           }
-        }
-        return arr;
-      }).then(function(elts){
-        service.cache = elts;
-        return elts;
+          return service.cacheArr;
+        });
+      }
+
+      if(CollectionUtils.isEmpty(service.cache)){
+        return update();
+      } else {
+        if(backgroundUpdate === undefined || backgroundUpdate){update();}
+        return $q.when(service.cacheArr);
+      }
+    }
+
+    function getWithIds(ids, backgroundUpdate, _errors){
+      var promises = [];
+      for(var i in ids){
+        promises.push(get(ids[i], backgroundUpdate, _errors));
+      }
+      return $q.all(promises).then(function(results){
+        return CollectionUtils.toMap(results);
       });
     }
 
@@ -238,10 +284,12 @@ angular.module('app')
             console.error('Error', error);
             defer.reject(error);
           } else {
-            if(_.find(service.cache, {id: elt.id}) === undefined){
-              service.cache.push(elt);
+            if(service.cache[elt.id]){
+              angular.copy(result.data, service.cache[elt.id]);
+              angular.copy(service.cache[elt.id], _.find(service.cacheArr, {id: elt.id}));
             } else {
-              CollectionUtils.replaceWithId(service.cache, elt);
+              service.cache[elt.id] = angular.copy(elt);
+              service.cacheArr.push(elt);
             }
             defer.resolve();
           }
@@ -263,7 +311,8 @@ angular.module('app')
             console.error('Error', error);
             defer.reject(error);
           } else {
-            _.remove(service.cache, {id: elt.id});
+            delete service.cache[elt.id];
+            _.remove(service.cacheArr, {id: elt.id});
             defer.resolve();
           }
         });

@@ -65,7 +65,7 @@ angular.module('app')
       error: null
     },
     model: {
-      elts: RecipeSrv.cache
+      elts: RecipeSrv.cacheArr
     }
   };
 
@@ -112,9 +112,9 @@ angular.module('app')
   };
 
   // custom load data !
-  SelectionSrv.get(ctx.data.weekNumber+1, true).then(function(selection){ ctx.data.nextSelections[1] = selection; ctx.status.loadingSelections[1] = false; });
-  SelectionSrv.get(ctx.data.weekNumber+2, true).then(function(selection){ ctx.data.nextSelections[2] = selection; ctx.status.loadingSelections[2] = false; });
-  SelectionSrv.get(ctx.data.weekNumber+3, true).then(function(selection){ ctx.data.nextSelections[3] = selection; ctx.status.loadingSelections[3] = false; });
+  SelectionSrv.get(ctx.data.weekNumber+1, false, true).then(function(selection){ ctx.data.nextSelections[1] = selection; ctx.status.loadingSelections[1] = false; });
+  SelectionSrv.get(ctx.data.weekNumber+2, false, true).then(function(selection){ ctx.data.nextSelections[2] = selection; ctx.status.loadingSelections[2] = false; });
+  SelectionSrv.get(ctx.data.weekNumber+3, false, true).then(function(selection){ ctx.data.nextSelections[3] = selection; ctx.status.loadingSelections[3] = false; });
 
   $scope.data = ctx.data;
   $scope.status = ctx.status;
@@ -198,8 +198,8 @@ angular.module('app')
       }
     },
     data: {
-      process: FoodSrv.cache,
-      foods: FoodSrv.cache,
+      process: FoodSrv.cacheArr,
+      foods: FoodSrv.cacheArr,
       recipeCategories: dataList.recipeCategories,
       servingUnits: dataList.servingUnits,
       timeUnits: dataList.timeUnits,
@@ -272,7 +272,7 @@ angular.module('app')
     },
     data: {
       currentWeek: moment().week(),
-      recipes: RecipeSrv.cache
+      recipes: RecipeSrv.cacheArr
     },
     status: {
       loading: true,
@@ -282,7 +282,7 @@ angular.module('app')
       error: null,
     },
     model: {
-      elts: SelectionSrv.cache,
+      elts: SelectionSrv.cacheArr,
       selected: null,
       form: null
     }
@@ -369,7 +369,7 @@ angular.module('app')
       error: null
     },
     model: {
-      elts: FoodSrv.cache,
+      elts: FoodSrv.cacheArr,
       selected: null,
       form: null
     }
@@ -618,7 +618,7 @@ angular.module('app')
 
   function processSelectionsWithRecipes(){
     var recipesPromise = RecipeSrv.getAll();
-    var selectionsPromise = SelectionSrv.getAll(true);
+    var selectionsPromise = SelectionSrv.getAll(true, true);
     return $q.all([recipesPromise, selectionsPromise]).then(function(all){
       var recipes = all[0], selections = all[1], _errors = [];
       for(var i in selections){

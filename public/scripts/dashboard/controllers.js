@@ -43,27 +43,11 @@ angular.module('app')
   });
 
   $scope.dailyUsers = StatsSrv.getUserActivity('day').then(function(data){
-    var series = GraphSrv.formatUserActivitySeries(data);
-    return {
-      type: 'area',
-      subtype: 'stacked',
-      legend: 'bottom',
-      tooltip: { shared: true },
-      xAxis: 'datetime',
-      series: series
-    };
+    return GraphSrv.formatUserActivitySeries(data);
   });
 
   $scope.weeklyUsers = StatsSrv.getUserActivity('week').then(function(data){
-    var series = GraphSrv.formatUserActivitySeries(data);
-    return {
-      type: 'area',
-      subtype: 'stacked',
-      legend: 'bottom',
-      tooltip: { shared: true },
-      xAxis: 'datetime',
-      series: series
-    };
+    return GraphSrv.formatUserActivitySeries(data);
   });
 })
 
@@ -97,25 +81,11 @@ angular.module('app')
   ];
 
   $scope.weekRecipes = StatsSrv.getRecipesStats('recipes').then(function(data){
-    var ret = GraphSrv.formatRecipeStatsSeries(data);
-    return {
-      type: 'bar',
-      legend: 'bottom',
-      tooltip: { shared: true },
-      xAxis: ret.labels,
-      series: ret.series
-    };
+    return GraphSrv.formatRecipeStatsGraph(data);
   });
 
   $scope.recipesThroughWeek = StatsSrv.getRecipesStats('days').then(function(data){
-    var ret = GraphSrv.formatRecipeStatsDaysSeries(data);
-    return {
-      type: 'line',
-      legend: 'bottom',
-      tooltip: { shared: true },
-      xAxis: ret.labels,
-      series: ret.series
-    };
+    return GraphSrv.formatRecipeStatsDaysGraph(data);
   });
 })
 

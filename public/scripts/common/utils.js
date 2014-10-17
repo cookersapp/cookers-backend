@@ -3,9 +3,24 @@ angular.module('app')
 .factory('CollectionUtils', function(){
   'use strict';
   var service = {
+    clear: clear,
     replace: replace,
-    replaceWithId: replaceWithId
+    replaceWithId: replaceWithId,
+    toMap: toMap,
+    toArray: toArray,
+    length: length,
+    isEmpty: isEmpty
   };
+
+  function clear(col){
+    if(Array.isArray(col)){
+      while(col.length > 0) { col.pop(); }
+    } else {
+      for(var i in col){
+        delete col[i];
+      }
+    }
+  }
 
   function replace(collection, callback, elt){
     var foundElt = _.find(collection, callback);
@@ -18,6 +33,37 @@ angular.module('app')
 
   function replaceWithId(collection, elt){
     return replace(collection, {id: elt.id}, elt);
+  }
+
+  function toMap(arr){
+    var map = {};
+    if(Array.isArray(arr)){
+      for(var i in arr){
+        map[arr[i].id] = arr[i];
+      }
+    }
+    return map;
+  }
+
+  function toArray(map, addTo){
+    var arr = addTo ? addTo : [];
+    for(var i in map){
+      map[i].id = i;
+      arr.push(map[i]);
+    }
+    return arr;
+  }
+
+  function length(col){
+    if(Array.isArray(col)){
+      return col.length;
+    } else {
+      return Object.keys(col).length;
+    }
+  }
+
+  function isEmpty(col){
+    return length(col) === 0;
   }
 
   return service;

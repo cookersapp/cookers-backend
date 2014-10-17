@@ -104,7 +104,7 @@ angular.module('app')
 })
 
 
-.directive('user', function(CacheSrv){
+.directive('user', function(UsersSrv){
   'use strict';
   return {
     restrict: 'E',
@@ -114,7 +114,7 @@ angular.module('app')
     },
     link: function(scope, element, attr){
       scope.username = scope.id;
-      CacheSrv.getUser(scope.id).then(function(user){
+      UsersSrv.get(scope.id, false).then(function(user){
         scope.username = user.email;
       });
     }
@@ -122,7 +122,7 @@ angular.module('app')
 })
 
 
-.directive('eventData', function(CacheSrv){
+.directive('eventData', function(RecipeSrv, FoodSrv){
   'use strict';
   return {
     restrict: 'E',
@@ -135,12 +135,12 @@ angular.module('app')
       if(scope.event && scope.event.data){
         scope.showData = angular.copy(scope.event.data);
         if(scope.showData.recipe){
-          CacheSrv.getRecipe(scope.showData.recipe).then(function(recipe){
+          RecipeSrv.get(scope.showData.recipe, false).then(function(recipe){
             scope.showData.recipe = recipe.name;
           });
         }
         if(scope.showData.item){
-          CacheSrv.getFood(scope.showData.item).then(function(food){
+          FoodSrv.get(scope.showData.item, false).then(function(food){
             scope.showData.item = food.name;
           });
         }

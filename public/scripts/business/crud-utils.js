@@ -194,7 +194,7 @@ angular.module('app')
   }
 
   function _loadData(DataSrv, ctx, _lazy){
-    return DataSrv.getAll(_lazy).then(function(elts){
+    return DataSrv.getAll(true, _lazy).then(function(elts){
       if(ctx.header){ctx.header.title = ctx.title+' ('+elts.length+')';}
       if(ctx.config && ctx.config.sort){Utils.sort(elts, ctx.config.sort);}
       ctx.model.elts = elts;
