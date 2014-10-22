@@ -25,8 +25,15 @@ GET       /api/v1/users/:id/events              controllers.Tracking.getForUser(
 PUT       /api/v1/users/:id/settings/:setting   controllers.Users.setUserSetting(id: String, setting: String)
 PUT       /api/v1/users/:id/device              controllers.Users.setUserDevice(id: String)
 
+# Products
+GET       /api/v1/products                      controllers.Products.getAll
+GET       /api/v1/products/:barcode             controllers.Products.get(barcode: String)
+
+# Admin methods
 POST      /api/v1/app-feedback                  controllers.Application.sendFeedback
+POST      /api/v1/load-products                 controllers.Products.loadOpenFoodFactsProducts
 DELETE    /api/v1/reset-database                controllers.Application.resetDatabase
+
 GET       /api/export                           controllers.Application.export(exportUsers:Option[Boolean], exportEvents:Option[Boolean], exportMalformedEvents:Option[Boolean])
 POST      /api/importAndMerge                   controllers.Application.importAndMerge
 POST      /api/clearAndImport                   controllers.Application.clearAndImport

@@ -1,5 +1,12 @@
 <div class="row">
   <div class="col-md-12">
     <pre>{{event | json}}</pre>
+    <div ng-if="event && event.name && event.name === 'exception'">
+      <h3>{{event.data.message}}</h3>
+      <pre>{{event.data.stack}}</pre>
+    </div>
+    <div ng-if="event && event.name && (event.name === 'exception' || event.name === 'error')">
+      <button type="button" class="btn btn-success">Problème corrigé !</button>
+    </div>
   </div>
 </div>

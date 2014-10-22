@@ -1,7 +1,6 @@
 package models
 
-import play.api.libs.json.Json
-import play.api.libs.json.JsValue
+import play.api.libs.json._
 
 case class DateInfo(year: Int, month: Int, week: Int, dayOfYear: Int, dayOfWeek: Int)
 
