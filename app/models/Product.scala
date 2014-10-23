@@ -2,6 +2,7 @@ package models
 
 import play.api.libs.json._
 
+// TODO : add fields: _keywords, ingredients_text, ingredients, stores
 case class Product(
   barcode: String,
   url: String,

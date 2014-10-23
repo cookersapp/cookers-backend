@@ -34,7 +34,7 @@ object Products extends Controller with MongoController {
     val productsUrl = "http://fr.openfoodfacts.org/data/fr.openfoodfacts.org.products.csv"
     Async {
       WS.url(productsUrl).withTimeout(1200000).get().flatMap { response =>
-        val lines = response.body.split("\n").tail.toList
+        val lines = response.body.getBytes("UTF-8").toString().split("\n").tail.toList
         val products = lines.map(line => Product.create(line.split("\t"))).filter(p => p.isDefined).map(opt => opt.get)
         /*val quantities = products.filter(p => p.quantity.isEmpty).map(p => p.quantityStr).groupBy(q => q).map { case (value, list) => (value, list.length) }
         val quantitiesByFreq = quantities.groupBy { case (value, freq) => freq.toString }
