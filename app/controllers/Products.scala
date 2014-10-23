@@ -55,7 +55,7 @@ object Products extends Controller with MongoController {
             "distinct" -> brands.size,
             "data" -> brandsByFreq),
           "categories" -> Json.obj(
-            "distinct" -> categories.size, 
+            "distinct" -> categories.size,
             "data" -> categoriesByFreq)))*/
 
         ProductsDao.drop().flatMap { dropped =>
