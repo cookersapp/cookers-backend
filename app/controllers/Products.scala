@@ -3,7 +3,7 @@ package controllers
 import models.Product
 import dao.ProductsDao
 import scala.concurrent.Future
-import play.api.libs.json.Json
+import play.api.libs.json._
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.ws._
 import play.api.mvc.Action
@@ -12,6 +12,20 @@ import play.modules.reactivemongo.MongoController
 
 object Products extends Controller with MongoController {
   implicit val DB = db
+
+  def getFromOFF(barcode: String) = Action { request =>
+    Async {
+      WS.url("http://fr.openfoodfacts.org/api/v0/produit/" + barcode + ".json").get().map { response =>
+        val product = Product.create(response.json)
+        if (product.isEmpty) {
+          Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
+        } else {
+          val data: JsValue = Json.toJson(product.get)
+          Ok(Json.obj("status" -> 200, "data" -> data))
+        }
+      }
+    }
+  }
 
   // get all products
   def getAll = Action { implicit request =>

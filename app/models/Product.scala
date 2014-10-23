@@ -5,7 +5,6 @@ import play.api.libs.json._
 // TODO : add fields: _keywords, ingredients_text, ingredients, stores
 case class Product(
   barcode: String,
-  url: String,
   name: String,
   genericName: String,
   quantityStr: String,
@@ -13,32 +12,42 @@ case class Product(
   brand: String,
   category: String,
   image: String,
-  imageSmall: String) {
-
-  def this(csv: Array[String]) = this(
-    Product.get(csv, Product.Field.code),
-    Product.get(csv, Product.Field.url),
-    Product.get(csv, Product.Field.product_name),
-    Product.get(csv, Product.Field.generic_name),
-    Product.get(csv, Product.Field.quantity),
-    Quantity.create(Product.get(csv, Product.Field.quantity)),
-    Product.get(csv, Product.Field.brands),
-    Product.get(csv, Product.Field.categories),
-    Product.get(csv, Product.Field.image_url),
-    Product.get(csv, Product.Field.image_small_url))
-
-}
+  imageSmall: String)
 
 object Product {
   implicit val productFormat = Json.format[Product]
 
-  def get(csv: Array[String], index: Int): String = if (csv.length > index) csv(index) else ""
+  def create(json: JsValue): Option[Product] = {
+    val barcode = (json \ "code").asOpt[String].getOrElse("")
+    val name = (json \ "product" \ "product_name").asOpt[String].getOrElse("")
+    val genericName = (json \ "product" \ "generic_name").asOpt[String].getOrElse("")
+    val quantityStr = (json \ "product" \ "quantity").asOpt[String].getOrElse("")
+    val quantity = Quantity.create(quantityStr)
+    val brand = (json \ "product" \ "brands").asOpt[String].getOrElse("")
+    val category = (json \ "product" \ "categories").asOpt[String].getOrElse("")
+    val image = (json \ "product" \ "image_url").asOpt[String].getOrElse("")
+    val imageSmall = (json \ "product" \ "image_small_url").asOpt[String].getOrElse("")
 
-  def create(csv: Array[String]): Option[Product] = {
-    val p = new Product(csv)
-    if (p.barcode != "" && p.name != "" && p.image != "") Some(p)
+    if (barcode != "" && name != "" && image != "") Some(new Product(barcode, name, genericName, quantityStr, quantity, brand, category, image, imageSmall))
     else None
   }
+
+  def create(csv: Array[String]): Option[Product] = {
+    val barcode = get(csv, Field.code)
+    val name = get(csv, Field.product_name)
+    val genericName = get(csv, Field.generic_name)
+    val quantityStr = get(csv, Field.quantity)
+    val quantity = Quantity.create(quantityStr)
+    val brand = get(csv, Field.brands)
+    val category = get(csv, Field.categories)
+    val image = get(csv, Field.image_url)
+    val imageSmall = get(csv, Field.image_small_url)
+
+    if (barcode != "" && name != "" && image != "") Some(new Product(barcode, name, genericName, quantityStr, quantity, brand, category, image, imageSmall))
+    else None
+  }
+
+  def get(csv: Array[String], index: Int): String = if (csv.length > index) csv(index) else ""
 
   object Field {
     val code = 0

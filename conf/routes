@@ -26,12 +26,12 @@ PUT       /api/v1/users/:id/settings/:setting   controllers.Users.setUserSetting
 PUT       /api/v1/users/:id/device              controllers.Users.setUserDevice(id: String)
 
 # Products
-GET       /api/v1/products                      controllers.Products.getAll
-GET       /api/v1/products/:barcode             controllers.Products.get(barcode: String)
+#GET       /api/v1/products                      controllers.Products.getAll
+GET       /api/v1/products/:barcode             controllers.Products.getFromOFF(barcode: String)
 
 # Admin methods
+#POST      /api/v1/load-products                 controllers.Products.loadOpenFoodFactsProducts
 POST      /api/v1/app-feedback                  controllers.Application.sendFeedback
-POST      /api/v1/load-products                 controllers.Products.loadOpenFoodFactsProducts
 DELETE    /api/v1/reset-database                controllers.Application.resetDatabase
 
 GET       /api/export                           controllers.Application.export(exportUsers:Option[Boolean], exportEvents:Option[Boolean], exportMalformedEvents:Option[Boolean])
