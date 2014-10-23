@@ -285,8 +285,7 @@ angular.module('app')
             defer.reject(error);
           } else {
             if(service.cache[elt.id]){
-              angular.copy(result.data, service.cache[elt.id]);
-              angular.copy(service.cache[elt.id], _.find(service.cacheArr, {id: elt.id}));
+              angular.copy(elt, service.cache[elt.id]);
             } else {
               service.cache[elt.id] = angular.copy(elt);
               service.cacheArr.push(elt);
