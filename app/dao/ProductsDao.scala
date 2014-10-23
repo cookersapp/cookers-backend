@@ -21,6 +21,11 @@ object ProductsDao {
   def findByBarcode(barcode: String)(implicit db: DB): Future[Option[Product]] = collection().find(Json.obj("barcode" -> barcode)).one[Product]
   def insert(product: Product)(implicit db: DB): Future[LastError] = collection().insert(product)
 
+  def count()(implicit db: DB): Future[Int] = {
+    val bsonQuery: BSONDocument = BSONFormats.toBSON(Json.obj()).get.asInstanceOf[BSONDocument]
+    collection().db.command(Count(COLLECTION_NAME, Some(bsonQuery)))
+  }
+
   def export()(implicit db: DB): Future[List[JsValue]] = DaoUtils.export(db, collection())
   def importCollection(docs: List[JsValue])(implicit db: DB): Future[List[LastError]] = DaoUtils.importCollection(db, collection(), docs)
   def drop()(implicit db: DB): Future[Boolean] = DaoUtils.drop(db, collection())

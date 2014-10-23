@@ -1,1 +1,1 @@
-web: target/start -Dhttp.port=${PORT} ${JAVA_OPTS} -Dfile.encoding=UTF8 -Dapplication.env=$APP_ENV -Dmongodb.uri=$MONGOHQ_URL
+web: target/start -Dhttp.port=${PORT} ${JAVA_OPTS} -Dfile.encoding=UTF-8 -Dapplication.env=$APP_ENV -Dmongodb.uri=$MONGOHQ_URL

@@ -60,8 +60,10 @@ object Products extends Controller with MongoController {
 
         ProductsDao.drop().flatMap { dropped =>
           val results = products.map { product => ProductsDao.insert(product) }
-          Future.sequence(results).map { errors =>
-            Ok(Json.obj("status" -> 200, "message" -> "products saved !"))
+          Future.sequence(results).flatMap { errors =>
+            ProductsDao.count().map { count =>
+              Ok(Json.obj("status" -> 200, "message" -> (count + " products saved !")))
+            }
           }
         }
       }
