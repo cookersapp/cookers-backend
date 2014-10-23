@@ -20,12 +20,12 @@ object Products extends Controller with MongoController {
     }
   }
 
-  // get product with barcode
+  // get product with barcode (ex: 3535710002787)
   def get(barcode: String) = Action { request =>
     Async {
       ProductsDao.findByBarcode(barcode).map {
-        case Some(product) => Ok(Json.toJson(product))
-        case None => NotFound(Json.obj("status" -> 404, "message" -> "Product not found !"))
+        case Some(product) => Ok(Json.obj("status" -> 200, "data" -> product))
+        case None => Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
       }
     }
   }
