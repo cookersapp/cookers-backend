@@ -58,9 +58,11 @@ object Products extends Controller with MongoController {
             "distinct" -> categories.size,
             "data" -> categoriesByFreq)))*/
 
-        val results = products.map { product => ProductsDao.insert(product) }
-        Future.sequence(results).map { errors =>
-          Ok(Json.obj("status" -> 200, "message" -> "products saved !"))
+        ProductsDao.drop().flatMap { dropped =>
+          val results = products.map { product => ProductsDao.insert(product) }
+          Future.sequence(results).map { errors =>
+            Ok(Json.obj("status" -> 200, "message" -> "products saved !"))
+          }
         }
       }
     }
