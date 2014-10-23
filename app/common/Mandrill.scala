@@ -2,7 +2,6 @@ package common
 
 import scala.concurrent._
 import ExecutionContext.Implicits.global
-
 import play.api.libs.json._
 import play.api.libs.ws._
 

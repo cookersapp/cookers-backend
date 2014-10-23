@@ -3,6 +3,7 @@ package models
 import play.api.libs.json._
 
 case class Quantity(value: Double, unit: String, details: String)
+
 object Quantity {
   implicit val quantityFormat = Json.format[Quantity]
 
@@ -52,7 +53,7 @@ object Quantity {
       case isKilo(val1, val2) => val1.toDouble * 1000 + val2.toDouble
       case isNumber(value) => value.toDouble
       case isFormula(val1, op, val2) => if (op == "/") val1.toDouble / val2.toDouble else val1.toDouble * val2.toDouble
-      case _ => "0".toDouble
+      case _ => 0
     }
   }
 

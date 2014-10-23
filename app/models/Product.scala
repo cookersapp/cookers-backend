@@ -18,15 +18,15 @@ object Product {
   implicit val productFormat = Json.format[Product]
 
   def create(json: JsValue): Option[Product] = {
-    val barcode = (json \ "code").asOpt[String].getOrElse("")
-    val name = (json \ "product" \ "product_name").asOpt[String].getOrElse("")
-    val genericName = (json \ "product" \ "generic_name").asOpt[String].getOrElse("")
-    val quantityStr = (json \ "product" \ "quantity").asOpt[String].getOrElse("")
+    val barcode = getStr(json \ "code")
+    val name = getStr(json \ "product" \ "product_name")
+    val genericName = getStr(json \ "product" \ "generic_name")
+    val quantityStr = getStr(json \ "product" \ "quantity")
     val quantity = Quantity.create(quantityStr)
-    val brand = (json \ "product" \ "brands").asOpt[String].getOrElse("")
-    val category = (json \ "product" \ "categories").asOpt[String].getOrElse("")
-    val image = (json \ "product" \ "image_url").asOpt[String].getOrElse("")
-    val imageSmall = (json \ "product" \ "image_small_url").asOpt[String].getOrElse("")
+    val brand = getStr(json \ "product" \ "brands")
+    val category = getStr(json \ "product" \ "categories")
+    val image = getStr(json \ "product" \ "image_url")
+    val imageSmall = getStr(json \ "product" \ "image_small_url")
 
     if (barcode != "" && name != "" && image != "") Some(new Product(barcode, name, genericName, quantityStr, quantity, brand, category, image, imageSmall))
     else None
@@ -48,6 +48,7 @@ object Product {
   }
 
   def get(csv: Array[String], index: Int): String = if (csv.length > index) csv(index) else ""
+  def getStr(value: JsValue): String = value.asOpt[String].getOrElse("")
 
   object Field {
     val code = 0
