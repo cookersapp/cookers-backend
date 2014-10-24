@@ -15,6 +15,9 @@ import play.api.libs.ws._
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.modules.reactivemongo.MongoController
+import models.Price
+import models.Price
+import models.PriceQuantity
 
 object Products extends Controller with MongoController {
   implicit val DB = db
@@ -75,15 +78,18 @@ object Products extends Controller with MongoController {
           if (productOpt.isEmpty) {
             Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
           } else {
-            val product: JsValue = Json.toJson(productOpt.get)
+            val product = productOpt.get
+            val price = if (product.price != null) product.price else new Price(new Random().nextDouble() * 3, "€")
+            val quantity = if (product.quantity.size > 0) product.quantity(0) else new Quantity(new Random().nextDouble() * 1000, "g")
+            val json: JsValue = Json.toJson(product)
             val store: JsObject = Json.obj(
               "store" -> Json.obj(
                 "id" -> storeId,
-                "price" -> Json.obj("value" -> new Random().nextDouble() * 3, "currency" -> "€"),
-                "genericPrice" -> Json.obj("value" -> new Random().nextDouble() * 10, "currency" -> "€", "unit" -> "kg")))
+                "price" -> price,
+                "genericPrice" -> price.forQuantity(quantity).inGeneric(quantity.unit)))
 
             val addStore = (__).json.update(__.read[JsObject].map { originalData => originalData ++ store })
-            val data: JsValue = product.transform(addStore).get
+            val data: JsValue = json.transform(addStore).get
             Ok(Json.obj("status" -> 200, "data" -> data))
           }
       }

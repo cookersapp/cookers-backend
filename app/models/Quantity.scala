@@ -1,11 +1,42 @@
 package models
 
+import play.api.Logger
 import play.api.libs.json._
 
-case class Quantity(value: Double, unit: String, details: String)
+case class Quantity(
+  value: Double,
+  unit: String,
+  details: Option[String]) {
+  def this(value: Double, unit: String) = this(value, unit, None)
+}
 
 object Quantity {
   implicit val quantityFormat = Json.format[Quantity]
+  private val conversions: List[(String, String, Double)] = List(
+    ("mg", "kg", 1000000),
+    ("g", "kg", 1000),
+    ("kg", "kg", 1),
+    ("ml", "l", 1000),
+    ("cl", "l", 100),
+    ("dl", "l", 10),
+    ("l", "l", 1))
+
+  def convert(from: String, to: String): Double = {
+    val generic = getGeneric(to)
+    val ratio1 = conversions.find { case (src, dest, r) => src == from && dest == generic }.map { case (src, dest, r) => r }
+    val ratio2 = conversions.find { case (src, dest, r) => src == to && dest == generic }.map { case (src, dest, r) => r }
+    if (ratio1.isDefined && ratio2.isDefined) {
+      ratio1.get / ratio2.get
+    } else {
+      Logger.warn("Can't convert <" + from + "> to <" + to + "> (generic:" + generic + ", r1:" + ratio1 + ", r2:" + ratio2 + ")")
+      1
+    }
+  }
+  def getGeneric(unit: String): String = {
+    if ("mg".equals(unit) || "g".equals(unit) || "kg".equals(unit)) "kg"
+    else if ("ml".equals(unit) || "cl".equals(unit) || "dl".equals(unit) || "l".equals(unit)) "l"
+    else unit
+  }
 
   private val caseInsensitive = "(?i)"
   private val op = "[×x\\*/]"
@@ -29,18 +60,18 @@ object Quantity {
 
     if (str != null) {
       str.split(", ").map(q => q.trim() match {
-        case specific(value, unit) => Quantity(toValue(value), unit.toLowerCase(), "")
-        case dragee(value, unit) => Quantity(toValue(value), "dragee", "")
-        case mg(value, unit, more) => Quantity(toValue(value), "mg", toDetails(more))
-        case g(value, unit, more) => Quantity(toValue(value), "g", toDetails(more))
-        case kg(value, unit, more) => Quantity(toValue(value), "kg", toDetails(more))
-        case ml(value, unit, more) => Quantity(toValue(value), "ml", toDetails(more))
-        case cl(value, unit, more) => Quantity(toValue(value), "cl", toDetails(more))
-        case dl(value, unit, more) => Quantity(toValue(value), "dl", toDetails(more))
-        case l(value, unit, more) => Quantity(toValue(value), "l", toDetails(more))
-        case oz(value, unit, more) => Quantity(toValue(value), "oz", toDetails(more))
-        case pz(value, unit, more) => Quantity(toValue(value), "pz", toDetails(more))
-        case unit(value, unit, more) => Quantity(toValue(value), "", toDetails(more))
+        case specific(value, unit) => new Quantity(toValue(value), unit.toLowerCase())
+        case dragee(value, unit) => new Quantity(toValue(value), "dragee")
+        case mg(value, unit, more) => new Quantity(toValue(value), "mg", toDetails(more))
+        case g(value, unit, more) => new Quantity(toValue(value), "g", toDetails(more))
+        case kg(value, unit, more) => new Quantity(toValue(value), "kg", toDetails(more))
+        case ml(value, unit, more) => new Quantity(toValue(value), "ml", toDetails(more))
+        case cl(value, unit, more) => new Quantity(toValue(value), "cl", toDetails(more))
+        case dl(value, unit, more) => new Quantity(toValue(value), "dl", toDetails(more))
+        case l(value, unit, more) => new Quantity(toValue(value), "l", toDetails(more))
+        case oz(value, unit, more) => new Quantity(toValue(value), "oz", toDetails(more))
+        case pz(value, unit, more) => new Quantity(toValue(value), "pz", toDetails(more))
+        case unit(value, unit, more) => new Quantity(toValue(value), "", toDetails(more))
         case _ => null
       }).toList.filter(q => q != null)
     } else {
@@ -61,15 +92,15 @@ object Quantity {
     }
   }
 
-  private def toDetails(str: String): String = {
+  private def toDetails(str: String): Option[String] = {
     if (str != null) {
       val noBraces = "\\((.*)\\)".r
       str.trim() match {
-        case noBraces(content) => content
-        case res => res
+        case noBraces(content) => Some(content)
+        case res => Some(res)
       }
     } else {
-      ""
+      None
     }
   }
 }

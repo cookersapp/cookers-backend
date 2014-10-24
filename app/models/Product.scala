@@ -6,13 +6,6 @@ import common.PrixingProduct
 import play.api.Logger
 import play.api.libs.json._
 
-case class Price(
-  value: Double,
-  currency: String)
-object Price {
-  implicit val priceFormat = Json.format[Price]
-}
-
 case class Additive(
   id: String,
   name: String,
