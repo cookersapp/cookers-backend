@@ -4,8 +4,11 @@ import models.Quantity
 import models.Product
 import common.OpenFoodFacts
 import common.Prixing
+import common.OpenFoodFactsProduct
+import common.PrixingProduct
 import scala.util.Random
 import scala.concurrent.Future
+import play.api.Logger
 import play.api.libs.json._
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.ws._
@@ -18,33 +21,57 @@ object Products extends Controller with MongoController {
 
   def get(barcode: String) = Action { request =>
     Async {
-      val future: Future[(Option[Product], Option[Product])] = for {
+      val future: Future[(Option[OpenFoodFactsProduct], Option[PrixingProduct])] = for {
         openfoodfacts <- OpenFoodFacts.getProduct(barcode)
         prixing <- Prixing.getProduct(barcode)
       } yield (openfoodfacts, prixing)
 
       future.map {
         case (openfoodfacts, prixing) =>
-          val productOpt = Product.merge(openfoodfacts, prixing)
+          val productOpt = Product.mergeSources(openfoodfacts, prixing)
           if (productOpt.isEmpty) {
             Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
           } else {
-            Ok(Json.obj("status" -> 200, "data" -> Json.toJson(productOpt.get)))
+            Ok(Json.obj("status" -> 200, "data" -> productOpt.get))
           }
+      }
+    }
+  }
+
+  def getPrixing(barcode: String) = Action { request =>
+    Async {
+      Prixing.getProduct(barcode).map { productOpt =>
+        if (productOpt.isEmpty) {
+          Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
+        } else {
+          Ok(Json.obj("status" -> 200, "data" -> productOpt.get))
+        }
+      }
+    }
+  }
+
+  def getOpenFoodFacts(barcode: String) = Action { request =>
+    Async {
+      OpenFoodFacts.getProduct(barcode).map { productOpt =>
+        if (productOpt.isEmpty) {
+          Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
+        } else {
+          Ok(Json.obj("status" -> 200, "data" -> productOpt.get))
+        }
       }
     }
   }
 
   def getWithStore(storeId: String, barcode: String) = Action { request =>
     Async {
-      val future: Future[(Option[Product], Option[Product])] = for {
+      val future: Future[(Option[OpenFoodFactsProduct], Option[PrixingProduct])] = for {
         openfoodfacts <- OpenFoodFacts.getProduct(barcode)
         prixing <- Prixing.getProduct(barcode)
       } yield (openfoodfacts, prixing)
 
       future.map {
         case (openfoodfacts, prixing) =>
-          val productOpt = Product.merge(openfoodfacts, prixing)
+          val productOpt = Product.mergeSources(openfoodfacts, prixing)
           if (productOpt.isEmpty) {
             Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
           } else {

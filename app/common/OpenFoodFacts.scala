@@ -9,18 +9,59 @@ import play.api.libs.json._
 import play.api.libs.ws._
 import reactivemongo.api.DB
 
+case class OpenFoodFactsProductNutrition(
+  grade: String,
+  levels: JsValue,
+  nutriments: JsValue)
+object OpenFoodFactsProductNutrition {
+  implicit val openFoodFactsProductNutritionFormat = Json.format[OpenFoodFactsProductNutrition]
+}
+
+case class OpenFoodFactsProductMore(
+  quantityStr: String,
+  servingStr: String,
+  link: String)
+object OpenFoodFactsProductMore {
+  implicit val openFoodFactsProductMoreFormat = Json.format[OpenFoodFactsProductMore]
+}
+
+case class OpenFoodFactsProduct(
+  barcode: String,
+  name: String,
+  genericName: String,
+  image: String,
+  imageSmall: String,
+  quantity: List[Quantity],
+  serving: List[Quantity],
+  brands: List[String],
+  stores: List[String],
+  origins: List[String],
+  countries: List[String],
+  packaging: List[String],
+  labels: List[String],
+  categories: List[String],
+  ingredients: List[String],
+  traces: List[String],
+  additives: List[String],
+  keywords: List[String],
+  nutrition: OpenFoodFactsProductNutrition,
+  more: OpenFoodFactsProductMore)
+object OpenFoodFactsProduct {
+  implicit val openFoodFactsProductFormat = Json.format[OpenFoodFactsProduct]
+}
+
 object OpenFoodFacts {
   val baseUrl = "http://fr.openfoodfacts.org"
   val databaseUrl = baseUrl + "/data/fr.openfoodfacts.org.products.csv"
   def productUrl(barcode: String) = baseUrl + "/api/v0/produit/" + barcode + ".json"
 
-  def getProduct(barcode: String)(implicit db: DB): Future[Option[Product]] = {
+  def getProduct(barcode: String)(implicit db: DB): Future[Option[OpenFoodFactsProduct]] = {
     ProductsDao.getOff(barcode).flatMap { opt =>
       if (opt.isDefined) {
-        Future.successful(create(opt.get))
+        Future.successful(create(barcode, opt.get))
       } else {
         WS.url(productUrl(barcode)).get().map { response =>
-          val productOpt = create(response.json)
+          val productOpt = create(barcode, response.json)
           if (productOpt.isDefined) {
             ProductsDao.insertOff(barcode, response.json)
           }
@@ -30,29 +71,46 @@ object OpenFoodFacts {
     }
   }
 
-  def getDatabase(): Future[List[Product]] = {
+  private def create(barcode: String, json: JsValue): Option[OpenFoodFactsProduct] = {
+    val nutritionGrade = getStr(json \ "product" \ "nutrition_grade_fr")
+    val nutrientLevels = json \ "product" \ "nutrient_levels"
+    val nutriments = json \ "product" \ "nutriments"
+    val nutrition = new OpenFoodFactsProductNutrition(nutritionGrade, nutrientLevels, nutriments)
+
+    val quantityStr = getStr(json \ "product" \ "quantity")
+    val servingStr = getStr(json \ "product" \ "serving_size")
+    val link = getStr(json \ "product" \ "link")
+    val more = new OpenFoodFactsProductMore(quantityStr, servingStr, link)
+
+    val name = getStr(json \ "product" \ "product_name")
+    val genericName = getStr(json \ "product" \ "generic_name")
+    val image = getStr(json \ "product" \ "image_url")
+    val imageSmall = getStr(json \ "product" \ "image_small_url")
+    val quantity = Quantity.create(quantityStr)
+    val serving = Quantity.create(servingStr)
+    val brands = strToList(getStr(json \ "product" \ "brands"))
+    val stores = strToList(getStr(json \ "product" \ "stores"))
+    val origins = strToList(getStr(json \ "product" \ "origins"))
+    val countries = strToList(getStr(json \ "product" \ "countries"))
+    val packaging = strToList(getStr(json \ "product" \ "packaging"))
+    val labels = strToList(getStr(json \ "product" \ "labels"))
+    val categories = strToList(getStr(json \ "product" \ "categories"))
+    val ingredients = strToList(getStr(json \ "product" \ "ingredients_text"))
+    val traces = strToList(getStr(json \ "product" \ "traces"))
+    val additives = getStrList(json \ "product" \ "additives_tags")
+    val keywords = getStrList(json \ "product" \ "_keywords")
+
+    isValid(new OpenFoodFactsProduct(barcode, name, genericName, image, imageSmall, quantity, serving, brands, stores, origins, countries, packaging, labels, categories, ingredients, traces, additives, keywords, nutrition, more))
+  }
+
+  /*def getDatabase(): Future[List[OpenFoodFactsProduct]] = {
     WS.url(databaseUrl).withTimeout(1200000).get().map { response =>
       val lines = response.body.split("\n").tail.toList
       lines.map(line => create(line.split("\t"))).filter(opt => opt.isDefined).map(opt => opt.get)
     }
   }
 
-  private def create(json: JsValue): Option[Product] = {
-    val barcode = getStr(json \ "code")
-    val name = getStr(json \ "product" \ "product_name")
-    val genericName = getStr(json \ "product" \ "generic_name")
-    val quantityStr = getStr(json \ "product" \ "quantity")
-    val quantity = Quantity.create(quantityStr)
-    val brand = getStr(json \ "product" \ "brands")
-    val category = getStr(json \ "product" \ "categories")
-    val image = getStr(json \ "product" \ "image_url")
-    val imageSmall = getStr(json \ "product" \ "image_small_url")
-
-    if (barcode != "" && name != "" && image != "") Some(new Product(barcode, name, genericName, quantityStr, quantity, brand, category, image, imageSmall, "openfoodfacts"))
-    else None
-  }
-
-  private def create(csv: Array[String]): Option[Product] = {
+  private def create(csv: Array[String]): Option[OpenFoodFactsProduct] = {
     val barcode = get(csv, Field.code)
     val name = get(csv, Field.product_name)
     val genericName = get(csv, Field.generic_name)
@@ -63,12 +121,18 @@ object OpenFoodFacts {
     val image = get(csv, Field.image_url)
     val imageSmall = get(csv, Field.image_small_url)
 
-    if (barcode != "" && name != "" && image != "") Some(new Product(barcode, name, genericName, quantityStr, quantity, brand, category, image, imageSmall, "openfoodfacts"))
+    isValid(new OpenFoodFactsProduct(barcode, name, genericName, quantityStr, quantity, brand, category, image, imageSmall, List()))
+  }*/
+
+  private def isValid(p: OpenFoodFactsProduct): Option[OpenFoodFactsProduct] = {
+    if (p.barcode != "" && p.name != "" && p.image != "") Some(p)
     else None
   }
 
   private def get(csv: Array[String], index: Int): String = if (csv.length > index) csv(index) else ""
   private def getStr(value: JsValue): String = value.asOpt[String].getOrElse("")
+  private def getStrList(value: JsValue): List[String] = value.asOpt[List[String]].getOrElse(List())
+  private def strToList(value: String): List[String] = value.split(",").toList.map(str => str.trim()).filter(str => str != "")
 
   private object Field {
     val code = 0

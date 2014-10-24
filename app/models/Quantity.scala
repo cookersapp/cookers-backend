@@ -27,21 +27,25 @@ object Quantity {
     val pz = (caseInsensitive + "(" + numberOrForumla + ") ?(pz)( .*)?").r
     val unit = (caseInsensitive + "(" + numberOrForumla + ") ?(|pièces?|unités|piezas?|oeufs|eggs|pamplemousse|fruit|servings)( .*)?").r
 
-    str.split(", ").map(q => q.trim() match {
-      case specific(value, unit) => Quantity(toValue(value), unit, "")
-      case dragee(value, unit) => Quantity(toValue(value), "dragee", "")
-      case mg(value, unit, more) => Quantity(toValue(value), "mg", toDetails(more))
-      case g(value, unit, more) => Quantity(toValue(value), "g", toDetails(more))
-      case kg(value, unit, more) => Quantity(toValue(value), "kg", toDetails(more))
-      case ml(value, unit, more) => Quantity(toValue(value), "ml", toDetails(more))
-      case cl(value, unit, more) => Quantity(toValue(value), "cl", toDetails(more))
-      case dl(value, unit, more) => Quantity(toValue(value), "dl", toDetails(more))
-      case l(value, unit, more) => Quantity(toValue(value), "l", toDetails(more))
-      case oz(value, unit, more) => Quantity(toValue(value), "oz", toDetails(more))
-      case pz(value, unit, more) => Quantity(toValue(value), "pz", toDetails(more))
-      case unit(value, unit, more) => Quantity(toValue(value), "", toDetails(more))
-      case _ => null
-    }).toList.filter(q => q != null)
+    if (str != null) {
+      str.split(", ").map(q => q.trim() match {
+        case specific(value, unit) => Quantity(toValue(value), unit.toLowerCase(), "")
+        case dragee(value, unit) => Quantity(toValue(value), "dragee", "")
+        case mg(value, unit, more) => Quantity(toValue(value), "mg", toDetails(more))
+        case g(value, unit, more) => Quantity(toValue(value), "g", toDetails(more))
+        case kg(value, unit, more) => Quantity(toValue(value), "kg", toDetails(more))
+        case ml(value, unit, more) => Quantity(toValue(value), "ml", toDetails(more))
+        case cl(value, unit, more) => Quantity(toValue(value), "cl", toDetails(more))
+        case dl(value, unit, more) => Quantity(toValue(value), "dl", toDetails(more))
+        case l(value, unit, more) => Quantity(toValue(value), "l", toDetails(more))
+        case oz(value, unit, more) => Quantity(toValue(value), "oz", toDetails(more))
+        case pz(value, unit, more) => Quantity(toValue(value), "pz", toDetails(more))
+        case unit(value, unit, more) => Quantity(toValue(value), "", toDetails(more))
+        case _ => null
+      }).toList.filter(q => q != null)
+    } else {
+      List()
+    }
   }
 
   private def toValue(str: String): Double = {
