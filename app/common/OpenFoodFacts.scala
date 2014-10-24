@@ -105,23 +105,43 @@ object OpenFoodFacts {
 
   /*def getDatabase(): Future[List[OpenFoodFactsProduct]] = {
     WS.url(databaseUrl).withTimeout(1200000).get().map { response =>
-      val lines = response.body.split("\n").tail.toList
+      val csv = new String(response.body.getBytes("ISO-8859-1"), "UTF-8")
+      val lines = csv.split("\n").tail.toList
       lines.map(line => create(line.split("\t"))).filter(opt => opt.isDefined).map(opt => opt.get)
     }
   }
 
   private def create(csv: Array[String]): Option[OpenFoodFactsProduct] = {
+    val nutritionGrade = ""
+    val nutrientLevels = Json.obj()
+    val nutriments = Json.obj()
+    val nutrition = new OpenFoodFactsProductNutrition(nutritionGrade, nutrientLevels, nutriments)
+
+    val quantityStr = get(csv, Field.quantity)
+    val servingStr = null
+    val link = null
+    val more = new OpenFoodFactsProductMore(quantityStr, servingStr, link)
+
     val barcode = get(csv, Field.code)
     val name = get(csv, Field.product_name)
     val genericName = get(csv, Field.generic_name)
-    val quantityStr = get(csv, Field.quantity)
-    val quantity = Quantity.create(quantityStr)
-    val brand = get(csv, Field.brands)
-    val category = get(csv, Field.categories)
     val image = get(csv, Field.image_url)
     val imageSmall = get(csv, Field.image_small_url)
+    val quantity = Quantity.create(quantityStr)
+    val serving = Quantity.create(servingStr)
+    val brands = strToList(get(csv, Field.brands))
+    val stores = List()
+    val origins = List()
+    val countries = List()
+    val packaging = List()
+    val labels = List()
+    val categories = strToList(get(csv, Field.categories))
+    val ingredients = List()
+    val traces = List()
+    val additives = List()
+    val keywords = List()
 
-    isValid(new OpenFoodFactsProduct(barcode, name, genericName, quantityStr, quantity, brand, category, image, imageSmall, List()))
+    isValid(new OpenFoodFactsProduct(barcode, name, genericName, image, imageSmall, quantity, serving, brands, stores, origins, countries, packaging, labels, categories, ingredients, traces, additives, keywords, nutrition, more))
   }*/
 
   private def isValid(p: OpenFoodFactsProduct): Option[OpenFoodFactsProduct] = {

@@ -2,10 +2,13 @@ package controllers
 
 import models.Quantity
 import models.Product
+import models.Price
+import models.PriceQuantity
 import common.OpenFoodFacts
 import common.Prixing
 import common.OpenFoodFactsProduct
 import common.PrixingProduct
+import dao.ProductsDao
 import scala.util.Random
 import scala.concurrent.Future
 import play.api.Logger
@@ -15,9 +18,6 @@ import play.api.libs.ws._
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.modules.reactivemongo.MongoController
-import models.Price
-import models.Price
-import models.PriceQuantity
 
 object Products extends Controller with MongoController {
   implicit val DB = db
@@ -98,16 +98,16 @@ object Products extends Controller with MongoController {
 
   /*def loadProductsFromOpenFoodFacts = Action {
     Async {
-      OpenFoodFacts.getDatabase().map { products =>
-        val quantities = products.filter(p => p.quantity.isEmpty).map(p => p.quantityStr).groupBy(q => q).map { case (value, list) => (value, list.length) }
+      OpenFoodFacts.getDatabase().flatMap { products =>
+        val quantities = products.filter(p => p.quantity.isEmpty).map(p => p.more.quantityStr).groupBy(q => q).map { case (value, list) => (value, list.length) }
         val quantitiesByFreq = quantities.groupBy { case (value, freq) => freq.toString }
         val quantitiesFormated = quantitiesByFreq.map(a => (a._1, a._2.map(b => (b._1, Quantity.create(b._1)))))
-        val brands = products.map(p => p.brand.toLowerCase()).groupBy(b => b).map { case (value, list) => (value, list.length) }
+        val brands = products.map(p => p.brands.mkString.toLowerCase()).groupBy(b => b).map { case (value, list) => (value, list.length) }
         val brandsByFreq = brands.groupBy { case (value, freq) => freq.toString }
-        val categories = products.map(p => p.category.toLowerCase()).groupBy(b => b).map { case (value, list) => (value, list.length) }
+        val categories = products.map(p => p.categories.mkString.toLowerCase()).groupBy(b => b).map { case (value, list) => (value, list.length) }
         val categoriesByFreq = categories.groupBy { case (value, freq) => freq.toString }
 
-        Ok(Json.obj(
+        Future.successful(Ok(Json.obj(
           "products" -> products.size,
           "data" -> products,
           "quantities" -> Json.obj(
@@ -118,16 +118,16 @@ object Products extends Controller with MongoController {
             "data" -> brandsByFreq),
           "categories" -> Json.obj(
             "distinct" -> categories.size,
-            "data" -> categoriesByFreq)))
+            "data" -> categoriesByFreq))))
 
-        //ProductsDao.drop().flatMap { dropped =>
-        //  val results = products.map { product => ProductsDao.insert(product) }
-        //  Future.sequence(results).flatMap { errors =>
-        //    ProductsDao.count().map { count =>
-        //      Ok(Json.obj("status" -> 200, "message" -> (count + " products saved !")))
-        //    }
-        // }
-        //}
+        ProductsDao.drop().flatMap { dropped =>
+          val results = products.map { product => ProductsDao.insertOff(product.barcode, Json.toJson(product)) }
+          Future.sequence(results).flatMap { errors =>
+            ProductsDao.count().map { count =>
+              Ok(Json.obj("status" -> 200, "message" -> (count + " products saved !")))
+            }
+          }
+        }
       }
     }
   }*/
