@@ -1,7 +1,7 @@
 package dao
 
 import common.Utils
-import models.Product
+import models.food.Product
 import java.util.Date
 import scala.concurrent._
 import ExecutionContext.Implicits.global

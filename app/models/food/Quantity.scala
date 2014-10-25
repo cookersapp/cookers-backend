@@ -1,7 +1,10 @@
-package models
+package models.food
 
 import play.api.Logger
 import play.api.libs.json._
+import play.api.libs.functional.syntax.functionalCanBuildApplicative
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import scala.Array.canBuildFrom
 
 case class Quantity(
   value: Double,
@@ -44,7 +47,7 @@ object Quantity {
   private val formula = number + " ?" + op + " ?" + number
   private val numberOrForumla = number + "|" + formula
 
-  def create(str: String): List[Quantity] = {
+  def create(str: Option[String]): Option[List[Quantity]] = {
     val specific = (caseInsensitive + "(" + numberOrForumla + ") ?(sachet|tranche|dosette|capsule|escalope|pot|barre|pack|tube|tasse|biscuit|cup)s?").r
     val dragee = (caseInsensitive + "(" + numberOrForumla + ") ?(dragées|dragees)").r
     val mg = (caseInsensitive + "(" + numberOrForumla + ") ?(mg)( .*)?").r
@@ -58,24 +61,25 @@ object Quantity {
     val pz = (caseInsensitive + "(" + numberOrForumla + ") ?(pz)( .*)?").r
     val unit = (caseInsensitive + "(" + numberOrForumla + ") ?(|pièces?|unités|piezas?|oeufs|eggs|pamplemousse|fruit|servings)( .*)?").r
 
-    if (str != null) {
-      str.split(", ").map(q => q.trim() match {
-        case specific(value, unit) => new Quantity(toValue(value), unit.toLowerCase())
-        case dragee(value, unit) => new Quantity(toValue(value), "dragee")
-        case mg(value, unit, more) => new Quantity(toValue(value), "mg", toDetails(more))
-        case g(value, unit, more) => new Quantity(toValue(value), "g", toDetails(more))
-        case kg(value, unit, more) => new Quantity(toValue(value), "kg", toDetails(more))
-        case ml(value, unit, more) => new Quantity(toValue(value), "ml", toDetails(more))
-        case cl(value, unit, more) => new Quantity(toValue(value), "cl", toDetails(more))
-        case dl(value, unit, more) => new Quantity(toValue(value), "dl", toDetails(more))
-        case l(value, unit, more) => new Quantity(toValue(value), "l", toDetails(more))
-        case oz(value, unit, more) => new Quantity(toValue(value), "oz", toDetails(more))
-        case pz(value, unit, more) => new Quantity(toValue(value), "pz", toDetails(more))
-        case unit(value, unit, more) => new Quantity(toValue(value), "", toDetails(more))
-        case _ => null
-      }).toList.filter(q => q != null)
+    if (str.isDefined) {
+      val list = str.get.split(", ").toList.map(q => q.trim() match {
+        case specific(value, unit) => Some(new Quantity(toValue(value), unit.toLowerCase()))
+        case dragee(value, unit) => Some(new Quantity(toValue(value), "dragee"))
+        case mg(value, unit, more) => Some(new Quantity(toValue(value), "mg", toDetails(more)))
+        case g(value, unit, more) => Some(new Quantity(toValue(value), "g", toDetails(more)))
+        case kg(value, unit, more) => Some(new Quantity(toValue(value), "kg", toDetails(more)))
+        case ml(value, unit, more) => Some(new Quantity(toValue(value), "ml", toDetails(more)))
+        case cl(value, unit, more) => Some(new Quantity(toValue(value), "cl", toDetails(more)))
+        case dl(value, unit, more) => Some(new Quantity(toValue(value), "dl", toDetails(more)))
+        case l(value, unit, more) => Some(new Quantity(toValue(value), "l", toDetails(more)))
+        case oz(value, unit, more) => Some(new Quantity(toValue(value), "oz", toDetails(more)))
+        case pz(value, unit, more) => Some(new Quantity(toValue(value), "pz", toDetails(more)))
+        case unit(value, unit, more) => Some(new Quantity(toValue(value), "", toDetails(more)))
+        case _ => None
+      }).filter(q => q.isDefined).map(q => q.get)
+      if (list.size > 0) Some(list) else None
     } else {
-      List()
+      None
     }
   }
 

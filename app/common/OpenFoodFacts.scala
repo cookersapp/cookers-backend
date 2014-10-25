@@ -1,7 +1,7 @@
 package common
 
-import models.Product
-import models.Quantity
+import models.food.Product
+import models.food.Quantity
 import dao.ProductsDao
 import scala.concurrent._
 import ExecutionContext.Implicits.global
@@ -10,7 +10,7 @@ import play.api.libs.ws._
 import reactivemongo.api.DB
 
 case class OpenFoodFactsProductNutrition(
-  grade: String,
+  grade: Option[String],
   levels: JsValue,
   nutriments: JsValue)
 object OpenFoodFactsProductNutrition {
@@ -18,32 +18,32 @@ object OpenFoodFactsProductNutrition {
 }
 
 case class OpenFoodFactsProductMore(
-  quantityStr: String,
-  servingStr: String,
-  link: String)
+  quantityStr: Option[String],
+  servingStr: Option[String],
+  link: Option[String])
 object OpenFoodFactsProductMore {
   implicit val openFoodFactsProductMoreFormat = Json.format[OpenFoodFactsProductMore]
 }
 
 case class OpenFoodFactsProduct(
   barcode: String,
-  name: String,
-  genericName: String,
-  image: String,
-  imageSmall: String,
-  quantity: List[Quantity],
-  serving: List[Quantity],
-  brands: List[String],
-  stores: List[String],
-  origins: List[String],
-  countries: List[String],
-  packaging: List[String],
-  labels: List[String],
-  categories: List[String],
-  ingredients: List[String],
-  traces: List[String],
-  additives: List[String],
-  keywords: List[String],
+  name: Option[String],
+  genericName: Option[String],
+  image: Option[String],
+  imageSmall: Option[String],
+  quantity: Option[List[Quantity]],
+  serving: Option[List[Quantity]],
+  brands: Option[List[String]],
+  stores: Option[List[String]],
+  origins: Option[List[String]],
+  countries: Option[List[String]],
+  packaging: Option[List[String]],
+  labels: Option[List[String]],
+  categories: Option[List[String]],
+  ingredients: Option[List[String]],
+  traces: Option[List[String]],
+  additives: Option[List[String]],
+  keywords: Option[List[String]],
   nutrition: OpenFoodFactsProductNutrition,
   more: OpenFoodFactsProductMore)
 object OpenFoodFactsProduct {
@@ -72,36 +72,43 @@ object OpenFoodFacts {
   }
 
   private def create(barcode: String, json: JsValue): Option[OpenFoodFactsProduct] = {
-    val nutritionGrade = getStr(json \ "product" \ "nutrition_grade_fr")
+    val nutritionGrade = (json \ "product" \ "nutrition_grade_fr").asOpt[String]
     val nutrientLevels = json \ "product" \ "nutrient_levels"
     val nutriments = json \ "product" \ "nutriments"
     val nutrition = new OpenFoodFactsProductNutrition(nutritionGrade, nutrientLevels, nutriments)
 
-    val quantityStr = getStr(json \ "product" \ "quantity")
-    val servingStr = getStr(json \ "product" \ "serving_size")
-    val link = getStr(json \ "product" \ "link")
+    val quantityStr = (json \ "product" \ "quantity").asOpt[String]
+    val servingStr = (json \ "product" \ "serving_size").asOpt[String]
+    val link = (json \ "product" \ "link").asOpt[String]
     val more = new OpenFoodFactsProductMore(quantityStr, servingStr, link)
 
-    val name = getStr(json \ "product" \ "product_name")
-    val genericName = getStr(json \ "product" \ "generic_name")
-    val image = getStr(json \ "product" \ "image_url")
-    val imageSmall = getStr(json \ "product" \ "image_small_url")
+    val name = (json \ "product" \ "product_name").asOpt[String]
+    val genericName = (json \ "product" \ "generic_name").asOpt[String]
+    val image = (json \ "product" \ "image_url").asOpt[String]
+    val imageSmall = (json \ "product" \ "image_small_url").asOpt[String]
     val quantity = Quantity.create(quantityStr)
     val serving = Quantity.create(servingStr)
-    val brands = strToList(getStr(json \ "product" \ "brands"))
-    val stores = strToList(getStr(json \ "product" \ "stores"))
-    val origins = strToList(getStr(json \ "product" \ "origins"))
-    val countries = strToList(getStr(json \ "product" \ "countries"))
-    val packaging = strToList(getStr(json \ "product" \ "packaging"))
-    val labels = strToList(getStr(json \ "product" \ "labels"))
-    val categories = strToList(getStr(json \ "product" \ "categories"))
-    val ingredients = strToList(getStr(json \ "product" \ "ingredients_text"))
-    val traces = strToList(getStr(json \ "product" \ "traces"))
-    val additives = getStrList(json \ "product" \ "additives_tags")
-    val keywords = getStrList(json \ "product" \ "_keywords")
+    val brands = strToList((json \ "product" \ "brands").asOpt[String])
+    val stores = strToList((json \ "product" \ "stores").asOpt[String])
+    val origins = strToList((json \ "product" \ "origins").asOpt[String])
+    val countries = strToList((json \ "product" \ "countries").asOpt[String])
+    val packaging = strToList((json \ "product" \ "packaging").asOpt[String])
+    val labels = strToList((json \ "product" \ "labels").asOpt[String])
+    val categories = strToList((json \ "product" \ "categories").asOpt[String])
+    val ingredients = strToList((json \ "product" \ "ingredients_text").asOpt[String])
+    val traces = strToList((json \ "product" \ "traces").asOpt[String])
+    val additives = (json \ "product" \ "additives_tags").asOpt[List[String]]
+    val keywords = (json \ "product" \ "_keywords").asOpt[List[String]]
 
     isValid(new OpenFoodFactsProduct(barcode, name, genericName, image, imageSmall, quantity, serving, brands, stores, origins, countries, packaging, labels, categories, ingredients, traces, additives, keywords, nutrition, more))
   }
+
+  private def isValid(p: OpenFoodFactsProduct): Option[OpenFoodFactsProduct] = {
+    if (!Utils.isEmpty(p.barcode) && p.name.isDefined && p.image.isDefined) Some(p)
+    else None
+  }
+
+  private def strToList(value: Option[String]): Option[List[String]] = Utils.notEmpty(value.getOrElse("").split(",").toList.map(str => Utils.toOpt(str)).flatten)
 
   /*def getDatabase(): Future[List[OpenFoodFactsProduct]] = {
     WS.url(databaseUrl).withTimeout(1200000).get().map { response =>
@@ -142,17 +149,9 @@ object OpenFoodFacts {
     val keywords = List()
 
     isValid(new OpenFoodFactsProduct(barcode, name, genericName, image, imageSmall, quantity, serving, brands, stores, origins, countries, packaging, labels, categories, ingredients, traces, additives, keywords, nutrition, more))
-  }*/
-
-  private def isValid(p: OpenFoodFactsProduct): Option[OpenFoodFactsProduct] = {
-    if (p.barcode != "" && p.name != "" && p.image != "") Some(p)
-    else None
   }
 
   private def get(csv: Array[String], index: Int): String = if (csv.length > index) csv(index) else ""
-  private def getStr(value: JsValue): String = value.asOpt[String].getOrElse("")
-  private def getStrList(value: JsValue): List[String] = value.asOpt[List[String]].getOrElse(List())
-  private def strToList(value: String): List[String] = value.split(",").toList.map(str => str.trim()).filter(str => str != "")
 
   private object Field {
     val code = 0
@@ -255,5 +254,5 @@ object OpenFoodFacts {
     val elaidic_acid_100g = 97
     val gondoic_acid_100g = 98
     val mead_acid_100g = 99 // cel CV
-  }
+  }*/
 }

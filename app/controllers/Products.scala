@@ -1,9 +1,8 @@
 package controllers
 
-import models.Quantity
-import models.Product
-import models.Price
-import models.PriceQuantity
+import models.food.Product
+import models.food.Price
+import models.food.Quantity
 import common.OpenFoodFacts
 import common.Prixing
 import common.OpenFoodFactsProduct
@@ -79,8 +78,8 @@ object Products extends Controller with MongoController {
             Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
           } else {
             val product = productOpt.get
-            val price = if (product.price != null) product.price else new Price(new Random().nextDouble() * 3, "€")
-            val quantity = if (product.quantity.size > 0) product.quantity(0) else new Quantity(new Random().nextDouble() * 1000, "g")
+            val price = if (product.price.isDefined) product.price.get else new Price(new Random().nextDouble() * 3, "€")
+            val quantity = if (product.quantity.isDefined) product.quantity.get(0) else new Quantity(new Random().nextDouble() * 1000, "g")
             val json: JsValue = Json.toJson(product)
             val store: JsObject = Json.obj(
               "store" -> Json.obj(
