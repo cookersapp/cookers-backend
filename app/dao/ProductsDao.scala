@@ -17,6 +17,9 @@ object ProductsDao {
   private val COLLECTION_NAME = "products"
   private val COLLECTION_NAME_OPEN_FOOD_FACTS = "openFoodFactsProducts"
   private val COLLECTION_NAME_PRIXING = "prixingProducts"
+  // http://www.product-open-data.com/
+  // http://www.noteo.info/
+  // http://www.shopwise.fr/
   private def collection()(implicit db: DB): JSONCollection = db.collection[JSONCollection](COLLECTION_NAME)
   private def collectionOff()(implicit db: DB): JSONCollection = db.collection[JSONCollection](COLLECTION_NAME_OPEN_FOOD_FACTS)
   private def collectionP()(implicit db: DB): JSONCollection = db.collection[JSONCollection](COLLECTION_NAME_PRIXING)
