@@ -38,6 +38,8 @@ var Logger = (function(){
 
   function track(type, data){
     if(!data){data = {};}
+    else if(typeof data === 'string'){data = {message: data};}
+
     if(!data.url && window && window.location){data.url = window.location.href;}
     if(!data.time){data.time = Date.now()/1000;} // special mixpanel property
     if(!data.localtime){data.localtime = Date.now();}
