@@ -2,8 +2,9 @@ package services
 
 import dao.ProductsDao
 import models.food.Product
-import models.food.dataImport.PrixingProduct
+import models.food.dataImport.CookersProduct
 import models.food.dataImport.OpenFoodFactsProduct
+import models.food.dataImport.PrixingProduct
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 import play.api.libs.json._
@@ -12,12 +13,25 @@ import reactivemongo.api.DB
 
 object FoodSrv {
   def getProduct(barcode: String)(implicit db: DB): Future[Option[Product]] = {
-    val future: Future[(Option[OpenFoodFactsProduct], Option[PrixingProduct])] = for {
+    val future: Future[(Option[CookersProduct], Option[OpenFoodFactsProduct], Option[PrixingProduct])] = for {
+      cookers <- getCookersProduct(barcode)
       openfoodfacts <- getOpenFoodFactsProduct(barcode)
       prixing <- getPrixingProduct(barcode)
-    } yield (openfoodfacts, prixing)
+    } yield (cookers, openfoodfacts, prixing)
 
-    future.map { case (openfoodfacts, prixing) => Product.mergeSources(openfoodfacts, prixing) }
+    future.map { case (cookers, openfoodfacts, prixing) => Product.mergeSources(cookers, openfoodfacts, prixing) }
+  }
+
+  def getCookersProduct(barcode: String)(implicit db: DB): Future[Option[CookersProduct]] = {
+    ProductsDao.getCookers(barcode).map { opt =>
+      if (opt.isEmpty) {
+        val productOpt = CookersProduct.create(barcode)
+        ProductsDao.insertCookers(productOpt)
+        Some(productOpt)
+      } else {
+        opt
+      }
+    }
   }
 
   def openFoodFactsUrl(barcode: String): String = "http://fr.openfoodfacts.org/api/v0/produit/" + barcode + ".json"

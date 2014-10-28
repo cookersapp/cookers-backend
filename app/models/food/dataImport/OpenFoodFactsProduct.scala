@@ -1,15 +1,9 @@
 package models.food.dataImport
+
+import common.Utils
 import models.food.Quantity
 import dao.ProductsDao
-import scala.concurrent._
-import ExecutionContext.Implicits.global
 import play.api.libs.json._
-import play.api.libs.ws._
-import reactivemongo.api.DB
-import common.Utils
-import play.api.libs.functional.syntax.functionalCanBuildApplicative
-import play.api.libs.functional.syntax.toFunctionalBuilderOps
-import scala.Option.option2Iterable
 
 case class OpenFoodFactsProductNutrition(
   grade: Option[String],

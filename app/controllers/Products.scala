@@ -32,6 +32,18 @@ object Products extends Controller with MongoController {
     }
   }
 
+  def getCookers(barcode: String) = Action { request =>
+    Async {
+      FoodSrv.getCookersProduct(barcode).map { productOpt =>
+        if (productOpt.isEmpty) {
+          Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
+        } else {
+          Ok(Json.obj("status" -> 200, "data" -> productOpt.get))
+        }
+      }
+    }
+  }
+
   def getOpenFoodFacts(barcode: String) = Action { request =>
     Async {
       FoodSrv.getOpenFoodFactsProduct(barcode).map { productOpt =>

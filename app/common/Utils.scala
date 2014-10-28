@@ -23,6 +23,7 @@ object Utils {
 
   def sequence[T, U](pair: (Option[T], Option[U])): Option[(T, U)] = for (a <- pair._1; b <- pair._2) yield (a, b)
   def first[T](values: Option[T]*): Option[T] = values.find(d => d.isDefined).getOrElse(None)
+  def firstStr(values: String*): Option[String] = values.find(str => !isEmpty(str))
   def notEmpty[T](list: List[T]): Option[List[T]] = if (list.size > 0) Some(list) else None
   def asList[T](values: Option[T]*): List[T] = values.filter(str => str.isDefined).map(str => str.get).toList
   def mergeLists[T](l1: Option[List[T]], l2: Option[List[T]]): Option[List[T]] = Utils.notEmpty((l1.getOrElse(List()) ++ l2.getOrElse(List())).distinct)

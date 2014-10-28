@@ -28,8 +28,9 @@ PUT       /api/v1/users/:id/device                    controllers.Users.setUserD
 # Products
 GET       /api/v1/stores/:storeId/products/:barcode   controllers.Products.getWithStore(storeId: String, barcode: String)
 GET       /api/v1/products/:barcode                   controllers.Products.get(barcode: String)
-GET       /api/v1/products/:barcode/prixing           controllers.Products.getPrixing(barcode: String)
+GET       /api/v1/products/:barcode/cookers           controllers.Products.getCookers(barcode: String)
 GET       /api/v1/products/:barcode/openfoodfacts     controllers.Products.getOpenFoodFacts(barcode: String)
+GET       /api/v1/products/:barcode/prixing           controllers.Products.getPrixing(barcode: String)
 
 # Admin methods
 #POST      /api/v1/load-products                 	controllers.Products.loadProductsFromOpenFoodFacts
