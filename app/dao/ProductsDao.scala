@@ -37,6 +37,7 @@ object ProductsDao {
   def insertOpenFoodFacts(barcode: String, product: JsValue)(implicit db: DB): Future[LastError] = collectionOpenFoodFacts().insert(Json.obj("barcode" -> barcode, "data" -> product))
   def insertPrixing(barcode: String, product: String)(implicit db: DB): Future[LastError] = collectionPrixing().insert(Json.obj("barcode" -> barcode, "data" -> product))
 
+  def setFoodId(barcode: String, foodId: String)(implicit db: DB): Future[LastError] = collectionCookers().update(Json.obj("barcode" -> barcode), Json.obj("$set" -> Json.obj("foodId" -> foodId)))
   /*def count()(implicit db: DB): Future[Int] = {
     val bsonQuery: BSONDocument = BSONFormats.toBSON(Json.obj()).get.asInstanceOf[BSONDocument]
     collection().db.command(Count(COLLECTION_NAME, Some(bsonQuery)))

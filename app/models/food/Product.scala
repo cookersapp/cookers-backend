@@ -67,14 +67,14 @@ object Product {
   implicit val productFormat = Json.format[Product]
 
   def mergeSources(p1: Option[CookersProduct], p2: Option[OpenFoodFactsProduct], p3: Option[PrixingProduct]): Option[Product] = {
-    if (p1.isEmpty && p2.isEmpty && p3.isEmpty) None
-    else if (p1.isDefined && p2.isEmpty && p3.isEmpty) isValid(transform(p1.get))
-    else if (p1.isEmpty && p2.isDefined && p3.isEmpty) isValid(transform(p2.get))
-    else if (p1.isEmpty && p2.isEmpty && p3.isDefined) isValid(transform(p3.get))
-    else if (p1.isDefined && p2.isDefined && p3.isEmpty) isValid(merge(transform(p1.get), transform(p2.get)))
-    else if (p1.isDefined && p2.isEmpty && p3.isDefined) isValid(merge(transform(p1.get), transform(p3.get)))
-    else if (p1.isEmpty && p2.isDefined && p3.isDefined) isValid(merge(transform(p2.get), transform(p3.get)))
-    else isValid(merge(transform(p1.get), transform(p2.get), transform(p3.get)))
+    val r1 = if (p1.isDefined) Some(transform(p1.get)) else None
+    val r2 = if (p2.isDefined) Some(transform(p2.get)) else None
+    val r3 = if (p3.isDefined) Some(transform(p3.get)) else None
+    val res = List(r1, r2, r3).flatten
+
+    if (res.isEmpty) None
+    else if (res.size == 0) isValid(res(0))
+    else isValid(res.tail.foldLeft(res(0)) { case (acc, elt) => merge(acc, elt) })
   }
 
   private def isValid(p: Product): Option[Product] = {
@@ -147,8 +147,8 @@ object Product {
   }
 
   private def merge(p1: Product, p2: Product): Product = {
-    val barcode = or(p1.barcode, p2.barcode).getOrElse("")
-    val name = or(p1.name, p2.name).getOrElse("")
+    val barcode = Utils.firstStr(p1.barcode, p2.barcode).getOrElse("")
+    val name = Utils.firstStr(p1.name, p2.name).getOrElse("")
     val allImages = (p1.more.allImages ++ p2.more.allImages).distinct
     val image = Utils.head(allImages).getOrElse("")
     val foodId = Utils.firstStr(p1.foodId, p2.foodId).getOrElse("")
@@ -172,9 +172,7 @@ object Product {
     val more = new ProductMore(allImages, allQuantities, allServings, link, sources)
     new Product(barcode, name, image, foodId, quantity, serving, rating, price, brands, labels, categories, ingredients, traces, additives, keywords, infos, nutrition, more)
   }
-  private def merge(p1: Product, p2: Product, p3: Product): Product = merge(p1, merge(p2, p3))
 
-  private def or(values: String*): Option[String] = values.find(str => !Utils.isEmpty(str))
   private def distinct(list: List[Additive]): List[Additive] = {
     list.groupBy(elt => elt.name).map {
       case (_, elts) =>
