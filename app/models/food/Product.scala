@@ -1,8 +1,8 @@
 package models.food
 
 import common.Utils
-import common.OpenFoodFactsProduct
-import common.PrixingProduct
+import models.food.dataImport.OpenFoodFactsProduct
+import models.food.dataImport.PrixingProduct
 import play.api.Logger
 import play.api.libs.json._
 
@@ -32,15 +32,22 @@ object ProductInfo {
   implicit val productInfoFormat = Json.format[ProductInfo]
 }
 
+case class ProductMore(
+  allImages: List[String],
+  allQuantities: Option[List[Quantity]],
+  allServings: Option[List[Quantity]],
+  link: Option[String],
+  sources: List[String])
+object ProductMore {
+  implicit val productMore = Json.format[ProductMore]
+}
+
 case class Product(
   barcode: String,
   name: String,
   image: String,
-  altImages: Option[List[String]],
-  quantityStr: Option[String],
-  quantity: Option[List[Quantity]],
-  servingStr: Option[String],
-  serving: Option[List[Quantity]],
+  quantity: Option[Quantity],
+  serving: Option[Quantity],
   rating: Option[Rating],
   price: Option[Price],
   brands: Option[List[String]],
@@ -52,8 +59,7 @@ case class Product(
   keywords: Option[List[String]],
   infos: Option[ProductInfo],
   nutrition: Option[ProductNutrition],
-  link: Option[String],
-  sources: List[String])
+  more: ProductMore)
 
 object Product {
   implicit val productFormat = Json.format[Product]
@@ -74,13 +80,12 @@ object Product {
   def transform(product: OpenFoodFactsProduct): Option[Product] = {
     val barcode = product.barcode
     val name = Utils.first(product.name, product.genericName).getOrElse("Unknown :(")
-    val images = Utils.asList(product.image, product.imageSmall).distinct
-    val image = Utils.head(images).getOrElse("")
-    val altImages = Utils.notEmpty(Utils.tail(images).getOrElse(List()))
-    val quantity = product.quantity
-    val quantityStr = product.more.quantityStr
-    val serving = product.serving
-    val servingStr = product.more.servingStr
+    val allImages = Utils.asList(product.image, product.imageSmall).distinct
+    val image = Utils.head(allImages).getOrElse("")
+    val allQuantities = product.quantity
+    val quantity = Utils.head(allQuantities)
+    val allServings = product.serving
+    val serving = Utils.head(allServings)
     val rating = None
     val price = None
     val brands = product.brands
@@ -95,18 +100,19 @@ object Product {
     val nutrition = if (productNutrition.isEmpty) None else Some(productNutrition)
     val link = product.more.link
     val sources = List("openfoodfacts")
-    isValid(new Product(barcode, name, image, altImages, quantityStr, quantity, servingStr, serving, rating, price, brands, labels, categories, ingredients, traces, additives, keywords, infos, nutrition, link, sources))
+    val more = new ProductMore(allImages, allQuantities, allServings, link, sources)
+    isValid(new Product(barcode, name, image, quantity, serving, rating, price, brands, labels, categories, ingredients, traces, additives, keywords, infos, nutrition, more))
   }
 
   def transform(product: PrixingProduct): Option[Product] = {
     val barcode = product.barcode
     val name = product.name.getOrElse("")
-    val images = product.images.getOrElse(List())
-    val image = Utils.head(images).getOrElse("")
-    val altImages = Utils.notEmpty(Utils.tail(images).getOrElse(List()))
+    val allImages = product.images.getOrElse(List())
+    val image = Utils.head(allImages).getOrElse("")
     val quantityStr = product.infos.quantity
-    val quantity = Quantity.create(quantityStr)
-    val servingStr = None
+    val allQuantities = Quantity.create(quantityStr)
+    val quantity = Utils.head(allQuantities)
+    val allServings = None
     val serving = None
     val rating = product.rating
     val price = product.price
@@ -124,19 +130,19 @@ object Product {
     val nutrition = None
     val link = None
     val sources = List("prixing")
-    isValid(new Product(barcode, name, image, altImages, quantityStr, quantity, servingStr, serving, rating, price, brands, labels, categories, ingredients, traces, additives, keywords, infos, nutrition, link, sources))
+    val more = new ProductMore(allImages, allQuantities, allServings, link, sources)
+    isValid(new Product(barcode, name, image, quantity, serving, rating, price, brands, labels, categories, ingredients, traces, additives, keywords, infos, nutrition, more))
   }
 
   private def merge(p1: Product, p2: Product): Option[Product] = {
     val barcode = or(p1.barcode, p2.barcode).getOrElse("")
     val name = or(p1.name, p2.name).getOrElse("")
-    val images = (List(p1.image, p2.image) ++ p1.altImages.getOrElse(List()) ++ p2.altImages.getOrElse(List())).distinct
-    val image = Utils.head(images).getOrElse("")
-    val altImages = Utils.notEmpty(Utils.tail(images).getOrElse(List()))
-    val quantityStr = Utils.first(p1.quantityStr, p2.quantityStr)
-    val quantity = Quantity.create(quantityStr)
-    val servingStr = Utils.first(p1.servingStr, p2.servingStr)
-    val serving = Quantity.create(servingStr)
+    val allImages = (p1.more.allImages ++ p2.more.allImages).distinct
+    val image = Utils.head(allImages).getOrElse("")
+    val allQuantities = Utils.mergeLists(p1.more.allQuantities, p2.more.allQuantities)
+    val quantity = Utils.head(allQuantities)
+    val allServings = Utils.mergeLists(p1.more.allServings, p2.more.allServings)
+    val serving = Utils.head(allServings)
     val rating = Utils.first(p1.rating, p2.rating)
     val price = Utils.first(p1.price, p2.price)
     val brands = Utils.mergeLists(p1.brands, p2.brands)
@@ -148,9 +154,10 @@ object Product {
     val keywords = Utils.mergeLists(p1.keywords, p2.keywords)
     val infos = Utils.first(p1.infos, p2.infos)
     val nutrition = Utils.first(p1.nutrition, p2.nutrition)
-    val link = Utils.first(p1.link, p2.link)
-    val sources = p1.sources ++ p2.sources
-    isValid(new Product(barcode, name, image, altImages, quantityStr, quantity, servingStr, serving, rating, price, brands, labels, categories, ingredients, traces, additives, keywords, infos, nutrition, link, sources))
+    val link = Utils.first(p1.more.link, p2.more.link)
+    val sources = p1.more.sources ++ p2.more.sources
+    val more = new ProductMore(allImages, allQuantities, allServings, link, sources)
+    isValid(new Product(barcode, name, image, quantity, serving, rating, price, brands, labels, categories, ingredients, traces, additives, keywords, infos, nutrition, more))
   }
 
   private def isValid(p: Product): Option[Product] = {

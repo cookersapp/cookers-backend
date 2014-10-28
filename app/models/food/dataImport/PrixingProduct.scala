@@ -1,17 +1,10 @@
-package common
+package models.food.dataImport
 
-import models.food.Product
-import models.food.Quantity
-import dao.ProductsDao
-import java.util.Date
-import java.text.SimpleDateFormat
-import scala.concurrent._
-import ExecutionContext.Implicits.global
-import play.api.libs.json._
-import play.api.libs.ws._
-import reactivemongo.api.DB
+import common.Utils
 import models.food.Rating
 import models.food.Price
+import java.util.Date
+import play.api.libs.json._
 
 case class PrixingProductInfo(
   allergenes: Option[String],
@@ -67,26 +60,9 @@ case class PrixingProduct(
   infos: PrixingProductInfo,
   opinionRating: Option[Rating],
   opinions: Option[List[PrixingOpinion]])
+
 object PrixingProduct {
   implicit val prixingProductFormat = Json.format[PrixingProduct]
-}
-
-object Prixing {
-  def getProduct(barcode: String)(implicit db: DB): Future[Option[PrixingProduct]] = {
-    ProductsDao.getP(barcode).flatMap { opt =>
-      if (opt.isDefined) {
-        Future.successful(create(barcode, opt.get))
-      } else {
-        WS.url("http://www.prixing.fr/products/" + barcode).get().map { response =>
-          val productOpt = create(barcode, response.body)
-          if (productOpt.isDefined) {
-            ProductsDao.insertP(barcode, response.body)
-          }
-          productOpt
-        }
-      }
-    }
-  }
 
   def create(barcode: String, content: String): Option[PrixingProduct] = {
     val allergenes = getAllergenes(content)

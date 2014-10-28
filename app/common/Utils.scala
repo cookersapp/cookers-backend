@@ -18,6 +18,8 @@ object Utils {
 
   def head[T](list: List[T]): Option[T] = if (list.isEmpty) None else Some(list.head)
   def tail[T](list: List[T]): Option[List[T]] = if (list.isEmpty) None else Some(list.tail)
+  def head[T](list: Option[List[T]]): Option[T] = if (list.isEmpty || list.get.isEmpty) None else Some(list.get.head)
+  def tail[T](list: Option[List[T]]): Option[List[T]] = if (list.isEmpty || list.get.isEmpty) None else Some(list.get.tail)
 
   def sequence[T, U](pair: (Option[T], Option[U])): Option[(T, U)] = for (a <- pair._1; b <- pair._2) yield (a, b)
   def first[T](values: Option[T]*): Option[T] = values.find(d => d.isDefined).getOrElse(None)
