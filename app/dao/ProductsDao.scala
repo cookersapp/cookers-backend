@@ -34,8 +34,10 @@ object ProductsDao {
 
   //def insert(product: Product)(implicit db: DB): Future[LastError] = collection().insert(product)
   def insertCookers(product: CookersProduct)(implicit db: DB): Future[LastError] = collectionCookers().insert(product)
-  def insertOpenFoodFacts(barcode: String, product: JsValue)(implicit db: DB): Future[LastError] = collectionOpenFoodFacts().insert(Json.obj("barcode" -> barcode, "data" -> product))
-  def insertPrixing(barcode: String, product: String)(implicit db: DB): Future[LastError] = collectionPrixing().insert(Json.obj("barcode" -> barcode, "data" -> product))
+  def saveOpenFoodFacts(barcode: String, product: JsValue)(implicit db: DB): Future[LastError] =
+    collectionOpenFoodFacts().update(Json.obj("barcode" -> barcode), Json.obj("$set" -> Json.obj("barcode" -> barcode, "saved" -> new Date().getTime(), "data" -> product)), GetLastError(), true, false)
+  def savePrixing(barcode: String, product: String)(implicit db: DB): Future[LastError] =
+    collectionPrixing().update(Json.obj("barcode" -> barcode), Json.obj("$set" -> Json.obj("barcode" -> barcode, "saved" -> new Date().getTime(), "data" -> product)), GetLastError(), true, false)
 
   def setFoodId(barcode: String, foodId: String)(implicit db: DB): Future[LastError] = collectionCookers().update(Json.obj("barcode" -> barcode), Json.obj("$set" -> Json.obj("foodId" -> foodId)))
   /*def count()(implicit db: DB): Future[Int] = {

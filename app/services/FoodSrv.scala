@@ -43,7 +43,7 @@ object FoodSrv {
         WS.url(openFoodFactsUrl(barcode)).get().map { response =>
           val productOpt = OpenFoodFactsProduct.create(barcode, response.json)
           if (productOpt.isDefined) {
-            ProductsDao.insertOpenFoodFacts(barcode, response.json)
+            ProductsDao.saveOpenFoodFacts(barcode, response.json)
           }
           productOpt
         }
@@ -60,7 +60,7 @@ object FoodSrv {
         WS.url(prixingUrl(barcode)).get().map { response =>
           val productOpt = PrixingProduct.create(barcode, response.body)
           if (productOpt.isDefined) {
-            ProductsDao.insertPrixing(barcode, response.body)
+            ProductsDao.savePrixing(barcode, response.body)
           }
           productOpt
         }
