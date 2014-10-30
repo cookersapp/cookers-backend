@@ -1,6 +1,7 @@
 package models
 
 import java.util.Date
+import scala.util.Random
 import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 
@@ -19,7 +20,7 @@ case class User(
     new Date().getTime(),
     new Date().getTime(),
     Some(Json.obj(
-      "recipeShiftOffset" -> Math.floor(Math.random() * 10),
+      "recipeShiftOffset" -> Math.floor(new Random().nextDouble() * 10),
       "defaultServings" -> 2,
       "showPrices" -> false,
       "bigImages" -> true,

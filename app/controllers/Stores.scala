@@ -33,11 +33,22 @@ object Stores extends Controller with MongoController {
         StoresDao.insert(store).map { lastError =>
           lastError.inError match {
             case false => Ok(Json.obj("status" -> 200, "data" -> store))
-            case true => InternalServerError(Json.obj("message" -> lastError.errMsg.getOrElse("").toString()))
+            case true => InternalServerError(Json.obj("status" -> 500, "message" -> lastError.errMsg.getOrElse("").toString()))
           }
         }
       } else {
         Future.successful(BadRequest("Can't find property 'name' of Store !"))
+      }
+    }
+  }
+
+  def remove(id: String) = Action {
+    Async {
+      StoresDao.remove(id).map { lastError =>
+        lastError.inError match {
+          case false => Ok(Json.obj("status" -> 200))
+          case true => InternalServerError(Json.obj("status" -> 500, "message" -> lastError.errMsg.getOrElse("").toString()))
+        }
       }
     }
   }

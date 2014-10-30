@@ -12,14 +12,12 @@ import play.modules.reactivemongo.MongoController
 object Users extends Controller with MongoController {
   implicit val DB = db
 
-  // get all users
   def getAll = Action {
     Async {
       UsersDao.all().map { users => Ok(Json.toJson(users)) }
     }
   }
 
-  // get user with id
   def get(id: String) = Action {
     Async {
       UsersDao.findById(id).map {
@@ -43,7 +41,7 @@ object Users extends Controller with MongoController {
                   if (welcomeEmailSent.isEmpty || (welcomeEmailSent.isDefined && !welcomeEmailSent.get)) {
                     Mandrill.sendWelcomeEmail(email)
                   }
-                  // TODO : get gravatar profile and update user
+                  // TODO : get user infos with gravatar and https://www.fullcontact.com/
                   Created(Json.toJson(user))
                 }
                 case true => InternalServerError(Json.obj("message" -> lastError.errMsg.getOrElse("").toString()))

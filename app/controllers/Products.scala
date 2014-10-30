@@ -5,6 +5,8 @@ import models.food.Price
 import models.food.Quantity
 import models.food.dataImport.OpenFoodFactsProduct
 import models.food.dataImport.PrixingProduct
+import models.StoreProduct
+import dao.StoresDao
 import dao.ProductsDao
 import services.FoodSrv
 import scala.util.Random
@@ -22,23 +24,23 @@ object Products extends Controller with MongoController {
 
   def getWithStore(storeId: String, barcode: String) = Action { request =>
     Async {
-      FoodSrv.getProduct(barcode).map { productOpt =>
-        if (productOpt.isEmpty) {
-          Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
-        } else {
-          val product = productOpt.get
-          val price = if (product.price.isDefined) product.price.get else new Price(new Random().nextDouble() * 3, "€")
-          val quantity = if (product.quantity.isDefined) product.quantity.get else new Quantity(new Random().nextDouble() * 1000, "g")
-          val json: JsValue = Json.toJson(product)
-          val store: JsObject = Json.obj(
-            "store" -> Json.obj(
-              "id" -> storeId,
-              "price" -> price,
-              "genericPrice" -> price.forQuantity(quantity).inGeneric(quantity.unit)))
+      val future: Future[(Option[Product], Option[StoreProduct])] = for {
+        productOpt <- FoodSrv.getProduct(barcode)
+        storeProductOpt <- StoresDao.findProduct(storeId, barcode)
+      } yield (productOpt, storeProductOpt)
 
-          val addStore = (__).json.update(__.read[JsObject].map { originalData => originalData ++ store })
-          Ok(Json.obj("status" -> 200, "data" -> json.transform(addStore).get))
-        }
+      future.map {
+        case (productOpt, storeProductOpt) =>
+          if (productOpt.isEmpty) {
+            Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
+          } else {
+            val product = productOpt.get
+            val storeProduct = storeProductOpt.getOrElse(StoreProduct.mockFor(product, storeId))
+
+            val addStore = (__).json.update(__.read[JsObject].map { originalData => originalData ++ Json.obj("store" -> storeProduct) })
+            val data = Json.toJson(product).transform(addStore).get
+            Ok(Json.obj("status" -> 200, "data" -> data))
+          }
       }
     }
   }
@@ -60,7 +62,7 @@ object Products extends Controller with MongoController {
       ProductsDao.setFoodId(barcode, foodId).map { lastError =>
         lastError.inError match {
           case false => Ok
-          case true => InternalServerError(Json.obj("message" -> lastError.errMsg.getOrElse("").toString()))
+          case true => InternalServerError(Json.obj("status" -> 500, "message" -> lastError.errMsg.getOrElse("").toString()))
         }
       }
     }

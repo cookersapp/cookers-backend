@@ -74,7 +74,7 @@ object Quantity {
         case l(value, unit, more) => Some(new Quantity(toValue(value), "l", toDetails(more)))
         case oz(value, unit, more) => Some(new Quantity(toValue(value), "oz", toDetails(more)))
         case pz(value, unit, more) => Some(new Quantity(toValue(value), "pz", toDetails(more)))
-        case unit(value, unit, more) => Some(new Quantity(toValue(value), "", toDetails(more)))
+        case unit(value, unit, more) => Some(new Quantity(toValue(value), "unit", toDetails(more)))
         case _ => None
       }).filter(q => q.isDefined).map(q => q.get)
       if (list.size > 0) Some(list) else None

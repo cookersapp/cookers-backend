@@ -22,6 +22,7 @@ object ProductsDao {
   // http://www.product-open-data.com/
   // http://www.noteo.info/
   // http://www.shopwise.fr/
+  // http://www.nutritionix.com/api
   //private def collection()(implicit db: DB): JSONCollection = db.collection[JSONCollection](COLLECTION_NAME)
   private def collectionCookers()(implicit db: DB): JSONCollection = db.collection[JSONCollection](COLLECTION_NAME_COOKERS)
   private def collectionOpenFoodFacts()(implicit db: DB): JSONCollection = db.collection[JSONCollection](COLLECTION_NAME_OPEN_FOOD_FACTS)
