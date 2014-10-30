@@ -1,30 +1,26 @@
 package controllers
 
-import scala.concurrent.Future
-
 import common.Mandrill
 import common.Validator
-import dao.UsersDao
 import models.User
-import models.User.userFormat
-import play.api.libs.json.Json
-import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import play.api.mvc.Action
-import play.api.mvc.Controller
+import dao.UsersDao
+import scala.concurrent.Future
+import play.api.libs.json._
+import play.api.mvc._
 import play.modules.reactivemongo.MongoController
 
 object Users extends Controller with MongoController {
   implicit val DB = db
 
   // get all users
-  def getAll = Action { implicit request =>
+  def getAll = Action {
     Async {
       UsersDao.all().map { users => Ok(Json.toJson(users)) }
     }
   }
 
   // get user with id
-  def get(id: String) = Action { request =>
+  def get(id: String) = Action {
     Async {
       UsersDao.findById(id).map {
         case Some(user) => Ok(Json.toJson(user))
@@ -34,7 +30,7 @@ object Users extends Controller with MongoController {
   }
 
   // find user with mail and create if it does not exists
-  def findOrCreate(email: String, welcomeEmailSent: Option[Boolean]) = Action { request =>
+  def findOrCreate(email: String, welcomeEmailSent: Option[Boolean]) = Action {
     Async {
       if (Validator.isEmail(email)) {
         UsersDao.findByEmail(email).flatMap {

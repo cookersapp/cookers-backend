@@ -26,6 +26,9 @@ PUT       /api/v1/users/:id/settings/:setting         controllers.Users.setUserS
 PUT       /api/v1/users/:id/device                    controllers.Users.setUserDevice(id: String)
 
 # Products
+GET       /api/v1/stores                              controllers.Stores.getAll
+POST      /api/v1/stores                              controllers.Stores.create
+GET       /api/v1/stores/:storeId                     controllers.Stores.get(storeId: String)
 GET       /api/v1/stores/:storeId/products/:barcode   controllers.Products.getWithStore(storeId: String, barcode: String)
 PUT       /api/v1/products/:barcode                   controllers.Products.setFoodId(barcode: String, foodId: String)
 GET       /api/v1/products/:barcode                   controllers.Products.get(barcode: String)
@@ -33,6 +36,7 @@ GET       /api/v1/products/:barcode                   controllers.Products.get(b
 GET       /api/v1/products/:barcode/cookers           controllers.Products.getCookers(barcode: String)
 GET       /api/v1/products/:barcode/openfoodfacts     controllers.Products.getOpenFoodFacts(barcode: String)
 GET       /api/v1/products/:barcode/prixing           controllers.Products.getPrixing(barcode: String)
+
 
 # Admin methods
 #POST      /api/v1/load-products                 	controllers.Products.loadProductsFromOpenFoodFacts

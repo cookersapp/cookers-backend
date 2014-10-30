@@ -1,8 +1,7 @@
 package models
 
 import java.util.Date
-import play.api.libs.json.Json
-import play.api.libs.json.JsValue
+import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 
 case class User(
@@ -31,7 +30,5 @@ case class User(
 }
 
 object User {
-  import play.api.libs.json.Json
-
   implicit val userFormat = Json.format[User]
 }

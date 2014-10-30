@@ -8,8 +8,7 @@ import dao.MalformedEventsDao
 import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.Logger
-import play.api.mvc.Action
-import play.api.mvc.Controller
+import play.api.mvc._
 import play.api.libs.json._
 import play.modules.reactivemongo.MongoController
 import reactivemongo.core.commands.LastError
