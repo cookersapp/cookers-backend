@@ -5,19 +5,18 @@
 # Home page
 GET       /                                         controllers.Application.index(any = "none")
 
-# Tracking system
+# Cookers API
+
 GET       /api/v1/track/events                      controllers.Tracking.getAll(name: Option[String])
 GET       /api/v1/track/events/malformed            controllers.Tracking.getAllMalformed
 GET       /api/v1/track/events/:id                  controllers.Tracking.get(id: String)
 POST      /api/v1/track/event                       controllers.Tracking.add
 POST      /api/v1/track/events                      controllers.Tracking.addAll
 
-# Stats for dashboard
 GET       /api/v1/stats/week                        controllers.Stats.weekData(week: Option[Int])
 GET       /api/v1/stats/users/activity              controllers.Stats.userActivity(interval: Option[String])
 GET       /api/v1/stats/recipes/week/:week          controllers.Stats.recipeStats(week: Int, graph: Option[String])
 
-# User management
 GET       /api/v1/users                             controllers.Users.getAll
 GET       /api/v1/users/find                        controllers.Users.findOrCreate(email: String, welcomeEmailSent: Option[Boolean])
 GET       /api/v1/users/:id                         controllers.Users.get(id: String)
@@ -25,7 +24,6 @@ GET       /api/v1/users/:id/events                  controllers.Tracking.getForU
 PUT       /api/v1/users/:id/settings/:setting       controllers.Users.setUserSetting(id: String, setting: String)
 PUT       /api/v1/users/:id/device                  controllers.Users.setUserDevice(id: String)
 
-# Products
 GET       /api/v1/stores                            controllers.Stores.getAll
 POST      /api/v1/stores                            controllers.Stores.create
 GET       /api/v1/stores/:id                        controllers.Stores.get(id: String)
@@ -33,27 +31,22 @@ DELETE    /api/v1/stores/:id                        controllers.Stores.remove(id
 GET       /api/v1/stores/:id/products/:barcode      controllers.Products.getWithStore(id: String, barcode: String)
 PUT       /api/v1/products/:barcode                 controllers.Products.setFoodId(barcode: String, foodId: String)
 GET       /api/v1/products/:barcode                 controllers.Products.get(barcode: String)
-
 GET       /api/v1/products/:barcode/cookers         controllers.Products.getCookers(barcode: String)
 GET       /api/v1/products/:barcode/openfoodfacts   controllers.Products.getOpenFoodFacts(barcode: String)
 GET       /api/v1/products/:barcode/prixing         controllers.Products.getPrixing(barcode: String)
 
-
 # Admin methods
-#POST      /api/v1/load-products                 	controllers.Products.loadProductsFromOpenFoodFacts
 POST      /api/v1/app-feedback                      controllers.Application.sendFeedback
 DELETE    /api/v1/reset-database                    controllers.Application.resetDatabase
-
 GET       /api/export                               controllers.Application.export(exportUsers:Option[Boolean], exportEvents:Option[Boolean], exportMalformedEvents:Option[Boolean])
 POST      /api/importAndMerge                       controllers.Application.importAndMerge
 POST      /api/clearAndImport                       controllers.Application.clearAndImport
 
-# Play routes serving JSON to AngularJS start with /api
-GET       /api/celebrities                          controllers.Celebrities.index
-POST      /api/celebrities/new                      controllers.Celebrities.create
-GET       /api/celebrities/:id                      controllers.Celebrities.show(id: String)
-POST      /api/celebrities/:id                      controllers.Celebrities.update(id: String)
-DELETE    /api/celebrities/:id                      controllers.Celebrities.delete(id: String)
+# Catch all API calls
+GET       /api/*all                                 controllers.Application.apiNotFound(verb = "GET", all: String)
+PUT       /api/*all                                 controllers.Application.apiNotFound(verb = "PUT", all: String)
+POST      /api/*all                                 controllers.Application.apiNotFound(verb = "POST", all: String)
+DELETE    /api/*all                                 controllers.Application.apiNotFound(verb = "DELETE", all: String)
 
 # Allow cross-origin
 OPTIONS   /*all                                     controllers.Application.corsPreflight(all: String)

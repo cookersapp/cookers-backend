@@ -20,6 +20,10 @@ object Application extends Controller with MongoController {
     Ok(views.html.index(Utils.getEnv()))
   }
 
+  def apiNotFound(verb: String, all: String) = Action {
+    NotFound(Json.obj("status" -> 404, "message" -> (verb + " '/api/" + all + "' endpoint does not exist !")))
+  }
+
   def sendFeedback = Action(parse.json) { request =>
     val from = (request.body \ "from").as[String]
     val content = (request.body \ "content").as[String]
