@@ -1,5 +1,6 @@
 package controllers
 
+import common.ApiUtils
 import models.Store
 import dao.StoresDao
 import scala.concurrent.Future
@@ -12,15 +13,15 @@ object Stores extends Controller with MongoController {
 
   def getAll = Action {
     Async {
-      StoresDao.all().map { stores => Ok(Json.obj("status" -> 200, "data" -> stores)) }
+      StoresDao.all().map { stores => Ok(ApiUtils.Ok(Json.toJson(stores))) }
     }
   }
 
   def get(id: String) = Action {
     Async {
       StoresDao.findById(id).map {
-        case Some(store) => Ok(Json.obj("status" -> 200, "data" -> store))
-        case None => NotFound(Json.obj("status" -> 404, "message" -> "Store not found !"))
+        case Some(store) => Ok(ApiUtils.Ok(store))
+        case None => Ok(ApiUtils.NotFound("Store not found !"))
       }
     }
   }
@@ -32,12 +33,12 @@ object Stores extends Controller with MongoController {
         val store = new Store(name.get)
         StoresDao.insert(store).map { lastError =>
           lastError.inError match {
-            case false => Ok(Json.obj("status" -> 200, "data" -> store))
-            case true => InternalServerError(Json.obj("status" -> 500, "message" -> lastError.errMsg.getOrElse("").toString()))
+            case false => Ok(ApiUtils.Ok(store))
+            case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
           }
         }
       } else {
-        Future.successful(BadRequest("Can't find property 'name' of Store !"))
+        Future.successful(Ok(ApiUtils.BadRequest("Can't find property 'name' of Store !")))
       }
     }
   }
@@ -46,8 +47,8 @@ object Stores extends Controller with MongoController {
     Async {
       StoresDao.remove(id).map { lastError =>
         lastError.inError match {
-          case false => Ok(Json.obj("status" -> 200))
-          case true => InternalServerError(Json.obj("status" -> 500, "message" -> lastError.errMsg.getOrElse("").toString()))
+          case false => Ok(ApiUtils.Ok)
+          case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
         }
       }
     }

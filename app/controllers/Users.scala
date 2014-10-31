@@ -2,6 +2,7 @@ package controllers
 
 import common.Mandrill
 import common.Validator
+import common.ApiUtils
 import models.User
 import dao.UsersDao
 import scala.concurrent.Future
@@ -14,15 +15,15 @@ object Users extends Controller with MongoController {
 
   def getAll = Action {
     Async {
-      UsersDao.all().map { users => Ok(Json.toJson(users)) }
+      UsersDao.all().map { users => Ok(ApiUtils.Ok(Json.toJson(users))) }
     }
   }
 
   def get(id: String) = Action {
     Async {
       UsersDao.findById(id).map {
-        case Some(user) => Ok(Json.toJson(user))
-        case None => NotFound(Json.obj("message" -> "User not found !"))
+        case Some(user) => Ok(ApiUtils.Ok(user))
+        case None => Ok(ApiUtils.NotFound("User not found !"))
       }
     }
   }
@@ -32,6 +33,7 @@ object Users extends Controller with MongoController {
     Async {
       if (Validator.isEmail(email)) {
         UsersDao.findByEmail(email).flatMap {
+          // TODO : can't migrate now because app version 1.1.0 expects result as User :(
           case Some(user) => Future.successful(Ok(Json.toJson(user)))
           case None => {
             val user = new User(email)
@@ -41,16 +43,17 @@ object Users extends Controller with MongoController {
                   if (welcomeEmailSent.isEmpty || (welcomeEmailSent.isDefined && !welcomeEmailSent.get)) {
                     Mandrill.sendWelcomeEmail(email)
                   }
+                  // TODO : can't migrate now because app version 1.1.0 expects result as User :(
                   // TODO : get user infos with gravatar and https://www.fullcontact.com/
-                  Created(Json.toJson(user))
+                  Ok(Json.toJson(user))
                 }
-                case true => InternalServerError(Json.obj("message" -> lastError.errMsg.getOrElse("").toString()))
+                case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
               }
             }
           }
         }
       } else {
-        Future.successful(BadRequest("invalid email"))
+        Future.successful(Ok(ApiUtils.BadRequest("invalid email")))
       }
     }
   }
@@ -62,8 +65,8 @@ object Users extends Controller with MongoController {
       val settingValue = request.body \ "value"
       UsersDao.updateSetting(id, setting, settingValue).map { lastError =>
         lastError.inError match {
-          case false => Ok
-          case true => InternalServerError(Json.obj("message" -> lastError.errMsg.getOrElse("").toString()))
+          case false => Ok(ApiUtils.Ok)
+          case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
         }
       }
     }
@@ -75,8 +78,8 @@ object Users extends Controller with MongoController {
       val device = request.body
       UsersDao.addDevice(id, device).map { lastError =>
         lastError.inError match {
-          case false => Ok
-          case true => InternalServerError(Json.obj("message" -> lastError.errMsg.getOrElse("").toString()))
+          case false => Ok(ApiUtils.Ok)
+          case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
         }
       }
     }

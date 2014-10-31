@@ -2,6 +2,7 @@ package controllers
 
 import common.Mandrill
 import common.Utils
+import common.ApiUtils
 import dao.UsersDao
 import dao.EventsDao
 import dao.MalformedEventsDao
@@ -21,7 +22,7 @@ object Application extends Controller with MongoController {
   }
 
   def apiNotFound(verb: String, all: String) = Action {
-    NotFound(Json.obj("status" -> 404, "message" -> (verb + " '/api/" + all + "' endpoint does not exist !")))
+    NotFound(ApiUtils.NotFound(verb + " '/api/" + all + "' endpoint does not exist !"))
   }
 
   def sendFeedback = Action(parse.json) { request =>
@@ -30,6 +31,7 @@ object Application extends Controller with MongoController {
     val source = (request.body \ "source").as[String]
     Async {
       Mandrill.sendFeedback(from, content, source).map { status =>
+        // TODO : can't migrate now because app version 1.1.0 expects result as String :(
         Ok(status)
       }
     }
@@ -37,12 +39,12 @@ object Application extends Controller with MongoController {
 
   def resetDatabase = Action {
     if (Utils.isProd()) {
-      Forbidden(Json.obj("message" -> "Illegal operation in Prod !"))
+      Ok(ApiUtils.Forbidden("Illegal operation in Prod !"))
     } else {
       UsersDao.drop()
       EventsDao.drop()
       MalformedEventsDao.drop()
-      Ok(Json.obj("message" -> "success"))
+      Ok(ApiUtils.Ok("success"))
     }
   }
 
@@ -56,28 +58,16 @@ object Application extends Controller with MongoController {
 
       results.map {
         case (users, events, malformedEvents) =>
-          Ok(Json.obj("users" -> users, "events" -> events, "malformedEvents" -> malformedEvents))
+          Ok(ApiUtils.Ok(Json.obj("users" -> users, "events" -> events, "malformedEvents" -> malformedEvents)))
       }
     }
-    /*val json = Json.obj(
-      "_id" -> Json.obj(),
-      "a" -> "a",
-      "b" -> Json.obj(
-        "ba" -> "ba",
-        "$bb" -> "bb"),
-      "c" -> Json.arr(
-        Json.obj(),
-        Json.obj(
-          "$ca" -> "ca",
-          "cb" -> "cb")))
-    Ok(json.delete((__ \ "_id")))*/
   }
 
   // Accept json of 10 Mo
   def importAndMerge = Action(parse.json(maxLength = 1024 * 1024 * 10)) { request =>
     Async {
       if (Utils.isProd()) {
-        Future.successful(Forbidden(Json.obj("message" -> "Illegal operation in Prod !")))
+        Future.successful(Ok(ApiUtils.Forbidden("Illegal operation in Prod !")))
       } else {
         val emptyList: List[JsValue] = List()
         val users = (request.body \ "users").asOpt[List[JsValue]].getOrElse(null)
@@ -92,7 +82,7 @@ object Application extends Controller with MongoController {
 
         results.map {
           case (usersErrors, eventsErrors, malformedEventsErrors) => {
-            Ok(Json.obj("message" -> "success"))
+            Ok(ApiUtils.Ok("success"))
           }
         }
       }
@@ -103,7 +93,7 @@ object Application extends Controller with MongoController {
   def clearAndImport = Action(parse.json(maxLength = 1024 * 1024 * 10)) { request =>
     Async {
       if (Utils.isProd()) {
-        Future.successful(Forbidden(Json.obj("message" -> "Illegal operation in Prod !")))
+        Future.successful(Ok(ApiUtils.Forbidden("Illegal operation in Prod !")))
       } else {
         val emptyList: List[JsValue] = List()
         val users = (request.body \ "users").asOpt[List[JsValue]].getOrElse(null)
@@ -126,7 +116,7 @@ object Application extends Controller with MongoController {
 
             results.map {
               case (usersErrors, eventsErrors, malformedEventsErrors) => {
-                Ok(Json.obj("message" -> "success"))
+                Ok(ApiUtils.Ok("success"))
               }
             }
           }

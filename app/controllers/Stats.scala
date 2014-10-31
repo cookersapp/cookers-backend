@@ -1,6 +1,7 @@
 package controllers
 
 import common.DateUtils
+import common.ApiUtils
 import dao.EventsDao
 import dao.MalformedEventsDao
 import dao.UsersDao
@@ -10,9 +11,8 @@ import models.stats.UserActivity
 import services.DashboardSrv
 import scala.Array.canBuildFrom
 import scala.concurrent._
-import play.api.libs.json.Json
-import play.api.mvc.Action
-import play.api.mvc.Controller
+import play.api.libs.json._
+import play.api.mvc._
 import play.api.Logger
 import play.modules.reactivemongo.MongoController
 
@@ -42,7 +42,7 @@ object Stats extends Controller with MongoController {
           val newUsers = totalUsers - beforeUsers
           val recurringUsers = activeUsers - newUsers
           val inactiveUsers = beforeUsers - recurringUsers
-          Ok(Json.obj(
+          Ok(ApiUtils.Ok(Json.obj(
             "period" -> Json.obj(
               "from" -> from,
               "to" -> to),
@@ -60,7 +60,7 @@ object Stats extends Controller with MongoController {
             "items" -> Json.obj(
               "bought" -> bought),
             "events" -> Json.obj(
-              "sent" -> all)))
+              "sent" -> all))))
       }
     }
   }
@@ -68,9 +68,8 @@ object Stats extends Controller with MongoController {
   // interval could be 'day' or 'week'
   def userActivity(interval: Option[String]) = Action {
     Async {
-      val result: Future[List[UserActivity]] = DashboardSrv.getUserActivity(interval.getOrElse("week"))
-      result.map { activity =>
-        Ok(Json.obj("activity" -> activity))
+      DashboardSrv.getUserActivity(interval.getOrElse("week")).map { activity =>
+        Ok(ApiUtils.Ok(activity))
       }
     }
   }
@@ -84,13 +83,13 @@ object Stats extends Controller with MongoController {
         if ("days".equals(graph.getOrElse("recipes"))) {
           val groupedByDay = events.groupBy(event => DateUtils.dayOfWeek(event.time).toString)
           val groupedByDayEvent = groupedByDay.map(e => (e._1, e._2.groupBy(event => event.name)))
-          val stats2 = groupedByDayEvent.map(recipe => (recipe._1, recipe._2.map(event => (event._1, event._2.size))))
-          Ok(Json.obj("stats" -> stats2))
+          val stats = groupedByDayEvent.map(recipe => (recipe._1, recipe._2.map(event => (event._1, event._2.size))))
+          Ok(ApiUtils.Ok(stats))
         } else {
           val groupedByRecipe = events.groupBy(event => event.recipe)
           val groupedByRecipeEvent = groupedByRecipe.map(e => (e._1, e._2.groupBy(event => event.name)))
           val stats = groupedByRecipeEvent.map(recipe => (recipe._1, recipe._2.map(event => (event._1, event._2.size))))
-          Ok(Json.obj("stats" -> stats))
+          Ok(ApiUtils.Ok(stats))
         }
       }
     }

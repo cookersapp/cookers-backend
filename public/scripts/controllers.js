@@ -502,7 +502,11 @@ angular.module('app')
       },
       loadDb: {
         fn: function(){
-          return $http.get('http://cookers.herokuapp.com/api/export').then(function(result){return result.data;});
+          return $http.get('http://cookers.herokuapp.com/api/export').then(function(result){
+            if(result && result.data && result.data.data){
+              return result.data.data;
+            }
+          });
         },
         model: null,
         status: {

@@ -1,10 +1,9 @@
 package controllers
 
+import common.ApiUtils
 import models.food.Product
 import models.food.Price
 import models.food.Quantity
-import models.food.dataImport.OpenFoodFactsProduct
-import models.food.dataImport.PrixingProduct
 import models.StoreProduct
 import dao.StoresDao
 import dao.ProductsDao
@@ -13,10 +12,8 @@ import scala.util.Random
 import scala.concurrent.Future
 import play.api.Logger
 import play.api.libs.json._
-import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.ws._
-import play.api.mvc.Action
-import play.api.mvc.Controller
+import play.api.mvc._
 import play.modules.reactivemongo.MongoController
 
 object Products extends Controller with MongoController {
@@ -32,14 +29,14 @@ object Products extends Controller with MongoController {
       future.map {
         case (productOpt, storeProductOpt) =>
           if (productOpt.isEmpty) {
-            Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
+            Ok(ApiUtils.NotFound("Product not found !"))
           } else {
             val product = productOpt.get
             val storeProduct = storeProductOpt.getOrElse(StoreProduct.mockFor(product, storeId))
 
             val addStore = (__).json.update(__.read[JsObject].map { originalData => originalData ++ Json.obj("store" -> storeProduct) })
             val data = Json.toJson(product).transform(addStore).get
-            Ok(Json.obj("status" -> 200, "data" -> data))
+            Ok(ApiUtils.Ok(data))
           }
       }
     }
@@ -49,9 +46,9 @@ object Products extends Controller with MongoController {
     Async {
       FoodSrv.getProduct(barcode).map { productOpt =>
         if (productOpt.isEmpty) {
-          Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
+          Ok(ApiUtils.NotFound("Product not found !"))
         } else {
-          Ok(Json.obj("status" -> 200, "data" -> productOpt.get))
+          Ok(ApiUtils.Ok(productOpt.get))
         }
       }
     }
@@ -61,8 +58,8 @@ object Products extends Controller with MongoController {
     Async {
       ProductsDao.setFoodId(barcode, foodId).map { lastError =>
         lastError.inError match {
-          case false => Ok
-          case true => InternalServerError(Json.obj("status" -> 500, "message" -> lastError.errMsg.getOrElse("").toString()))
+          case false => Ok(ApiUtils.Ok)
+          case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
         }
       }
     }
@@ -72,9 +69,9 @@ object Products extends Controller with MongoController {
     Async {
       FoodSrv.getCookersProduct(barcode).map { productOpt =>
         if (productOpt.isEmpty) {
-          Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
+          Ok(ApiUtils.NotFound("Product not found !"))
         } else {
-          Ok(Json.obj("status" -> 200, "data" -> productOpt.get))
+          Ok(ApiUtils.Ok(productOpt.get))
         }
       }
     }
@@ -84,9 +81,9 @@ object Products extends Controller with MongoController {
     Async {
       FoodSrv.getOpenFoodFactsProduct(barcode).map { productOpt =>
         if (productOpt.isEmpty) {
-          Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
+          Ok(ApiUtils.NotFound("Product not found !"))
         } else {
-          Ok(Json.obj("status" -> 200, "data" -> productOpt.get))
+          Ok(ApiUtils.Ok(productOpt.get))
         }
       }
     }
@@ -96,9 +93,9 @@ object Products extends Controller with MongoController {
     Async {
       FoodSrv.getPrixingProduct(barcode).map { productOpt =>
         if (productOpt.isEmpty) {
-          Ok(Json.obj("status" -> 404, "message" -> "Product not found !"))
+          Ok(ApiUtils.NotFound("Product not found !"))
         } else {
-          Ok(Json.obj("status" -> 200, "data" -> productOpt.get))
+          Ok(ApiUtils.Ok(productOpt.get))
         }
       }
     }

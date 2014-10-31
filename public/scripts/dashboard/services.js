@@ -13,11 +13,11 @@ angular.module('app')
 
   function get(id, backgroundUpdate){
     function update(){
-      promiseCache[id] = $http.get('/api/v1/users/'+id).then(function(result){
+      promiseCache[id] = _get('/api/v1/users/'+id).then(function(user){
         if(cache[id]){
-          angular.copy(result.data, cache[id]);
+          angular.copy(user, cache[id]);
         } else {
-          cache[id] = angular.copy(result.data);
+          cache[id] = angular.copy(user);
           cacheArr.push(cache[id]);
         }
         delete promiseCache[id];
@@ -37,8 +37,8 @@ angular.module('app')
   }
 
   function getAll(){
-    var getAllPromise = $http.get('/api/v1/users').then(function(result){
-      angular.copy(result.data, cacheArr);
+    var getAllPromise = _get('/api/v1/users').then(function(users){
+      angular.copy(users, cacheArr);
       angular.copy(CollectionUtils.toMap(cacheArr), cache);
       return cacheArr;
     });
@@ -50,6 +50,14 @@ angular.module('app')
     }
   }
 
+  function _get(url){
+    return $http.get(url).then(function(res){
+      if(res && res.data && res.data.data){
+        return res.data.data;
+      }
+    });
+  }
+
   return service;
 })
 
@@ -57,47 +65,19 @@ angular.module('app')
 .factory('EventsSrv', function($http){
   'use strict';
   var service = {
-    get: get,
-    getAll: getAll,
-    getForUser: getForUser,
-    getAllExceptions: getAllExceptions,
-    getAllErrors: getAllErrors,
-    getAllMalformed: getAllMalformed
+    get               : function(id)  { return _get('/api/v1/track/events/'+id);            },
+    getAll            : function()    { return _get('/api/v1/track/events');                },
+    getForUser        : function(id)  { return _get('/api/v1/users/'+id+'/events');         },
+    getAllExceptions  : function()    { return _get('/api/v1/track/events?name=exception'); },
+    getAllErrors      : function()    { return _get('/api/v1/track/events?name=error');     },
+    getAllMalformed   : function()    { return _get('/api/v1/track/events/malformed');      }
   };
 
-  function get(id){
-    return $http.get('/api/v1/track/events/'+id).then(function(result){
-      return result.data;
-    });
-  }
-
-  function getAll(){
-    return $http.get('/api/v1/track/events').then(function(result){
-      return result.data;
-    });
-  }
-
-  function getForUser(id){
-    return $http.get('/api/v1/users/'+id+'/events').then(function(result){
-      return result.data;
-    });
-  }
-
-  function getAllExceptions(){
-    return $http.get('/api/v1/track/events?name=exception').then(function(result){
-      return result.data;
-    });
-  }
-
-  function getAllErrors(){
-    return $http.get('/api/v1/track/events?name=error').then(function(result){
-      return result.data;
-    });
-  }
-
-  function getAllMalformed(){
-    return $http.get('/api/v1/track/events/malformed').then(function(result){
-      return result.data;
+  function _get(url){
+    return $http.get(url).then(function(res){
+      if(res && res.data && res.data.data){
+        return res.data.data;
+      }
     });
   }
 
@@ -108,26 +88,16 @@ angular.module('app')
 .factory('StatsSrv', function($http){
   'use strict';
   var service = {
-    getWeekData: getWeekData,
-    getUserActivity: getUserActivity,
-    getRecipesStats: getRecipesStats
+    getWeekData     : function()            { return _get('/api/v1/stats/week');                                                          },
+    getUserActivity : function(interval)    { return _get('/api/v1/stats/users/activity?interval='+(interval ? interval : 'week'));       },
+    getRecipesStats : function(type, week)  { return _get('/api/v1/stats/recipes/week/'+(week ? week : moment().week())+'?graph='+type);  }
   };
 
-  function getWeekData(){
-    return $http.get('/api/v1/stats/week').then(function(result){
-      return result.data;
-    });
-  }
-
-  function getUserActivity(interval){
-    return $http.get('/api/v1/stats/users/activity?interval='+(interval ? interval : 'week')).then(function(res){
-      return res.data.activity;
-    });
-  }
-
-  function getRecipesStats(type, week){
-    return $http.get('/api/v1/stats/recipes/week/'+(week ? week : moment().week())+'?graph='+type).then(function(res){
-      return res.data.stats;
+  function _get(url){
+    return $http.get(url).then(function(res){
+      if(res && res.data && res.data.data){
+        return res.data.data;
+      }
     });
   }
 
