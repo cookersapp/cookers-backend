@@ -10,11 +10,12 @@ object Utils {
   def getEnv(): String = Play.current.configuration.getString("application.env").getOrElse("undefined")
   def isProd(): Boolean = "prod".equals(getEnv())
 
-  def isEmpty(json: JsValue): Boolean = "null".equals(Json.stringify(json)) || "{}".equals(Json.stringify(json)) || "[]".equals(Json.stringify(json))
   def isEmpty(str: String): Boolean = str == null || str.trim().isEmpty()
   def trim(str: String): String = if (str != null) str.trim() else null
   def toDate(date: String, format: String): Date = new SimpleDateFormat(format).parse(trim(date))
   def toOpt(str: String): Option[String] = if (isEmpty(str)) None else Some(trim(str))
+  def isEmpty(json: JsValue): Boolean = "null".equals(Json.stringify(json)) || "{}".equals(Json.stringify(json)) || "[]".equals(Json.stringify(json))
+  def toOpt(json: JsValue): Option[JsValue] = if (isEmpty(json)) None else Some(json)
 
   def head[T](list: List[T]): Option[T] = if (list.isEmpty) None else Some(list.head)
   def tail[T](list: List[T]): Option[List[T]] = if (list.isEmpty) None else Some(list.tail)

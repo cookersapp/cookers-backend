@@ -17,8 +17,8 @@ object Additive {
 
 case class ProductNutrition(
   grade: Option[String],
-  levels: JsValue) {
-  def isEmpty: Boolean = grade.isEmpty && Utils.isEmpty(levels)
+  levels: Option[JsValue]) {
+  def isEmpty: Boolean = grade.isEmpty && levels.isEmpty
 }
 object ProductNutrition {
   implicit val productNutritionFormat = Json.format[ProductNutrition]

@@ -19,7 +19,31 @@ import play.modules.reactivemongo.MongoController
 object Products extends Controller with MongoController {
   implicit val DB = db
 
-  def getWithStore(storeId: String, barcode: String) = Action { request =>
+  def getAll = Action {
+    Async {
+      FoodSrv.getAllProducts().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
+    }
+  }
+
+  def getAllCookers = Action {
+    Async {
+      FoodSrv.getAllCookersProduct().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
+    }
+  }
+
+  def getAllOpenFoodFacts = Action {
+    Async {
+      FoodSrv.getAllOpenFoodFactsProduct().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
+    }
+  }
+
+  def getAllPrixing = Action {
+    Async {
+      FoodSrv.getAllPrixingProduct().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
+    }
+  }
+
+  def getWithStore(storeId: String, barcode: String) = Action {
     Async {
       val future: Future[(Option[Product], Option[StoreProduct])] = for {
         productOpt <- FoodSrv.getProduct(barcode)
@@ -42,7 +66,7 @@ object Products extends Controller with MongoController {
     }
   }
 
-  def get(barcode: String) = Action { request =>
+  def get(barcode: String) = Action {
     Async {
       FoodSrv.getProduct(barcode).map { productOpt =>
         if (productOpt.isEmpty) {
@@ -65,7 +89,7 @@ object Products extends Controller with MongoController {
     }
   }
 
-  def getCookers(barcode: String) = Action { request =>
+  def getCookers(barcode: String) = Action {
     Async {
       FoodSrv.getCookersProduct(barcode).map { productOpt =>
         if (productOpt.isEmpty) {
@@ -77,7 +101,7 @@ object Products extends Controller with MongoController {
     }
   }
 
-  def getOpenFoodFacts(barcode: String) = Action { request =>
+  def getOpenFoodFacts(barcode: String) = Action {
     Async {
       FoodSrv.getOpenFoodFactsProduct(barcode).map { productOpt =>
         if (productOpt.isEmpty) {
@@ -89,7 +113,7 @@ object Products extends Controller with MongoController {
     }
   }
 
-  def getPrixing(barcode: String) = Action { request =>
+  def getPrixing(barcode: String) = Action {
     Async {
       FoodSrv.getPrixingProduct(barcode).map { productOpt =>
         if (productOpt.isEmpty) {

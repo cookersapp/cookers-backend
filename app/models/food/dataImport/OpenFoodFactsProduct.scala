@@ -7,8 +7,8 @@ import play.api.libs.json._
 
 case class OpenFoodFactsProductNutrition(
   grade: Option[String],
-  levels: JsValue,
-  nutriments: JsValue)
+  levels: Option[JsValue],
+  nutriments: Option[JsValue])
 object OpenFoodFactsProductNutrition {
   implicit val openFoodFactsProductNutritionFormat = Json.format[OpenFoodFactsProductNutrition]
 }
@@ -48,8 +48,8 @@ object OpenFoodFactsProduct {
 
   def create(barcode: String, json: JsValue): Option[OpenFoodFactsProduct] = {
     val nutritionGrade = (json \ "product" \ "nutrition_grade_fr").asOpt[String]
-    val nutrientLevels = json \ "product" \ "nutrient_levels"
-    val nutriments = json \ "product" \ "nutriments"
+    val nutrientLevels = Utils.toOpt(json \ "product" \ "nutrient_levels")
+    val nutriments = Utils.toOpt(json \ "product" \ "nutriments")
     val nutrition = new OpenFoodFactsProductNutrition(nutritionGrade, nutrientLevels, nutriments)
 
     val quantityStr = (json \ "product" \ "quantity").asOpt[String]
