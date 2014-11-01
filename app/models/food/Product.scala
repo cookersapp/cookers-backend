@@ -4,13 +4,29 @@ import common.Utils
 import models.food.dataImport.CookersProduct
 import models.food.dataImport.OpenFoodFactsProduct
 import models.food.dataImport.PrixingProduct
+import models.food.dataImport.PrixingAdditive
 import play.api.Logger
 import play.api.libs.json._
 
 case class Additive(
+  reference: String,
   name: String,
-  fullName: Option[String],
-  url: Option[String])
+  humanName: Option[String],
+  fullName: String,
+  danger: Option[Int],
+  source: Option[String],
+  category: Option[String],
+  authorisation: Option[String],
+  dailyDose: Option[String],
+  origine: Option[String],
+  risks: Option[String],
+  toxicity: Option[String],
+  regime: Option[String],
+  usage: Option[String],
+  description: Option[String]) {
+  def this(reference: String) = this(reference, "", None, "", None, None, None, None, None, None, None, None, None, None, None)
+  def this(a: PrixingAdditive) = this(a.reference, a.name, a.humanName, a.fullName, a.danger, a.source, a.category, a.authorisation, a.dailyDose, a.origine, a.risks, a.toxicity, a.regime, a.usage, a.description)
+}
 object Additive {
   implicit val additiveFormat = Json.format[Additive]
 }
@@ -91,8 +107,8 @@ object Product {
 
   private def transform(product: OpenFoodFactsProduct): Product = {
     val barcode = product.barcode
-    val name = Utils.first(product.name, product.genericName).getOrElse("Unknown :(")
-    val allImages = Utils.asList(product.image, product.imageSmall).distinct
+    val name = Utils.first(product.name, product.more.genericName).getOrElse("Unknown :(")
+    val allImages = Utils.asList(product.image, product.more.imageSmall).distinct
     val image = Utils.head(allImages).getOrElse("")
     val foodId = ""
     val allQuantities = product.quantity
@@ -108,7 +124,7 @@ object Product {
     val labels = product.labels
     val ingredients = product.ingredients
     val traces = product.traces
-    val additives = product.additives.map(elt => elt.map(str => new Additive(str, None, None)))
+    val additives = product.additives.map(elt => elt.map(str => new Additive(str)))
     val keywords = product.keywords
     val infos = None
     val productNutrition = new ProductNutrition(product.nutrition.grade, product.nutrition.levels)
@@ -139,7 +155,7 @@ object Product {
     val labels = None
     val ingredients = None
     val traces = None
-    val additives = product.additives.map(elt => elt.map(a => new Additive(a.name, Some(a.fullName), a.url)))
+    val additives = product.additives.map(elt => elt.map { additive => new Additive(additive) }.toList)
     val keywords = None
     val productInfo = new ProductInfo(
       Utils.first(product.infos.description, product.infos.informations, product.infos.presentation),
@@ -182,12 +198,24 @@ object Product {
   }
 
   private def distinct(list: List[Additive]): List[Additive] = {
-    list.groupBy(elt => elt.name).map {
+    list.groupBy(elt => elt.reference).map {
       case (_, elts) =>
-        val nameOpt = elts.map(elt => Utils.toOpt(elt.name)).find(str => str.isDefined).getOrElse(None)
-        val fullName = elts.map(elt => elt.fullName).find(str => str.isDefined).getOrElse(None)
-        val url = elts.map(elt => elt.url).find(str => str.isDefined).getOrElse(None)
-        nameOpt.map(name => new Additive(name, fullName, url))
-    }.toList.flatten
+        val reference = elts.map(elt => Utils.toOpt(elt.reference)).find(str => str.isDefined).map(opt => opt.get).getOrElse("")
+        val name = elts.map(elt => Utils.toOpt(elt.name)).find(str => str.isDefined).map(opt => opt.get).getOrElse("")
+        val humanName = elts.map(elt => elt.humanName).find(str => str.isDefined).getOrElse(None)
+        val fullName = elts.map(elt => Utils.toOpt(elt.fullName)).find(str => str.isDefined).map(opt => opt.get).getOrElse("")
+        val danger = elts.map(elt => elt.danger).find(str => str.isDefined).getOrElse(None)
+        val source = elts.map(elt => elt.source).find(str => str.isDefined).getOrElse(None)
+        val category = elts.map(elt => elt.category).find(str => str.isDefined).getOrElse(None)
+        val authorisation = elts.map(elt => elt.authorisation).find(str => str.isDefined).getOrElse(None)
+        val dailyDose = elts.map(elt => elt.dailyDose).find(str => str.isDefined).getOrElse(None)
+        val origine = elts.map(elt => elt.origine).find(str => str.isDefined).getOrElse(None)
+        val risks = elts.map(elt => elt.risks).find(str => str.isDefined).getOrElse(None)
+        val toxicity = elts.map(elt => elt.toxicity).find(str => str.isDefined).getOrElse(None)
+        val regime = elts.map(elt => elt.regime).find(str => str.isDefined).getOrElse(None)
+        val usage = elts.map(elt => elt.usage).find(str => str.isDefined).getOrElse(None)
+        val description = elts.map(elt => elt.description).find(str => str.isDefined).getOrElse(None)
+        new Additive(reference, name, humanName, fullName, danger, source, category, authorisation, dailyDose, origine, risks, toxicity, regime, usage, description)
+    }.toList
   }
 }

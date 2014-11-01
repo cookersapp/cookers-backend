@@ -2,6 +2,8 @@ package common
 
 import java.text.SimpleDateFormat
 import java.util.Date
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 import play.api.Play
 import play.api.libs.json._
 
@@ -29,4 +31,6 @@ object Utils {
   def notEmpty[T](list: List[T]): Option[List[T]] = if (list.size > 0) Some(list) else None
   def asList[T](values: Option[T]*): List[T] = values.filter(str => str.isDefined).map(str => str.get).toList
   def mergeLists[T](l1: Option[List[T]], l2: Option[List[T]]): Option[List[T]] = Utils.notEmpty((l1.getOrElse(List()) ++ l2.getOrElse(List())).distinct)
+
+  def transform[A](o: Option[Future[A]]): Future[Option[A]] = o.map(f => f.map(Option(_))).getOrElse(Future.successful(None))
 }

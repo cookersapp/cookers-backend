@@ -38,16 +38,8 @@ object PrixingOpinion {
   implicit val prixingOpinionFormat = Json.format[PrixingOpinion]
 }
 
-case class PrixingAdditive(
-  id: Option[String],
-  name: String,
-  fullName: String,
-  url: Option[String])
-object PrixingAdditive {
-  implicit val prixingAdditiveFormat = Json.format[PrixingAdditive]
-}
-
 case class PrixingProduct(
+  version: Int,
   barcode: String,
   name: Option[String],
   images: Option[List[String]],
@@ -59,10 +51,16 @@ case class PrixingProduct(
   additives: Option[List[PrixingAdditive]],
   infos: PrixingProductInfo,
   opinionRating: Option[Rating],
-  opinions: Option[List[PrixingOpinion]])
+  opinions: Option[List[PrixingOpinion]],
+  url: String) {
+  def this(product: PrixingProduct, additives: List[PrixingAdditive]) = this(PrixingProduct.VERSION, product.barcode, product.name, product.images, product.category, product.categoryUrl, product.shortDescription, product.rating, product.price, Some(additives), product.infos, product.opinionRating, product.opinions, product.url)
+}
 
 object PrixingProduct {
+  val VERSION = 1
   implicit val prixingProductFormat = Json.format[PrixingProduct]
+
+  def getUrl(barcode: String): String = "http://www.prixing.fr/products/" + barcode
 
   def create(barcode: String, content: String): Option[PrixingProduct] = {
     val allergenes = getAllergenes(content)
@@ -93,7 +91,8 @@ object PrixingProduct {
     val additives = getAdditives(content)
     val opinionRating = getOpinionRating(content)
     val opinions = getOpinions(content)
-    val product = new PrixingProduct(barcode, name, images, category, categoryUrl, shortDescription, rating, price, additives, infos, opinionRating, opinions)
+    val url = getUrl(barcode)
+    val product = new PrixingProduct(VERSION, barcode, name, images, category, categoryUrl, shortDescription, rating, price, additives, infos, opinionRating, opinions, url)
 
     isValid(product)
   }
@@ -113,15 +112,11 @@ object PrixingProduct {
   private def getRating(content: String): Option[Rating] = simpleMatch(content, "<li class='current-rating' id='current-rating' style=\"width:([^p]*)px\"></li>").map(r => new Rating(r.toDouble / 25, 5))
   private def getprice(content: String): Option[Price] = Utils.sequence(doubleMatch(content, "<div class=\"prix\">\n *([0-9,]+) (.)\n *</div>")).map { case (value, currency) => new Price(value.replace(",", ".").toDouble, currency) }
   private def getAdditives(content: String): Option[List[PrixingAdditive]] = {
-    val ret = doubleMatchMulti(content, "<a href=\"#\" onclick=\"show_modal\\('/additives/([0-9]*)/show'\\)\">([^<]*)</a><br/>")
-      .map(elt => elt.map {
-        case (id, name) =>
-          if (name.isDefined)
-            Some(new PrixingAdditive(id, name.get.split(" ")(0).toLowerCase(), name.get, id.map(str => "http://www.prixing.fr/additives/" + str + "/show")))
-          else
-            None
-      }).map(list => list.flatten)
-    ret
+    doubleMatchMulti(content, "<a href=\"#\" onclick=\"show_modal\\('/additives/([0-9]*)/show'\\)\">([^<]*)</a><br/>").map { results =>
+      results
+        .map { case (id, fullName) => if (id.isDefined && fullName.isDefined) Some(new PrixingAdditive(id.get, fullName.get)) else None }
+        .flatten
+    }
   }
   private def getAllergenes(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Allergènes</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
   private def getComposition(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Composition</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")

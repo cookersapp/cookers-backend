@@ -14,6 +14,8 @@ object OpenFoodFactsProductNutrition {
 }
 
 case class OpenFoodFactsProductMore(
+  genericName: Option[String],
+  imageSmall: Option[String],
   quantityStr: Option[String],
   servingStr: Option[String],
   link: Option[String])
@@ -22,11 +24,10 @@ object OpenFoodFactsProductMore {
 }
 
 case class OpenFoodFactsProduct(
+  version: Int,
   barcode: String,
   name: Option[String],
-  genericName: Option[String],
   image: Option[String],
-  imageSmall: Option[String],
   quantity: Option[List[Quantity]],
   serving: Option[List[Quantity]],
   brands: Option[List[String]],
@@ -41,10 +42,14 @@ case class OpenFoodFactsProduct(
   additives: Option[List[String]],
   keywords: Option[List[String]],
   nutrition: OpenFoodFactsProductNutrition,
-  more: OpenFoodFactsProductMore)
+  more: OpenFoodFactsProductMore,
+  url: String)
 
 object OpenFoodFactsProduct {
+  val VERSION = 1
   implicit val openFoodFactsProductFormat = Json.format[OpenFoodFactsProduct]
+
+  def getUrl(barcode: String): String = "http://fr.openfoodfacts.org/api/v0/produit/" + barcode + ".json"
 
   def create(barcode: String, json: JsValue): Option[OpenFoodFactsProduct] = {
     val nutritionGrade = (json \ "product" \ "nutrition_grade_fr").asOpt[String]
@@ -52,15 +57,15 @@ object OpenFoodFactsProduct {
     val nutriments = Utils.toOpt(json \ "product" \ "nutriments")
     val nutrition = new OpenFoodFactsProductNutrition(nutritionGrade, nutrientLevels, nutriments)
 
+    val genericName = (json \ "product" \ "generic_name").asOpt[String]
+    val imageSmall = (json \ "product" \ "image_small_url").asOpt[String]
     val quantityStr = (json \ "product" \ "quantity").asOpt[String]
     val servingStr = (json \ "product" \ "serving_size").asOpt[String]
     val link = (json \ "product" \ "link").asOpt[String]
-    val more = new OpenFoodFactsProductMore(quantityStr, servingStr, link)
+    val more = new OpenFoodFactsProductMore(genericName, imageSmall, quantityStr, servingStr, link)
 
     val name = (json \ "product" \ "product_name").asOpt[String]
-    val genericName = (json \ "product" \ "generic_name").asOpt[String]
     val image = (json \ "product" \ "image_url").asOpt[String]
-    val imageSmall = (json \ "product" \ "image_small_url").asOpt[String]
     val quantity = Quantity.create(quantityStr)
     val serving = Quantity.create(servingStr)
     val brands = strToList((json \ "product" \ "brands").asOpt[String])
@@ -74,8 +79,9 @@ object OpenFoodFactsProduct {
     val traces = strToList((json \ "product" \ "traces").asOpt[String])
     val additives = (json \ "product" \ "additives_tags").asOpt[List[String]]
     val keywords = (json \ "product" \ "_keywords").asOpt[List[String]]
+    val url = getUrl(barcode)
 
-    isValid(new OpenFoodFactsProduct(barcode, name, genericName, image, imageSmall, quantity, serving, brands, stores, origins, countries, packaging, labels, categories, ingredients, traces, additives, keywords, nutrition, more))
+    isValid(new OpenFoodFactsProduct(VERSION, barcode, name, image, quantity, serving, brands, stores, origins, countries, packaging, labels, categories, ingredients, traces, additives, keywords, nutrition, more, url))
   }
 
   private def isValid(p: OpenFoodFactsProduct): Option[OpenFoodFactsProduct] = {
