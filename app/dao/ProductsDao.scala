@@ -1,23 +1,23 @@
 package dao
 
-import common.Utils
-import models.food.Product
 import models.food.dataImport.CookersProduct
 import models.food.dataImport.OpenFoodFactsProduct
 import models.food.dataImport.PrixingProduct
-import models.food.dataImport.PrixingAdditive
 import java.util.Date
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 import play.api.Logger
 import play.api.libs.json._
-import play.modules.reactivemongo.json.BSONFormats
 import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.api.DB
 import reactivemongo.core.commands._
-import reactivemongo.bson.BSONDocument
 
 object ProductsDao {
+  // http://www.product-open-data.com/
+  // http://www.noteo.info/
+  // http://www.shopwise.fr/
+  // http://www.mesgouts.fr/
+  // http://www.nutritionix.com/api
   private val COLLECTION_COOKERS = "cookersProducts"
   private val COLLECTION_OPEN_FOOD_FACTS = "importOpenFoodFactsProducts"
   private val COLLECTION_PRIXING = "importPrixingProducts"

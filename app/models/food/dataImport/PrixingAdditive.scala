@@ -32,6 +32,10 @@ case class PrixingAdditive(
     Some(PrixingAdditive.humanName(fullName)),
     fullName,
     None, None, None, None, None, None, None, None, None, None, None, None, PrixingAdditive.getUrl(id))
+
+  def isValid: Boolean = {
+    this.version == PrixingAdditive.VERSION
+  }
 }
 
 object PrixingAdditive {
@@ -70,26 +74,18 @@ object PrixingAdditive {
     else None
   }
 
-  private def getName(content: String): Option[String] = simpleMatch(content, "(?i)<h2>([^ ]*) - .*</h2>")
-  private def getDanger(content: String): Option[Int] = simpleMatch(content, "(?i)<img alt=\"Additive_dangerousness_([0-9]*)\"").map(s => s.toInt)
-  private def getDangerName(content: String): Option[String] = simpleMatch(content, "(?i).png\" /><br/>(.*)</span></td>")
-  private def getHumanName(content: String): Option[String] = simpleMatch(content, "(?i)<h2>[^ ]* - (.*)</h2>")
-  private def getSource(content: String): Option[String] = simpleMatch(content, "(?i)<h5>(.*)</h5>")
-  private def getCategory(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Type</h4>\n(.*)</br>")
-  private def getAuthorisation(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Autorisation</h4>\n(.*)</br>")
-  private def getDailyDose(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Dose journalière admissible</h4>\n(.*)</br>")
-  private def getOrigine(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Origine</h4>\n(.*)</br>")
-  private def getRisks(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Risques et effets secondaires</h4>\n(.*)</br>")
-  private def getToxicity(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Toxicité</h4>\n(.*)</br>")
-  private def getRegime(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Restrictions alimentaires</h4>\n(.*)</br>")
-  private def getUsage(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Fonction</h4>\n(.*)</br>")
-  private def getDescription(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Description</h4>\n(.*)</br>")
-
-  private def simpleMatch(content: String, regex: String): Option[String] = {
-    val matcher = regex.r.unanchored
-    content match {
-      case matcher(value) => Utils.toOpt(value)
-      case _ => None
-    }
-  }
+  private def getName(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h2>([^ ]*) - .*</h2>")
+  private def getDanger(content: String): Option[Int] = Utils.simpleMatch(content, "(?i)<img alt=\"Additive_dangerousness_([0-9]*)\"").map(s => s.toInt)
+  private def getDangerName(content: String): Option[String] = Utils.simpleMatch(content, "(?i).png\" /><br/>(.*)</span></td>")
+  private def getHumanName(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h2>[^ ]* - (.*)</h2>")
+  private def getSource(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h5>(.*)</h5>")
+  private def getCategory(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Type</h4>\n(.*)</br>")
+  private def getAuthorisation(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Autorisation</h4>\n(.*)</br>")
+  private def getDailyDose(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Dose journalière admissible</h4>\n(.*)</br>")
+  private def getOrigine(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Origine</h4>\n(.*)</br>")
+  private def getRisks(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Risques et effets secondaires</h4>\n(.*)</br>")
+  private def getToxicity(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Toxicité</h4>\n(.*)</br>")
+  private def getRegime(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Restrictions alimentaires</h4>\n(.*)</br>")
+  private def getUsage(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Fonction</h4>\n(.*)</br>")
+  private def getDescription(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Description</h4>\n(.*)</br>")
 }

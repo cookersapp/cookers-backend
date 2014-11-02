@@ -43,7 +43,11 @@ case class OpenFoodFactsProduct(
   keywords: Option[List[String]],
   nutrition: OpenFoodFactsProductNutrition,
   more: OpenFoodFactsProductMore,
-  url: String)
+  url: String) {
+  def isValid: Boolean = {
+    this.version == OpenFoodFactsProduct.VERSION
+  }
+}
 
 object OpenFoodFactsProduct {
   val VERSION = 1

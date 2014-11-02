@@ -1,10 +1,13 @@
 package services
 
+import common.Utils
 import dao.ProductsDao
+import dao.AdditivesDao
 import models.food.Product
 import models.food.dataImport.CookersProduct
 import models.food.dataImport.OpenFoodFactsProduct
 import models.food.dataImport.PrixingProduct
+import models.food.dataImport.AdditifAlimentairesAdditive
 import models.food.dataImport.PrixingAdditive
 import scala.concurrent._
 import ExecutionContext.Implicits.global
@@ -12,16 +15,8 @@ import play.api.Logger
 import play.api.libs.json._
 import play.api.libs.ws._
 import reactivemongo.api.DB
-import dao.AdditivesDao
-import common.Utils
 
 object FoodSrv {
-  // http://www.product-open-data.com/
-  // http://www.noteo.info/
-  // http://www.shopwise.fr/
-  // http://www.mesgouts.fr/
-  // http://www.nutritionix.com/api
-
   def getAllProducts()(implicit db: DB): Future[List[Product]] = {
     ProductsDao.getAllCookers().flatMap { products =>
       val results = products.map { product =>
@@ -62,7 +57,7 @@ object FoodSrv {
   def getAllOpenFoodFactsProduct()(implicit db: DB): Future[List[OpenFoodFactsProduct]] = ProductsDao.getAllOpenFoodFacts()
   def getOpenFoodFactsProduct(barcode: String)(implicit db: DB): Future[Option[OpenFoodFactsProduct]] = {
     ProductsDao.getOpenFoodFacts(barcode).flatMap { opt =>
-      if (opt.isDefined && opt.get.version == OpenFoodFactsProduct.VERSION) {
+      if (opt.isDefined && opt.get.isValid) {
         Future.successful(opt)
       } else {
         WS.url(OpenFoodFactsProduct.getUrl(barcode)).get().map { response =>
@@ -78,7 +73,7 @@ object FoodSrv {
   def getAllPrixingProduct()(implicit db: DB): Future[List[PrixingProduct]] = ProductsDao.getPrixingProducts()
   def getPrixingProduct(barcode: String)(implicit db: DB): Future[Option[PrixingProduct]] = {
     ProductsDao.getPrixingProduct(barcode).flatMap { opt =>
-      if (opt.isDefined && opt.get.version == PrixingProduct.VERSION) {
+      if (opt.isDefined && opt.get.isValid) {
         Future.successful(opt)
       } else {
         WS.url(PrixingProduct.getUrl(barcode)).get().map { response =>
@@ -102,7 +97,7 @@ object FoodSrv {
   private def getPrixingAdditive(prixingId: String, fullName: String)(implicit db: DB): Future[PrixingAdditive] = {
     val reference = PrixingAdditive.reference(fullName)
     AdditivesDao.getPrixingAdditive(reference).flatMap { opt =>
-      if (opt.isDefined && opt.get.version == PrixingAdditive.VERSION) {
+      if (opt.isDefined && opt.get.isValid) {
         Future.successful(opt.get)
       } else {
         WS.url(PrixingAdditive.getUrl(prixingId)).get().map { response =>
@@ -110,6 +105,26 @@ object FoodSrv {
             AdditivesDao.savePrixingAdditive(reference, response.body, additiveFormated)
             additiveFormated
           }.getOrElse(new PrixingAdditive(prixingId, fullName))
+        }
+      }
+    }
+  }
+
+  def getAdditifAlimentairesAdditive(reference: String)(implicit db: DB): Future[Option[AdditifAlimentairesAdditive]] = {
+    AdditivesDao.getAdditifAlimentairesAdditive(reference).flatMap { opt =>
+      if (opt.isDefined && opt.get.isValid) {
+        Future.successful(opt)
+      } else {
+        WS.url(AdditifAlimentairesAdditive.getSearchUrl(reference)).get().flatMap { response =>
+          AdditifAlimentairesAdditive.getIdFromSearch(reference, response.body).map { id =>
+            WS.url(AdditifAlimentairesAdditive.getUrl(id)).get().map { response =>
+              val content = new String(response.body.getBytes("ISO-8859-1"), "UTF-8")
+              AdditifAlimentairesAdditive.create(id, content).map { additiveFormated =>
+                AdditivesDao.saveAdditifAlimentairesAdditive(reference, content, additiveFormated)
+                additiveFormated
+              }
+            }
+          }.getOrElse(Future.successful(None))
         }
       }
     }

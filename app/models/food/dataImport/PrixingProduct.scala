@@ -53,7 +53,12 @@ case class PrixingProduct(
   opinionRating: Option[Rating],
   opinions: Option[List[PrixingOpinion]],
   url: String) {
+
   def this(product: PrixingProduct, additives: List[PrixingAdditive]) = this(PrixingProduct.VERSION, product.barcode, product.name, product.images, product.category, product.categoryUrl, product.shortDescription, product.rating, product.price, Some(additives), product.infos, product.opinionRating, product.opinions, product.url)
+
+  def isValid: Boolean = {
+    this.version == PrixingProduct.VERSION
+  }
 }
 
 object PrixingProduct {
@@ -102,40 +107,40 @@ object PrixingProduct {
     else None
   }
 
-  private def getName(content: String): Option[String] = simpleMatch(content, "<h1>(.*)</h1>")
-  private def getImages(content: String): Option[List[String]] = simpleMatchMulti(content, "<img alt=\"\" class=\"img-produit\" src=\"([^\"]*)\" />").map(elt => elt.map(rel => "http://www.prixing.fr" + rel))
+  private def getName(content: String): Option[String] = Utils.simpleMatch(content, "<h1>(.*)</h1>")
+  private def getImages(content: String): Option[List[String]] = Utils.simpleMatchMulti(content, "<img alt=\"\" class=\"img-produit\" src=\"([^\"]*)\" />").map(elt => elt.map(rel => "http://www.prixing.fr" + rel))
   private def getCategory(content: String): (Option[String], Option[String]) = {
-    val ret = doubleMatch(content, "<a href=\"/products/categories/([^\"]*)\">([^<]*)</a>")
+    val ret = Utils.doubleMatch(content, "<a href=\"/products/categories/([^\"]*)\">([^<]*)</a>")
     (ret._2, ret._1.map(url => "http://www.prixing.fr/products/categories/" + url))
   }
-  private def getShortDesc(content: String): Option[String] = simpleMatch(content, "<p class=\"short-description\">(.*)</p>")
-  private def getRating(content: String): Option[Rating] = simpleMatch(content, "<li class='current-rating' id='current-rating' style=\"width:([^p]*)px\"></li>").map(r => new Rating(r.toDouble / 25, 5))
-  private def getprice(content: String): Option[Price] = Utils.sequence(doubleMatch(content, "<div class=\"prix\">\n *([0-9,]+) (.)\n *</div>")).map { case (value, currency) => new Price(value.replace(",", ".").toDouble, currency) }
+  private def getShortDesc(content: String): Option[String] = Utils.simpleMatch(content, "<p class=\"short-description\">(.*)</p>")
+  private def getRating(content: String): Option[Rating] = Utils.simpleMatch(content, "<li class='current-rating' id='current-rating' style=\"width:([^p]*)px\"></li>").map(r => new Rating(r.toDouble / 25, 5))
+  private def getprice(content: String): Option[Price] = Utils.transform(Utils.doubleMatch(content, "<div class=\"prix\">\n *([0-9,]+) (.)\n *</div>")).map { case (value, currency) => new Price(value.replace(",", ".").toDouble, currency) }
   private def getAdditives(content: String): Option[List[PrixingAdditive]] = {
-    doubleMatchMulti(content, "<a href=\"#\" onclick=\"show_modal\\('/additives/([0-9]*)/show'\\)\">([^<]*)</a><br/>").map { results =>
+    Utils.doubleMatchMulti(content, "<a href=\"#\" onclick=\"show_modal\\('/additives/([0-9]*)/show'\\)\">([^<]*)</a><br/>").map { results =>
       results
         .map { case (id, fullName) => if (id.isDefined && fullName.isDefined) Some(new PrixingAdditive(id.get, fullName.get)) else None }
         .flatten
     }
   }
-  private def getAllergenes(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Allergènes</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getComposition(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Composition</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getDescription(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Description</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getEnergy(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Valeur énergétique</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getExtra(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Extra</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getHelp(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Conseils</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getInformations(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Informations</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getInformationsGlobal(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Information générale</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getIngredients(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Ingrédients</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getNutrition(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Données nutritionelles</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getNutrition100(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Données nutritionnelles \\(100g/ml\\)</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getNutritionnel(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Nutritionnel</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getNutritionnel2(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Valeurs Nutritionnels</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getOrigine(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Origine</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getPresentation(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Présentation</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getQuantity(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Contenance</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getTips(content: String): Option[String] = simpleMatch(content, "(?i)<h4>Renseignements pratiques</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
-  private def getOpinionRating(content: String): Option[Rating] = simpleMatch(content, "Avis : ([0-9\\.]+)").map(r => new Rating(r.toDouble, 5))
+  private def getAllergenes(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Allergènes</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getComposition(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Composition</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getDescription(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Description</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getEnergy(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Valeur énergétique</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getExtra(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Extra</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getHelp(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Conseils</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getInformations(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Informations</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getInformationsGlobal(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Information générale</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getIngredients(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Ingrédients</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getNutrition(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Données nutritionelles</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getNutrition100(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Données nutritionnelles \\(100g/ml\\)</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getNutritionnel(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Nutritionnel</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getNutritionnel2(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Valeurs Nutritionnels</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getOrigine(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Origine</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getPresentation(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Présentation</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getQuantity(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Contenance</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getTips(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Renseignements pratiques</h4>\n *<div class=\"pDescription\"><span>(.*)</span></div>")
+  private def getOpinionRating(content: String): Option[Rating] = Utils.simpleMatch(content, "Avis : ([0-9\\.]+)").map(r => new Rating(r.toDouble, 5))
   private def getOpinions(content: String): Option[List[PrixingOpinion]] = {
     val matcher = (
       " *<div class=\"avis-titre\">\n" +
@@ -166,34 +171,4 @@ object PrixingProduct {
     else 0
   }
 
-  private def doubleMatchMulti(content: String, regex: String): Option[List[(Option[String], Option[String])]] = {
-    val matcher = regex.r.unanchored
-    val res = matcher.findAllIn(content).map {
-      case matcher(val1, val2) => (Utils.toOpt(val1), Utils.toOpt(val2))
-      case _ => (None, None)
-    }.toList.filter(str => str._1.isDefined || str._2.isDefined)
-    Utils.notEmpty(res)
-  }
-  private def simpleMatchMulti(content: String, regex: String): Option[List[String]] = {
-    val matcher = regex.r.unanchored
-    val res = matcher.findAllIn(content).map {
-      case matcher(value) => Utils.toOpt(value)
-      case _ => None
-    }.toList.flatten
-    Utils.notEmpty(res)
-  }
-  private def doubleMatch(content: String, regex: String): (Option[String], Option[String]) = {
-    val matcher = regex.r.unanchored
-    content match {
-      case matcher(val1, val2) => (Utils.toOpt(val1), Utils.toOpt(val2))
-      case _ => (None, None)
-    }
-  }
-  private def simpleMatch(content: String, regex: String): Option[String] = {
-    val matcher = regex.r.unanchored
-    content match {
-      case matcher(value) => Utils.toOpt(value)
-      case _ => None
-    }
-  }
 }
