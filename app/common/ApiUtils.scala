@@ -7,6 +7,9 @@ import models.food.Product
 import models.food.dataImport.CookersProduct
 import models.food.dataImport.OpenFoodFactsProduct
 import models.food.dataImport.PrixingProduct
+import models.food.Additive
+import models.food.dataImport.AdditifAlimentairesAdditive
+import models.food.dataImport.PrixingAdditive
 import models.stats.UserActivity
 import play.api.libs.json._
 
@@ -18,6 +21,9 @@ object ApiUtils {
   def Ok(data: CookersProduct): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: OpenFoodFactsProduct): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: PrixingProduct): JsObject = Json.obj("status" -> 200, "data" -> data)
+  def Ok(data: Additive): JsObject = Json.obj("status" -> 200, "data" -> data)
+  def Ok(data: AdditifAlimentairesAdditive): JsObject = Json.obj("status" -> 200, "data" -> data)
+  def Ok(data: PrixingAdditive): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: List[UserActivity]): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: Store): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: Event): JsObject = Json.obj("status" -> 200, "data" -> data)

@@ -31,7 +31,12 @@ object Utils {
   def notEmpty[T, U](map: Map[T, U]): Option[Map[T, U]] = if (map.size > 0) Some(map) else None
   def notEmpty[T](listOpt: Option[List[T]]): Option[List[T]] = if (listOpt.isDefined && listOpt.get.size > 0) listOpt else None
   def asList[T](values: Option[T]*): List[T] = values.filter(str => str.isDefined).map(str => str.get).toList
-  def mergeLists[T](l1: Option[List[T]], l2: Option[List[T]]): Option[List[T]] = Utils.notEmpty((l1.getOrElse(List()) ++ l2.getOrElse(List())).distinct)
+  def mergeLists[T](l1: Option[List[T]], l2: Option[List[T]]): Option[List[T]] = notEmpty((l1.getOrElse(List()) ++ l2.getOrElse(List())).distinct)
+  def mergeMaps[T, U](m1: Option[Map[T, U]], m2: Option[Map[T, U]]): Option[Map[T, U]] =
+    notEmpty((m1.getOrElse(Map()).toSeq ++ m2.getOrElse(Map()).toSeq)
+      .groupBy(_._1)
+      .map { case (key, values) => if (values.size > 0) Some(key, values.head._2) else None }
+      .flatten.toMap)
 
   def transform[T, U](pair: (Option[T], Option[U])): Option[(T, U)] = for (a <- pair._1; b <- pair._2) yield (a, b)
   def transform[A](o: Option[Future[A]]): Future[Option[A]] = o.map(f => f.map(Option(_))).getOrElse(Future.successful(None))

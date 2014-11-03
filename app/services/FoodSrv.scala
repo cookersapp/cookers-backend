@@ -7,6 +7,7 @@ import models.food.Product
 import models.food.dataImport.CookersProduct
 import models.food.dataImport.OpenFoodFactsProduct
 import models.food.dataImport.PrixingProduct
+import models.food.Additive
 import models.food.dataImport.AdditifAlimentairesAdditive
 import models.food.dataImport.PrixingAdditive
 import scala.concurrent._
@@ -39,9 +40,20 @@ object FoodSrv {
     } yield (cookers, openfoodfacts, prixing)
 
     future.map { case (cookers, openfoodfacts, prixing) => Product.mergeSources(cookers, openfoodfacts, prixing) }
+      // get additives and add them to product
+      .flatMap { opt =>
+        Utils.transform(opt.map { product =>
+          if (product.additives.isDefined) {
+            val loadAdditives = product.additives.get.map { additive => getAdditive(additive.reference) }
+            Future.sequence(loadAdditives).map(additives => product.withAdditives(additives.flatten))
+          } else {
+            Future.successful(product)
+          }
+        })
+      }
   }
 
-  def getAllCookersProduct()(implicit db: DB): Future[List[CookersProduct]] = ProductsDao.getAllCookers()
+  def getAllCookersProducts()(implicit db: DB): Future[List[CookersProduct]] = ProductsDao.getAllCookers()
   def getCookersProduct(barcode: String)(implicit db: DB): Future[Option[CookersProduct]] = {
     ProductsDao.getCookers(barcode).map { opt =>
       if (opt.isDefined) {
@@ -54,7 +66,7 @@ object FoodSrv {
     }
   }
 
-  def getAllOpenFoodFactsProduct()(implicit db: DB): Future[List[OpenFoodFactsProduct]] = ProductsDao.getAllOpenFoodFacts()
+  def getAllOpenFoodFactsProducts()(implicit db: DB): Future[List[OpenFoodFactsProduct]] = ProductsDao.getAllOpenFoodFacts()
   def getOpenFoodFactsProduct(barcode: String)(implicit db: DB): Future[Option[OpenFoodFactsProduct]] = {
     ProductsDao.getOpenFoodFacts(barcode).flatMap { opt =>
       if (opt.isDefined && opt.get.isValid) {
@@ -70,7 +82,7 @@ object FoodSrv {
     }
   }
 
-  def getAllPrixingProduct()(implicit db: DB): Future[List[PrixingProduct]] = ProductsDao.getPrixingProducts()
+  def getAllPrixingProducts()(implicit db: DB): Future[List[PrixingProduct]] = ProductsDao.getPrixingProducts()
   def getPrixingProduct(barcode: String)(implicit db: DB): Future[Option[PrixingProduct]] = {
     ProductsDao.getPrixingProduct(barcode).flatMap { opt =>
       if (opt.isDefined && opt.get.isValid) {
@@ -83,15 +95,18 @@ object FoodSrv {
           }.getOrElse(None)
         }
       }
-    }.flatMap(opt => Utils.transform(opt.map { product =>
+    }
       // get additives and add them to product
-      if (product.additives.isDefined) {
-        val loadAdditives = product.additives.get.map { additive => getPrixingAdditive(additive.id, additive.fullName) }
-        Future.sequence(loadAdditives).map(additives => new PrixingProduct(product, additives))
-      } else {
-        Future.successful(product)
+      .flatMap { opt =>
+        Utils.transform(opt.map { product =>
+          if (product.additives.isDefined) {
+            val loadAdditives = product.additives.get.map { additive => getPrixingAdditive(additive.id, additive.fullName) }
+            Future.sequence(loadAdditives).map(additives => product.withAdditives(additives))
+          } else {
+            Future.successful(product)
+          }
+        })
       }
-    }))
   }
 
   private def getPrixingAdditive(prixingId: String, fullName: String)(implicit db: DB): Future[PrixingAdditive] = {
@@ -110,6 +125,28 @@ object FoodSrv {
     }
   }
 
+  def getAllAdditives()(implicit db: DB): Future[List[Additive]] = {
+    AdditivesDao.getAdditifAlimentairesAdditives().flatMap { additives =>
+      val results = additives.map { additive =>
+        AdditivesDao.getPrixingAdditive(additive.reference).map { prixing => Additive.mergeSources(Some(additive), prixing) }
+      }
+      Future.sequence(results).map(d => d.flatten)
+    }
+  }
+
+  def getAdditive(reference: String)(implicit db: DB): Future[Option[Additive]] = {
+    val future: Future[(Option[AdditifAlimentairesAdditive], Option[PrixingAdditive])] = for {
+      additifalimentaires <- getAdditifAlimentairesAdditive(reference)
+      prixing <- getPrixingAdditive(reference)
+    } yield (additifalimentaires, prixing)
+
+    future.map { case (additifalimentaires, prixing) => Additive.mergeSources(additifalimentaires, prixing) }
+  }
+
+  def getAllPrixingAdditives()(implicit db: DB): Future[List[PrixingAdditive]] = AdditivesDao.getPrixingAdditives()
+  def getPrixingAdditive(reference: String)(implicit db: DB): Future[Option[PrixingAdditive]] = AdditivesDao.getPrixingAdditive(reference)
+
+  def getAllAdditifAlimentairesAdditive()(implicit db: DB): Future[List[AdditifAlimentairesAdditive]] = AdditivesDao.getAdditifAlimentairesAdditives()
   def getAdditifAlimentairesAdditive(reference: String)(implicit db: DB): Future[Option[AdditifAlimentairesAdditive]] = {
     AdditivesDao.getAdditifAlimentairesAdditive(reference).flatMap { opt =>
       if (opt.isDefined && opt.get.isValid) {

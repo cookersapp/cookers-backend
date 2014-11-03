@@ -54,7 +54,7 @@ case class PrixingProduct(
   opinions: Option[List[PrixingOpinion]],
   url: String) {
 
-  def this(product: PrixingProduct, additives: List[PrixingAdditive]) = this(PrixingProduct.VERSION, product.barcode, product.name, product.images, product.category, product.categoryUrl, product.shortDescription, product.rating, product.price, Some(additives), product.infos, product.opinionRating, product.opinions, product.url)
+  def withAdditives(additives: List[PrixingAdditive]) = new PrixingProduct(this.version, this.barcode, this.name, this.images, this.category, this.categoryUrl, this.shortDescription, this.rating, this.price, Some(additives), this.infos, this.opinionRating, this.opinions, this.url)
 
   def isValid: Boolean = {
     this.version == PrixingProduct.VERSION

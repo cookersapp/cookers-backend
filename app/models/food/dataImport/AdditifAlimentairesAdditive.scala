@@ -6,12 +6,26 @@ import scala.concurrent._
 import ExecutionContext.Implicits.global
 import play.api.libs.json._
 
-case class AdditifAlimentairesAdditiveDanger(level: Int, description: String)
+case class AdditifAlimentairesAdditiveDanger(level: Int, description: String) {
+  def this(level: Int) = this(level, level match {
+    case 0 => "Inconnu"
+    case 1 | 2 => "Sans danger"
+    case 3 | 4 => "Douteux"
+    case 5 | 6 => "Dangereux"
+  })
+}
 object AdditifAlimentairesAdditiveDanger {
   implicit val additifAlimentairesAdditiveDangerFormat = Json.format[AdditifAlimentairesAdditiveDanger]
 }
 
-case class AdditifAlimentairesAdditiveAllowed(level: String, info: String, description: String)
+case class AdditifAlimentairesAdditiveAllowed(level: Int, name: String, description: String) {
+  def this(level: Int, description: String) = this(level, level match {
+    case 0 => "unknown"
+    case 1 => "allowed"
+    case 2 => "suspicious"
+    case 3 => "forbidden"
+  }, description)
+}
 object AdditifAlimentairesAdditiveAllowed {
   implicit val additifAlimentairesAdditiveAllowedFormat = Json.format[AdditifAlimentairesAdditiveAllowed]
 }
@@ -31,7 +45,7 @@ object AdditifAlimentairesAdditiveOrigin {
   implicit val additifAlimentairesAdditiveOriginFormat = Json.format[AdditifAlimentairesAdditiveOrigin]
 }
 
-case class AdditifAlimentairesAdditiveDiet(name: String, image: String, link: String, allowed: Option[AdditifAlimentairesAdditiveAllowed])
+case class AdditifAlimentairesAdditiveDiet(name: String, image: String, link: String, allowed: AdditifAlimentairesAdditiveAllowed)
 object AdditifAlimentairesAdditiveDiet {
   implicit val additifAlimentairesAdditiveDietFormat = Json.format[AdditifAlimentairesAdditiveDiet]
 }
@@ -46,7 +60,7 @@ object AdditifAlimentairesAdditiveMolecule {
   implicit val additifAlimentairesAdditiveMoleculeFormat = Json.format[AdditifAlimentairesAdditiveMolecule]
 }
 
-case class AdditifAlimentairesAdditiveSimilar(id: String, category: String, name: String, humanName: String)
+case class AdditifAlimentairesAdditiveSimilar(id: String, category: String, reference: String, name: String, humanName: String)
 object AdditifAlimentairesAdditiveSimilar {
   implicit val additifAlimentairesAdditiveSimilarFormat = Json.format[AdditifAlimentairesAdditiveSimilar]
 }
@@ -63,17 +77,17 @@ case class AdditifAlimentairesAdditive(
   name: String,
   humanName: Option[String],
   fullName: String,
-  alias: Option[List[String]],
+  alias: Option[List[String]], // see e101
   authorized: Option[AdditifAlimentairesAdditiveAllowed],
   category: Option[String],
   usages: Option[List[AdditifAlimentairesAdditiveUsage]],
-  inProducts: Option[List[AdditifAlimentairesProduct]],
-  origin: Option[List[AdditifAlimentairesAdditiveOrigin]],
+  inProducts: Option[List[AdditifAlimentairesProduct]], // see e407
+  origins: Option[List[AdditifAlimentairesAdditiveOrigin]], // see e101
   regimes: Option[Map[String, AdditifAlimentairesAdditiveDiet]],
   risks: Option[List[AdditifAlimentairesAdditiveRisk]],
   danger: AdditifAlimentairesAdditiveDanger,
   description: Option[String],
-  molecule: Option[AdditifAlimentairesAdditiveMolecule],
+  molecule: Option[AdditifAlimentairesAdditiveMolecule], // see e101
   similars: Option[List[AdditifAlimentairesAdditiveSimilar]],
   sameCategory: Option[List[AdditifAlimentairesAdditiveSimilar]],
   articles: Option[List[AdditifAlimentairesAdditiveArticle]],
@@ -97,7 +111,7 @@ case class AdditifAlimentairesAdditive(
     ret += (tab + "category: " + category + "\n")
     ret += (tab + "usages:\n"); usages.map(l => l.map(u => ret += (tab + tab + u + "\n")))
     ret += (tab + "inProducts:\n"); inProducts.map(l => l.map(u => ret += (tab + tab + u + "\n")))
-    ret += (tab + "origin:\n"); origin.map(l => l.map(u => ret += (tab + tab + u + "\n")))
+    ret += (tab + "origin:\n"); origins.map(l => l.map(u => ret += (tab + tab + u + "\n")))
     ret += (tab + "regimes:\n"); regimes.map(l => l.map(u => ret += (tab + tab + u + "\n")))
     ret += (tab + "risks:\n"); risks.map(l => l.map(u => ret += (tab + tab + u + "\n")))
     ret += (tab + "danger: " + danger + "\n")
@@ -132,7 +146,7 @@ object AdditifAlimentairesAdditive {
     val category = getCategory(content)
     val usages = getUsages(content)
     val inProducts = getInProducts(content)
-    val origin = getOrigin(content)
+    val origins = getOrigins(content)
     val regimes = getRegimes(content)
     val risks = getRisks(content)
     val danger = risks.flatMap { list =>
@@ -147,11 +161,11 @@ object AdditifAlimentairesAdditive {
     val sameCategory = getSameCategory(content)
     val articles = getArticles(content)
     val url = getUrl(id)
-    isValid(new AdditifAlimentairesAdditive(VERSION, id, reference, name, humanName, fullName, alias, authorized, category, usages, inProducts, origin, regimes, risks, danger, description, molecule, similars, sameCategory, articles, url))
+    isValid(new AdditifAlimentairesAdditive(VERSION, id, reference, name, humanName, fullName, alias, authorized, category, usages, inProducts, origins, regimes, risks, danger, description, molecule, similars, sameCategory, articles, url))
   }
 
-  private def isValid(p: AdditifAlimentairesAdditive): Option[AdditifAlimentairesAdditive] = {
-    if (!Utils.isEmpty(p.id) && !Utils.isEmpty(p.reference) && !Utils.isEmpty(p.name)) Some(p)
+  private def isValid(a: AdditifAlimentairesAdditive): Option[AdditifAlimentairesAdditive] = {
+    if (!Utils.isEmpty(a.id) && !Utils.isEmpty(a.reference) && !Utils.isEmpty(a.name)) Some(a)
     else None
   }
 
@@ -180,7 +194,7 @@ object AdditifAlimentairesAdditive {
       }.flatMap(list => Utils.notEmpty(list.flatten))
 
   def getInProducts(content: String): Option[List[AdditifAlimentairesProduct]] =
-    Utils.simpleMatch(content, "(?i)<li><div class='legende'>Utilisé dans</div><div>(.*)<br>" +
+    Utils.simpleMatch(content, "(?i)<li><div class='legende'>Utilisé dans</div><div>(.*)\\.<br>" +
       "<small style='color:grey;' >Liste non exaustive d'exemple d'utilisations. Les marques citées appartiennent à leurs propriétaires respectifs.</small></div></li>").map { products =>
       products.split(", ").toList.map { product =>
         val (nameOpt, brandOpt, detailsOpt) = Utils.tripleMatch(product, "(?i)(.*) <span style='font-style: italic;'>(.*)</span>(.*)")
@@ -188,7 +202,7 @@ object AdditifAlimentairesAdditive {
       }
     }.flatMap(list => Utils.notEmpty(list.flatten))
 
-  def getOrigin(content: String): Option[List[AdditifAlimentairesAdditiveOrigin]] =
+  def getOrigins(content: String): Option[List[AdditifAlimentairesAdditiveOrigin]] =
     Utils.doubleMatchMulti(content, "(?i)<div class=\"Origine\" >(?:<img  ?src=\"([^>]*)\"> )?([^/]*)</div>").map { list =>
       list.map { case (imgOpt, nameOpt) => nameOpt.map(name => new AdditifAlimentairesAdditiveOrigin(name, imgOpt.map(img => URL + img))) }
     }.flatMap(list => Utils.notEmpty(list.flatten))
@@ -207,7 +221,7 @@ object AdditifAlimentairesAdditive {
           name,
           imgOpt.map(img => URL + img).getOrElse(""),
           linkOpt.map(link => URL + link).getOrElse(""),
-          colorOpt.map(color => allowed(color, textOpt.map(text => text.replace("<br>", " ").trim()).getOrElse(""))))))
+          allowed(colorOpt.getOrElse(""), textOpt.getOrElse("").replace("<br>", " ").trim()))))
       }
     }).flatMap(list => Utils.notEmpty(list.flatten.toMap))
 
@@ -234,13 +248,13 @@ object AdditifAlimentairesAdditive {
   def getSimilars(content: String): Option[List[AdditifAlimentairesAdditiveSimilar]] =
     Utils.quadrupleMatchMulti(content, "(?i)<li class='addlien'><a href='/([^']*)\\.php'><span>Additifs similaires</span>([^<]*)<br>([^<]*)<br>([^<]*)</a></li>").map(opt => opt.map {
       case (idOpt, categoryOpt, nameOpt, humanNameOpt) =>
-        idOpt.map(id => new AdditifAlimentairesAdditiveSimilar(id, categoryOpt.getOrElse(""), nameOpt.getOrElse(""), humanNameOpt.getOrElse("")))
+        idOpt.map(id => new AdditifAlimentairesAdditiveSimilar(id, categoryOpt.getOrElse(""), nameOpt.getOrElse("").toLowerCase(), nameOpt.getOrElse(""), humanNameOpt.getOrElse("")))
     }).flatMap(list => Utils.notEmpty(list.flatten))
 
   def getSameCategory(content: String): Option[List[AdditifAlimentairesAdditiveSimilar]] =
     Utils.quadrupleMatchMulti(content, "(?i)<li class='addlien'><a href='/([^']*)\\.php'><span>Additifs de même famille</span>([^<]*)<br>([^<]*)<br>([^<]*)</a></li>").map(opt => opt.map {
       case (idOpt, categoryOpt, nameOpt, humanNameOpt) =>
-        idOpt.map(id => new AdditifAlimentairesAdditiveSimilar(id, categoryOpt.getOrElse(""), nameOpt.getOrElse(""), humanNameOpt.getOrElse("")))
+        idOpt.map(id => new AdditifAlimentairesAdditiveSimilar(id, categoryOpt.getOrElse(""), nameOpt.getOrElse("").toLowerCase(), nameOpt.getOrElse(""), humanNameOpt.getOrElse("")))
     }).flatMap(list => Utils.notEmpty(list.flatten))
 
   def getArticles(content: String): Option[List[AdditifAlimentairesAdditiveArticle]] =
@@ -250,21 +264,18 @@ object AdditifAlimentairesAdditive {
     }).flatMap(list => Utils.notEmpty(list.flatten))
 
   private def danger(color: String): AdditifAlimentairesAdditiveDanger = color match {
-    case "#427d06" => new AdditifAlimentairesAdditiveDanger(1, "Sans danger")
-    case "#67b800" => new AdditifAlimentairesAdditiveDanger(2, "Sans danger")
-    case "#b0cc00" => new AdditifAlimentairesAdditiveDanger(3, "Douteux")
-    case "#cc9800" => new AdditifAlimentairesAdditiveDanger(4, "Douteux")
-    case "#cc5800" => new AdditifAlimentairesAdditiveDanger(5, "Dangereux")
-    case "#cc0000" => new AdditifAlimentairesAdditiveDanger(6, "Dangereux")
-    case c => new AdditifAlimentairesAdditiveDanger(0, "Inconnu")
+    case "#427d06" => new AdditifAlimentairesAdditiveDanger(1)
+    case "#67b800" => new AdditifAlimentairesAdditiveDanger(2)
+    case "#b0cc00" => new AdditifAlimentairesAdditiveDanger(3)
+    case "#cc9800" => new AdditifAlimentairesAdditiveDanger(4)
+    case "#cc5800" => new AdditifAlimentairesAdditiveDanger(5)
+    case "#cc0000" => new AdditifAlimentairesAdditiveDanger(6)
+    case c => new AdditifAlimentairesAdditiveDanger(0)
   }
   private def allowed(color: String, description: String): AdditifAlimentairesAdditiveAllowed = color match {
-    case "#b0b0b0" => new AdditifAlimentairesAdditiveAllowed("unknown", "Inconnu", description) // law
-    case "#209920" => new AdditifAlimentairesAdditiveAllowed("allowed", "Autorisé", description) // law
-    case "#00b000" => new AdditifAlimentairesAdditiveAllowed("allowed", "Autorisé", description) // regime
-    case "#b0b000" => new AdditifAlimentairesAdditiveAllowed("suspicious", "Douteux", description) // regime
-    case "#ff2020" => new AdditifAlimentairesAdditiveAllowed("forbidden", "Interdit", description) // law
-    case "#b00000" => new AdditifAlimentairesAdditiveAllowed("forbidden", "Interdit", description) // regime
-    case _ => new AdditifAlimentairesAdditiveAllowed("unknown", "Inconnu", description)
+    case "#209920" | "#00b000" => new AdditifAlimentairesAdditiveAllowed(1, description)
+    case "#b0b000" => new AdditifAlimentairesAdditiveAllowed(2, description)
+    case "#ff2020" | "#b00000" => new AdditifAlimentairesAdditiveAllowed(3, description)
+    case "#b0b0b0" | _ => new AdditifAlimentairesAdditiveAllowed(0, description)
   }
 }

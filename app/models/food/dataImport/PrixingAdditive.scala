@@ -13,10 +13,10 @@ case class PrixingAdditive(
   danger: Option[Int],
   dangerName: Option[String],
   source: Option[String],
+  origin: Option[String],
   category: Option[String],
   authorisation: Option[String],
   dailyDose: Option[String],
-  origine: Option[String],
   risks: Option[String],
   toxicity: Option[String],
   regime: Option[String],
@@ -52,17 +52,17 @@ object PrixingAdditive {
     val danger = getDanger(content)
     val dangerName = getDangerName(content)
     val source = getSource(content)
+    val origin = getOrigin(content)
     val category = getCategory(content)
     val authorisation = getAuthorisation(content)
     val dailyDose = getDailyDose(content)
-    val origine = getOrigine(content)
     val risks = getRisks(content)
     val toxicity = getToxicity(content)
     val regime = getRegime(content)
     val usage = getUsage(content)
     val description = getDescription(content)
     val url = getUrl(prixingId)
-    isValid(new PrixingAdditive(VERSION, prixingId, reference, name, humanName, fullName, danger, dangerName, source, category, authorisation, dailyDose, origine, risks, toxicity, regime, usage, description, url))
+    isValid(new PrixingAdditive(VERSION, prixingId, reference, name, humanName, fullName, danger, dangerName, source, origin, category, authorisation, dailyDose, risks, toxicity, regime, usage, description, url))
   }
 
   def reference(fullName: String): String = fullName.split(" ")(0).toLowerCase()
@@ -82,7 +82,7 @@ object PrixingAdditive {
   private def getCategory(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Type</h4>\n(.*)</br>")
   private def getAuthorisation(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Autorisation</h4>\n(.*)</br>")
   private def getDailyDose(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Dose journalière admissible</h4>\n(.*)</br>")
-  private def getOrigine(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Origine</h4>\n(.*)</br>")
+  private def getOrigin(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Origine</h4>\n(.*)</br>")
   private def getRisks(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Risques et effets secondaires</h4>\n(.*)</br>")
   private def getToxicity(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Toxicité</h4>\n(.*)</br>")
   private def getRegime(content: String): Option[String] = Utils.simpleMatch(content, "(?i)<h4>Restrictions alimentaires</h4>\n(.*)</br>")

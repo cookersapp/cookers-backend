@@ -27,19 +27,19 @@ object Products extends Controller with MongoController {
 
   def getAllCookers = Action {
     Async {
-      FoodSrv.getAllCookersProduct().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
+      FoodSrv.getAllCookersProducts().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
     }
   }
 
   def getAllOpenFoodFacts = Action {
     Async {
-      FoodSrv.getAllOpenFoodFactsProduct().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
+      FoodSrv.getAllOpenFoodFactsProducts().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
     }
   }
 
   def getAllPrixing = Action {
     Async {
-      FoodSrv.getAllPrixingProduct().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
+      FoodSrv.getAllPrixingProducts().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
     }
   }
 

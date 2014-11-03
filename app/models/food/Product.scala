@@ -4,32 +4,8 @@ import common.Utils
 import models.food.dataImport.CookersProduct
 import models.food.dataImport.OpenFoodFactsProduct
 import models.food.dataImport.PrixingProduct
-import models.food.dataImport.PrixingAdditive
 import play.api.Logger
 import play.api.libs.json._
-
-case class Additive(
-  reference: String,
-  name: String,
-  humanName: Option[String],
-  fullName: String,
-  danger: Option[Int],
-  source: Option[String],
-  category: Option[String],
-  authorisation: Option[String],
-  dailyDose: Option[String],
-  origine: Option[String],
-  risks: Option[String],
-  toxicity: Option[String],
-  regime: Option[String],
-  usage: Option[String],
-  description: Option[String]) {
-  def this(reference: String) = this(reference, "", None, "", None, None, None, None, None, None, None, None, None, None, None)
-  def this(a: PrixingAdditive) = this(a.reference, a.name, a.humanName, a.fullName, a.danger, a.source, a.category, a.authorisation, a.dailyDose, a.origine, a.risks, a.toxicity, a.regime, a.usage, a.description)
-}
-object Additive {
-  implicit val additiveFormat = Json.format[Additive]
-}
 
 case class ProductNutrition(
   grade: Option[String],
@@ -79,20 +55,24 @@ case class Product(
   keywords: Option[List[String]],
   infos: Option[ProductInfo],
   nutrition: Option[ProductNutrition],
-  more: ProductMore)
+  more: ProductMore) {
+  def withAdditives(additives: List[Additive]) = new Product(this.barcode, this.name, this.image, this.foodId, this.quantity, this.serving, this.rating, this.price, this.brand, this.category, this.labels, this.ingredients, this.traces, Some(additives), this.keywords, this.infos, this.nutrition, this.more)
+}
 
 object Product {
   implicit val productFormat = Json.format[Product]
 
   def mergeSources(p1: Option[CookersProduct], p2: Option[OpenFoodFactsProduct], p3: Option[PrixingProduct]): Option[Product] = {
-    val r1 = if (p1.isDefined) Some(transform(p1.get)) else None
-    val r2 = if (p2.isDefined) Some(transform(p2.get)) else None
-    val r3 = if (p3.isDefined) Some(transform(p3.get)) else None
-    val res = List(r1, r2, r3).flatten
+    val r1 = if (p1.isDefined) Some(from(p1.get)) else None
+    val r2 = if (p2.isDefined) Some(from(p2.get)) else None
+    val r3 = if (p3.isDefined) Some(from(p3.get)) else None
+    mergeSources(List(r1, r2, r3).flatten)
+  }
 
-    if (res.isEmpty) None
-    else if (res.size == 0) isValid(res(0))
-    else isValid(res.tail.foldLeft(res(0)) { case (acc, elt) => merge(acc, elt) })
+  def mergeSources(list: List[Product]): Option[Product] = {
+    if (list.isEmpty) None
+    else if (list.size == 1) isValid(list(0))
+    else isValid(list.tail.foldLeft(list(0)) { case (acc, elt) => merge(acc, elt) })
   }
 
   private def isValid(p: Product): Option[Product] = {
@@ -100,12 +80,12 @@ object Product {
     else None
   }
 
-  private def transform(product: CookersProduct): Product = {
+  private def from(product: CookersProduct): Product = {
     val more = new ProductMore(List(), None, None, None, None, None, List("cookers"))
     new Product(product.barcode, "", "", product.foodId, None, None, None, None, None, None, None, None, None, None, None, None, None, more)
   }
 
-  private def transform(product: OpenFoodFactsProduct): Product = {
+  private def from(product: OpenFoodFactsProduct): Product = {
     val barcode = product.barcode
     val name = Utils.first(product.name, product.more.genericName).getOrElse("Unknown :(")
     val allImages = Utils.asList(product.image, product.more.imageSmall).distinct
@@ -135,7 +115,7 @@ object Product {
     new Product(barcode, name, image, foodId, quantity, serving, rating, price, brand, category, labels, ingredients, traces, additives, keywords, infos, nutrition, more)
   }
 
-  private def transform(product: PrixingProduct): Product = {
+  private def from(product: PrixingProduct): Product = {
     val barcode = product.barcode
     val name = product.name.getOrElse("")
     val allImages = product.images.getOrElse(List())
@@ -155,7 +135,7 @@ object Product {
     val labels = None
     val ingredients = None
     val traces = None
-    val additives = product.additives.map(elt => elt.map { additive => new Additive(additive) }.toList)
+    val additives = product.additives.map(elt => elt.map { additive => Additive.from(additive) }.toList)
     val keywords = None
     val productInfo = new ProductInfo(
       Utils.first(product.infos.description, product.infos.informations, product.infos.presentation),
@@ -200,22 +180,7 @@ object Product {
   private def distinct(list: List[Additive]): List[Additive] = {
     list.groupBy(elt => elt.reference).map {
       case (_, elts) =>
-        val reference = elts.map(elt => Utils.toOpt(elt.reference)).find(str => str.isDefined).map(opt => opt.get).getOrElse("")
-        val name = elts.map(elt => Utils.toOpt(elt.name)).find(str => str.isDefined).map(opt => opt.get).getOrElse("")
-        val humanName = elts.map(elt => elt.humanName).find(str => str.isDefined).getOrElse(None)
-        val fullName = elts.map(elt => Utils.toOpt(elt.fullName)).find(str => str.isDefined).map(opt => opt.get).getOrElse("")
-        val danger = elts.map(elt => elt.danger).find(str => str.isDefined).getOrElse(None)
-        val source = elts.map(elt => elt.source).find(str => str.isDefined).getOrElse(None)
-        val category = elts.map(elt => elt.category).find(str => str.isDefined).getOrElse(None)
-        val authorisation = elts.map(elt => elt.authorisation).find(str => str.isDefined).getOrElse(None)
-        val dailyDose = elts.map(elt => elt.dailyDose).find(str => str.isDefined).getOrElse(None)
-        val origine = elts.map(elt => elt.origine).find(str => str.isDefined).getOrElse(None)
-        val risks = elts.map(elt => elt.risks).find(str => str.isDefined).getOrElse(None)
-        val toxicity = elts.map(elt => elt.toxicity).find(str => str.isDefined).getOrElse(None)
-        val regime = elts.map(elt => elt.regime).find(str => str.isDefined).getOrElse(None)
-        val usage = elts.map(elt => elt.usage).find(str => str.isDefined).getOrElse(None)
-        val description = elts.map(elt => elt.description).find(str => str.isDefined).getOrElse(None)
-        new Additive(reference, name, humanName, fullName, danger, source, category, authorisation, dailyDose, origine, risks, toxicity, regime, usage, description)
-    }.toList
+        Additive.mergeSources(elts)
+    }.toList.flatten
   }
 }

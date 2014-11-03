@@ -3,60 +3,66 @@
 # ~~~~
 
 # Home page
-GET       /                                         controllers.Application.index(any = "none")
+GET       /                                                  controllers.Application.index(any = "none")
 
 # Cookers API
 
-GET       /api/v1/track/events                      controllers.Tracking.getAll(name: Option[String])
-GET       /api/v1/track/events/malformed            controllers.Tracking.getAllMalformed
-GET       /api/v1/track/events/:id                  controllers.Tracking.get(id: String)
-POST      /api/v1/track/event                       controllers.Tracking.add
-POST      /api/v1/track/events                      controllers.Tracking.addAll
+GET       /api/v1/track/events                               controllers.Tracking.getAll(name: Option[String])
+GET       /api/v1/track/events/malformed                     controllers.Tracking.getAllMalformed
+GET       /api/v1/track/events/:id                           controllers.Tracking.get(id: String)
+POST      /api/v1/track/event                                controllers.Tracking.add
+POST      /api/v1/track/events                               controllers.Tracking.addAll
 
-GET       /api/v1/stats/week                        controllers.Stats.weekData(week: Option[Int])
-GET       /api/v1/stats/users/activity              controllers.Stats.userActivity(interval: Option[String])
-GET       /api/v1/stats/recipes/week/:week          controllers.Stats.recipeStats(week: Int, graph: Option[String])
+GET       /api/v1/stats/week                                 controllers.Stats.weekData(week: Option[Int])
+GET       /api/v1/stats/users/activity                       controllers.Stats.userActivity(interval: Option[String])
+GET       /api/v1/stats/recipes/week/:week                   controllers.Stats.recipeStats(week: Int, graph: Option[String])
 
-GET       /api/v1/users                             controllers.Users.getAll
-GET       /api/v1/users/find                        controllers.Users.findOrCreate(email: String, welcomeEmailSent: Option[Boolean])
-GET       /api/v1/users/:id                         controllers.Users.get(id: String)
-GET       /api/v1/users/:id/events                  controllers.Tracking.getForUser(id: String)
-PUT       /api/v1/users/:id/settings/:setting       controllers.Users.setUserSetting(id: String, setting: String)
-PUT       /api/v1/users/:id/device                  controllers.Users.setUserDevice(id: String)
+GET       /api/v1/users                                      controllers.Users.getAll
+GET       /api/v1/users/find                                 controllers.Users.findOrCreate(email: String, welcomeEmailSent: Option[Boolean])
+GET       /api/v1/users/:id                                  controllers.Users.get(id: String)
+GET       /api/v1/users/:id/events                           controllers.Tracking.getForUser(id: String)
+PUT       /api/v1/users/:id/settings/:setting                controllers.Users.setUserSetting(id: String, setting: String)
+PUT       /api/v1/users/:id/device                           controllers.Users.setUserDevice(id: String)
 
-GET       /api/v1/stores                            controllers.Stores.getAll
-POST      /api/v1/stores                            controllers.Stores.create
-GET       /api/v1/stores/:id                        controllers.Stores.get(id: String)
-DELETE    /api/v1/stores/:id                        controllers.Stores.remove(id: String)
-GET       /api/v1/stores/:id/products/:barcode      controllers.Products.getWithStore(id: String, barcode: String)
-GET       /api/v1/products                          controllers.Products.getAll
-GET       /api/v1/products/cookers                  controllers.Products.getAllCookers
-GET       /api/v1/products/openfoodfacts            controllers.Products.getAllOpenFoodFacts
-GET       /api/v1/products/prixing                  controllers.Products.getAllPrixing
-GET       /api/v1/products/:barcode                 controllers.Products.get(barcode: String)
-PUT       /api/v1/products/:barcode                 controllers.Products.setFoodId(barcode: String, foodId: String)
-GET       /api/v1/products/:barcode/cookers         controllers.Products.getCookers(barcode: String)
-GET       /api/v1/products/:barcode/openfoodfacts   controllers.Products.getOpenFoodFacts(barcode: String)
-GET       /api/v1/products/:barcode/prixing         controllers.Products.getPrixing(barcode: String)
+GET       /api/v1/stores                                     controllers.Stores.getAll
+POST      /api/v1/stores                                     controllers.Stores.create
+GET       /api/v1/stores/:id                                 controllers.Stores.get(id: String)
+DELETE    /api/v1/stores/:id                                 controllers.Stores.remove(id: String)
+GET       /api/v1/stores/:id/products/:barcode               controllers.Products.getWithStore(id: String, barcode: String)
+GET       /api/v1/products                                   controllers.Products.getAll
+GET       /api/v1/products/cookers                           controllers.Products.getAllCookers
+GET       /api/v1/products/openfoodfacts                     controllers.Products.getAllOpenFoodFacts
+GET       /api/v1/products/prixing                           controllers.Products.getAllPrixing
+GET       /api/v1/products/:barcode                          controllers.Products.get(barcode: String)
+PUT       /api/v1/products/:barcode                          controllers.Products.setFoodId(barcode: String, foodId: String)
+GET       /api/v1/products/:barcode/cookers                  controllers.Products.getCookers(barcode: String)
+GET       /api/v1/products/:barcode/openfoodfacts            controllers.Products.getOpenFoodFacts(barcode: String)
+GET       /api/v1/products/:barcode/prixing                  controllers.Products.getPrixing(barcode: String)
+GET       /api/v1/additives                                  controllers.Additives.getAll
+GET       /api/v1/additives/additifalimentaires              controllers.Additives.getAllAdditifAlimentaires
+GET       /api/v1/additives/prixing                          controllers.Additives.getAllPrixing
+GET       /api/v1/additives/:reference                       controllers.Additives.get(reference: String)
+GET       /api/v1/additives/:reference/additifalimentaires   controllers.Additives.getAdditifAlimentaires(reference: String)
+GET       /api/v1/additives/:reference/prixing               controllers.Additives.getPrixing(reference: String)
 
 # Admin methods
-POST      /api/v1/app-feedback                      controllers.Application.sendFeedback
-DELETE    /api/v1/reset-database                    controllers.Application.resetDatabase
-GET       /api/export                               controllers.Application.export(exportUsers:Option[Boolean], exportEvents:Option[Boolean], exportMalformedEvents:Option[Boolean])
-POST      /api/importAndMerge                       controllers.Application.importAndMerge
-POST      /api/clearAndImport                       controllers.Application.clearAndImport
+POST      /api/v1/app-feedback                               controllers.Application.sendFeedback
+DELETE    /api/v1/reset-database                             controllers.Application.resetDatabase
+GET       /api/export                                        controllers.Application.export(exportUsers:Option[Boolean], exportEvents:Option[Boolean], exportMalformedEvents:Option[Boolean])
+POST      /api/importAndMerge                                controllers.Application.importAndMerge
+POST      /api/clearAndImport                                controllers.Application.clearAndImport
 
 # Catch all API calls
-GET       /api/*all                                 controllers.Application.apiNotFound(verb = "GET", all: String)
-PUT       /api/*all                                 controllers.Application.apiNotFound(verb = "PUT", all: String)
-POST      /api/*all                                 controllers.Application.apiNotFound(verb = "POST", all: String)
-DELETE    /api/*all                                 controllers.Application.apiNotFound(verb = "DELETE", all: String)
+GET       /api/*all                                          controllers.Application.apiNotFound(verb = "GET", all: String)
+PUT       /api/*all                                          controllers.Application.apiNotFound(verb = "PUT", all: String)
+POST      /api/*all                                          controllers.Application.apiNotFound(verb = "POST", all: String)
+DELETE    /api/*all                                          controllers.Application.apiNotFound(verb = "DELETE", all: String)
 
 # Allow cross-origin
-OPTIONS   /*all                                     controllers.Application.corsPreflight(all: String)
+OPTIONS   /*all                                              controllers.Application.corsPreflight(all: String)
 
 # Map static resources from the /public folder to the /assets URL path
-GET       /assets/*file                             controllers.Assets.at(path="/public", file)
+GET       /assets/*file                                      controllers.Assets.at(path="/public", file)
 
 # Redirect all unknown routes to the index page
-GET       /*any                                     controllers.Application.index(any)
+GET       /*any                                              controllers.Application.index(any)
