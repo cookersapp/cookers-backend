@@ -11,6 +11,7 @@ case class AdditiveAllowed(level: Int, name: String, description: String) {
     case 1 => "allowed"
     case 2 => "suspicious"
     case 3 => "forbidden"
+    case _ => "???"
   }, description)
 }
 object AdditiveAllowed {
@@ -28,6 +29,7 @@ case class AdditiveDanger(level: Int, description: String) {
     case 1 | 2 => "Sans danger"
     case 3 | 4 => "Douteux"
     case 5 | 6 => "Dangereux"
+    case _ => "???"
   })
 }
 object AdditiveDanger {
@@ -89,7 +91,8 @@ object Additive {
     val fullName = a.fullName
     val alias = None
     val authorized = a.authorisation.map(auth => auth match {
-      case "Autorisé en france" => new AdditiveAllowed(1, "allowed", auth)
+      case "Autorisé en france" => new AdditiveAllowed(1, auth)
+      case _ => new AdditiveAllowed(0, auth)
     })
     val category = a.category
     val usages = a.usage.map(u => List(new AdditiveUsage("", u)))
