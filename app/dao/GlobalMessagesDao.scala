@@ -17,7 +17,6 @@ object GlobalMessagesDao {
 
   def all()(implicit db: DB): Future[List[GlobalMessage]] = collection().find(Json.obj()).cursor[GlobalMessage].toList
   def findById(id: String)(implicit db: DB): Future[Option[GlobalMessage]] = collection().find(Json.obj("id" -> id)).one[GlobalMessage]
-  def findFor(version: String)(implicit db: DB): Future[List[GlobalMessage]] = collection().find(Json.obj("versions" -> version)).cursor[GlobalMessage].toList
 
   def insert(message: GlobalMessage)(implicit db: DB): Future[LastError] = collection().insert(message)
   def update(id: String, message: GlobalMessage)(implicit db: DB): Future[LastError] = collection().update(Json.obj("id" -> id), message)

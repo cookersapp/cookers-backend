@@ -18,12 +18,6 @@ object GlobalMessages extends Controller with MongoController {
     }
   }
 
-  def getForMe(version: String) = Action {
-    Async {
-      GlobalMessagesDao.findFor(version).map { messages => Ok(ApiUtils.Ok(Json.toJson(messages))) }
-    }
-  }
-
   def get(id: String) = Action {
     Async {
       GlobalMessagesDao.findById(id).map {

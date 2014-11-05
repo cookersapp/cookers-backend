@@ -416,7 +416,7 @@ angular.module('app')
   var defaultSort = {order: 'sticky'};
   var defaultFormElt = {
     category: dataList.messageCategories[0],
-    versions: [dataList.appVersions[0], dataList.appVersions[1], dataList.appVersions[2], dataList.appVersions[3], dataList.appVersions[4], dataList.appVersions[5]]
+    versions: [dataList.appVersions[0], dataList.appVersions[1]]
   };
   $scope.crud = CrudUtils.createCrudCtrl('Global messages', $rootScope.config.header, GlobalmessageSrv, defaultSort, defaultFormElt);
 })
