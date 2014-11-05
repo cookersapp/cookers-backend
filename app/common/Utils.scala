@@ -6,6 +6,7 @@ import scala.concurrent._
 import ExecutionContext.Implicits.global
 import play.api.Play
 import play.api.libs.json._
+import reactivemongo.bson.BSONObjectID
 
 object Utils {
   // possible values for env : 'local', 'dev', 'prod', 'undefined'
@@ -40,6 +41,11 @@ object Utils {
 
   def transform[T, U](pair: (Option[T], Option[U])): Option[(T, U)] = for (a <- pair._1; b <- pair._2) yield (a, b)
   def transform[A](o: Option[Future[A]]): Future[Option[A]] = o.map(f => f.map(Option(_))).getOrElse(Future.successful(None))
+
+  def addId(json: JsValue): JsValue = {
+    val addIdTransformer = (__).json.update(__.read[JsObject].map { originalData => originalData ++ Json.obj("id" -> BSONObjectID.generate.stringify) })
+    json.transform(addIdTransformer).get
+  }
 
   def simpleMatch(content: String, regex: String): Option[String] = {
     val matcher = regex.r.unanchored

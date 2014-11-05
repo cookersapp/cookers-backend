@@ -11,6 +11,7 @@ import models.food.Additive
 import models.food.dataImport.AdditifAlimentairesAdditive
 import models.food.dataImport.PrixingAdditive
 import models.stats.UserActivity
+import models.GlobalMessage
 import play.api.libs.json._
 
 object ApiUtils {
@@ -24,10 +25,11 @@ object ApiUtils {
   def Ok(data: Additive): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: AdditifAlimentairesAdditive): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: PrixingAdditive): JsObject = Json.obj("status" -> 200, "data" -> data)
-  def Ok(data: List[UserActivity]): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: Store): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: Event): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: User): JsObject = Json.obj("status" -> 200, "data" -> data)
+  def Ok(data: GlobalMessage): JsObject = Json.obj("status" -> 200, "data" -> data)
+  def Ok(data: List[UserActivity]): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: Map[String, Map[String, Int]]): JsObject = Json.obj("status" -> 200, "data" -> data)
   def BadRequest(message: String): JsObject = Json.obj("status" -> 400, "message" -> message)
   def Unauthorized(message: String): JsObject = Json.obj("status" -> 401, "message" -> message)

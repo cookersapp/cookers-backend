@@ -2,40 +2,36 @@
   <div class="col-md-8">
     <div class="widget">
       <div class="widget-header">
-        <i class="fa fa-comment"></i> Global message
-        <button type="button" class="btn btn-sm btn-success pull-right" ng-click="create()" style="margin-left: 10px;"><i class="fa fa-plus"></i> Créer un message</button>
+        <i class="fa fa-comment"></i> Global message ({{filtered.length}})
+        <button type="button" class="btn btn-sm btn-success pull-right" ng-click="crud.fn.create()" style="margin-left: 10px;"><i class="fa fa-plus"></i> Créer un message</button>
         <input type="text" class="form-control input-sm pull-right" placeholder="Search ..." ng-model="search">
         <div class="clearfix"></div>
       </div>
       <div class="widget-body no-padding">
-        <rd-loading ng-if="status.loading && !(model.elts && model.elts.length > 0)"></rd-loading>
-        <div class="alert alert-danger" role="alert" ng-if="status.error"><strong>Error!</strong> {{status.error}}</div>
-        <div class="table-responsive" ng-if="model.elts && model.elts.length > 0">
+        <rd-loading ng-show="crud.data.status.loading && !(crud.data.elts && crud.data.elts.length > 0)"></rd-loading>
+        <div class="alert alert-danger" role="alert" ng-show="crud.data.status.error"><strong>Error!</strong> {{crud.data.status.error}}</div>
+        <div class="table-responsive" ng-show="crud.data.elts && crud.data.elts.length > 0">
           <table class="table table-hover">
             <thead>
               <tr>
-                <th sort="config.sort" name="type" ng-click="sort('type')">Type</th>
-                <th sort="config.sort" name="isProd" ng-click="sort('isProd')">Prod</th>
-                <th>Message ({{filtered.length}})</th>
+                <th sort="crud.data.currentSort" name="sticky" ng-click="crud.fn.sort('sticky')">Sticky</th>
+                <th>Message</th>
                 <th>Versions</th>
-                <th sort="config.sort" name="updated" ng-click="sort('updated', true)">Mis à jour</th>
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="message in filtered = (model.elts | filter:search)" ng-click="toggle(message)" ng-class="{active: model.selected && message.id === model.selected.id}">
-                <td><span class="label" ng-class="{'label-default': message.type==='standard', 'label-success': message.type==='sticky', 'label-danger': message.type==='exec'}">{{message.type}}</span></td>
-                <td><span class="label" ng-class="{'label-default': !message.isProd, 'label-danger': message.isProd}">{{message.isProd ? 'Oui' : 'Non'}}</span></td>
+              <tr ng-repeat="message in filtered = (crud.data.elts | filter:search)" ng-click="crud.fn.toggle(message)" ng-class="{active: crud.data.selectedElt && message.id === crud.data.selectedElt.id}">
+                <td><span class="label" ng-class="{'label-default': !message.sticky, 'label-danger': message.sticky}">{{message.sticky ? 'Oui' : 'Non'}}</span></td>
                 <td>
-                  <div class="alert alert-{{message.display}}" style="max-width: 384px;">
+                  <div class="alert alert-{{message.category}}" style="max-width: 384px;">
                     <span ng-bind-html="trustHtml(message.content)"></span>
                   </div>
                 </td>
                 <td>
-                  <span ng-repeat="target in message.targets">
-                    <span class="label label-primary">{{target}}</span>
+                  <span ng-repeat="version in message.versions">
+                    <span class="label label-primary">{{version}}</span>
                   </span>
                 </td>
-                <td>{{message.updated ? message.updated : message.created | date}}</td>
               </tr>
             </tbody>
           </table>
@@ -44,63 +40,52 @@
     </div>
   </div>
   
-  <div class="col-md-4" ng-if="model.selected && !model.form">
+  <div class="col-md-4" ng-show="crud.data.selectedElt && !crud.data.form">
     <div class="card">
       <h4 class="card-heading">
         <span class="pull-right">
-          <a class="btn btn-xs btn-default" href="{{eltRestUrl(model.selected)}}" target="_blank"><i class="fa fa-external-link"></i></a>
-          <a class="btn btn-xs btn-info" ng-click="edit(model.selected)"><i class="fa fa-pencil-square-o"></i></a>
-          <loading-button btn-class="btn-xs btn-danger" btn-icon="fa fa-trash-o" btn-loading="status.removing" ng-click="remove(model.selected)"></loading-button>
+          <a class="btn btn-xs btn-default" href="{{crud.fn.eltRestUrl(crud.data.selectedElt)}}" target="_blank"><i class="fa fa-external-link"></i></a>
+          <a class="btn btn-xs btn-info" ng-click="crud.fn.edit(crud.data.selectedElt)"><i class="fa fa-pencil-square-o"></i></a>
+          <loading-button btn-class="btn-xs btn-danger" btn-icon="fa fa-trash-o" btn-loading="crud.data.status.removing" ng-click="crud.fn.remove(crud.data.selectedElt)"></loading-button>
         </span>
-        Type: <span class="label" ng-class="{'label-default': model.selected.type==='standard', 'label-success': model.selected.type==='sticky', 'label-danger': model.selected.type==='exec'}">{{model.selected.type}}</span>
-        Prod: <span class="label" ng-class="{'label-default': !model.selected.isProd, 'label-danger': model.selected.isProd}">{{model.selected.isProd ? 'Oui' : 'Non'}}</span>
+        Sticky: <span class="label" ng-class="{'label-default': !crud.data.selectedElt.sticky, 'label-danger': crud.data.selectedElt.sticky}">{{crud.data.selectedElt.sticky ? 'Oui' : 'Non'}}</span>
       </h4>
-      <div class="alert alert-{{model.selected.display}}" style="max-width: 384px;">
-        <span ng-bind-html="trustHtml(model.selected.content)"></span>
-      </div>
-      <div>
-        <h4>Afficher le message si :</h4>
-        <pre>{{model.selected.shouldDisplay}}</pre>
-      </div>
-      <div>
-        <h4>Executer :</h4>
-        <pre>{{model.selected.exec}}</pre>
+      <div class="alert alert-{{crud.data.selectedElt.category}}" style="max-width: 384px;">
+        <span ng-bind-html="trustHtml(crud.data.selectedElt.content)"></span>
       </div>
       <p class="footer">
-        <span ng-repeat="target in model.selected.targets"> <span class="label label-primary">{{target}}</span></span> |
-        Modifié le {{model.selected.updated ? model.selected.updated : model.selected.created | date}}
+        <span ng-repeat="version in crud.data.selectedElt.versions"> <span class="label label-primary">{{version}}</span></span>
       </p>
     </div>
   </div>
   
-  <div class="col-md-4" ng-if="model.form">
-    <form ng-submit="save()">
+  <div class="col-md-4" ng-show="crud.data.form">
+    <form ng-submit="crud.fn.save()">
       <div class="card">
-        <div class="form-group">
-          <label for="type">Type de message</label>
-          <select id="type" name="type" class="form-control" ng-model="model.form.type" ng-options="type for type in data.messageTypes" required>
-            <option value="">--</option>
-          </select>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="sticky" ng-model="crud.data.form.sticky"> sticky
+          </label>
         </div>
         <div class="form-group">
-          <label for="display">Apparence du message</label>
-          <select id="display" name="display" class="form-control" ng-model="model.form.display" ng-options="display for display in data.messageDisplay" required>
+          <label for="category">Apparence du message</label>
+          <select id="category" name="category" class="form-control" ng-model="crud.data.form.category" ng-options="category for category in data.messageCategories" required>
             <option value="">--</option>
           </select>
         </div>
         <div class="form-group">
           <label for="content">Message</label>
-          <textarea id="content" name="content" class="form-control" rows="5" ng-model="model.form.content" placeholder="Ex:bonjour :)" required></textarea>
+          <textarea id="content" name="content" class="form-control" rows="5" ng-model="crud.data.form.content" placeholder="Ex:bonjour :)" required></textarea>
         </div>
       </div>
 
-      <div class="card" ng-if="model.form.content">
+      <div class="card" ng-show="crud.data.form.content">
         <div class="form-group">
           <label>Preview :</label>
           <div class="form-control-static">
-            <div class="alert alert-{{model.form.display}}" style="max-width: 384px;">
+            <div class="alert alert-{{crud.data.form.category}}" style="max-width: 384px;">
               <button type="button" class="close">&times;</button>
-              <span ng-bind-html="trustHtml(model.form.content)"></span>
+              <span ng-bind-html="trustHtml(crud.data.form.content)"></span>
             </div>
           </div>
         </div>
@@ -108,21 +93,8 @@
       
       <div class="card">
         <div class="form-group">
-          <label for="shouldDisplay">Conditions d'affichage</label>
-          <textarea id="shouldDisplay" name="shouldDisplay" class="form-control" rows="5" ng-model="model.form.shouldDisplay" required></textarea>
-        </div>
-        <div class="form-group">
-          <label for="exec">Code exécuté</label>
-          <textarea id="exec" name="exec" class="form-control" rows="5" ng-model="model.form.exec" required></textarea>
-        </div>
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" name="isProd" ng-model="model.form.isProd"> send in prod
-          </label>
-        </div>
-        <div class="form-group">
-          <label for="targets">Versions cibles</label>
-          <select id="targets" name="targets" class="form-control" ng-model="model.form.targets" ng-options="v for v in data.appVersions" ng-multiple="true" multiple size="6" required>
+          <label for="versions">Versions cibles</label>
+          <select id="versions" name="versions" class="form-control" ng-model="crud.data.form.versions" ng-options="v for v in data.appVersions" ng-multiple="true" multiple size="6" required>
             <option value="">--</option>
           </select>
         </div>
@@ -130,10 +102,10 @@
 
       <div class="card">
         <div class="pull-right">
-          <loading-button btn-type="submit" btn-class="btn-primary" btn-loading="status.saving" ng-if="!model.form.id">Créer</loading-button>
-          <loading-button btn-type="submit" btn-class="btn-success" btn-loading="status.saving" ng-if="model.form.id">Enregistrer</loading-button>
+          <loading-button btn-type="submit" btn-class="btn-primary" btn-loading="crud.data.status.saving" ng-show="!crud.data.form.id">Créer</loading-button>
+          <loading-button btn-type="submit" btn-class="btn-success" btn-loading="crud.data.status.saving" ng-show="crud.data.form.id">Enregistrer</loading-button>
         </div>
-        <a class="btn btn-default" ng-click="cancelEdit()">Annuler</a>
+        <a class="btn btn-default" ng-click="crud.fn.cancelEdit()">Annuler</a>
         <div class="clearfix"></div>
       </div>
     </form>

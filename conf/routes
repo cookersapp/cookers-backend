@@ -23,6 +23,12 @@ GET       /api/v1/users/:id                                  controllers.Users.g
 GET       /api/v1/users/:id/events                           controllers.Tracking.getForUser(id: String)
 PUT       /api/v1/users/:id/settings/:setting                controllers.Users.setUserSetting(id: String, setting: String)
 PUT       /api/v1/users/:id/device                           controllers.Users.setUserDevice(id: String)
+GET       /api/v1/globalmessages                             controllers.GlobalMessages.getAll
+GET       /api/v1/globalmessages/me                          controllers.GlobalMessages.getForMe(version: String)
+GET       /api/v1/globalmessages/:id                         controllers.GlobalMessages.get(id: String)
+POST      /api/v1/globalmessages                             controllers.GlobalMessages.create
+PUT       /api/v1/globalmessages/:id                         controllers.GlobalMessages.update(id: String)
+DELETE    /api/v1/globalmessages/:id                         controllers.GlobalMessages.remove(id: String)
 
 GET       /api/v1/stores                                     controllers.Stores.getAll
 POST      /api/v1/stores                                     controllers.Stores.create

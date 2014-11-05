@@ -196,9 +196,8 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
   timerColors:      ['blue', 'red', 'yellow', 'green', 'orange'],
   foodCategories:   ['Viandes & Poissons', 'Fruits & Légumes', 'Pains & Pâtisseries', 'Frais', 'Surgelés', 'Épicerie salée', 'Épicerie sucrée', 'Boissons', 'Bébé', 'Bio', 'Hygiène & Beauté', 'Entretien & Nettoyage', 'Animalerie', 'Bazar & Textile'],
   currencies:       ['€'],
-  messageTypes:     ['standard', 'sticky', 'exec'],
-  messageDisplay:   ['default', 'success', 'info', 'warning', 'danger'],
-  appVersions:      ['~', '0.1.0', '0.2.0', '0.3.0', '0.3.1', '1.0.0', '1.0.1', '1.0.2', '1.0.3', '1.1.0']
+  messageCategories:['default', 'success', 'info', 'warning', 'danger'],
+  appVersions:      ['~', '1.1.0', '1.2.0']
 })
 
 .run(function($rootScope, $sce, $state, $location, $window, AuthSrv){

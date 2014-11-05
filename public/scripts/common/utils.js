@@ -4,8 +4,10 @@ angular.module('app')
   'use strict';
   var service = {
     clear: clear,
-    replace: replace,
-    replaceWithId: replaceWithId,
+    copy: copy,
+    updateElt: updateElt,
+    upsertElt: upsertElt,
+    removeElt: removeElt,
     toMap: toMap,
     toArray: toArray,
     length: length,
@@ -22,8 +24,17 @@ angular.module('app')
     }
   }
 
-  function replace(collection, callback, elt){
-    var foundElt = _.find(collection, callback);
+  function copy(src, dest){
+    if(Array.isArray(dest)){
+      clear(dest);
+      for(var i in src){
+        dest.push(src[i]);
+      }
+    }
+  }
+
+  function _updateElt(collection, selector, elt){
+    var foundElt = _.find(collection, selector);
     if(foundElt){
       var replacedElt = angular.copy(foundElt);
       angular.copy(elt, foundElt);
@@ -31,8 +42,29 @@ angular.module('app')
     }
   }
 
-  function replaceWithId(collection, elt){
-    return replace(collection, {id: elt.id}, elt);
+  function updateElt(collection, elt){
+    var foundElt = _.find(collection, {id: elt.id});
+    if(foundElt){
+      var replacedElt = angular.copy(foundElt);
+      angular.copy(elt, foundElt);
+      return replacedElt;
+    }
+  }
+
+  function upsertElt(collection, elt){
+    var foundElt = _.find(collection, {id: elt.id});
+    if(foundElt){
+      var replacedElt = angular.copy(foundElt);
+      angular.copy(elt, foundElt);
+      return replacedElt;
+    } else {
+      if(Array.isArray(collection)){ collection.push(elt); }
+      else { collection[elt.id] = elt; }
+    }
+  }
+
+  function removeElt(collection, elt){
+    _.remove(collection, {id: elt.id});
   }
 
   function toMap(arr){

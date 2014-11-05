@@ -161,16 +161,6 @@ angular.module('app')
   return service;
 })
 
-.factory('GlobalmessageSrv', function(_FirebaseCrudBuilder){
-  'use strict';
-  function process(formMessage){
-    var message = angular.copy(formMessage);
-    _FirebaseCrudBuilder.preprocessData(message);
-    return message;
-  }
-  return _FirebaseCrudBuilder.createDataService('globalmessages', process);
-})
-
 .factory('_FirebaseCrudBuilder', function($q, $http, firebaseUrl, Utils, CollectionUtils){
   'use strict';
   var service = {
