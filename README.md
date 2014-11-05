@@ -26,5 +26,9 @@ See spec.txt
 - Event sourcing : http://blog.zilverline.com/2012/07/04/simple-event-sourcing-introduction-part-1/ et https://github.com/ubourdon/uno/tree/fonctionnalEventSourcing
 - Export data from mixpanel : https://github.com/michaelcarter/mixpanel-data-export-js
 - Mixpanel api docs : https://mixpanel.com/docs/api-documentation/data-export-api
-- Dashboard from : https://github.com/Ehesp/Responsive-Dashboard
 - Sample app using heroku : https://github.com/jamesward/play2bars/tree/scala-mongodb
+
+## Dashboard samples
+
+- https://github.com/Ehesp/Responsive-Dashboard
+- https://github.com/keen/dashboards
