@@ -7,7 +7,7 @@ import models.food.Quantity
 import models.StoreProduct
 import dao.StoresDao
 import dao.ProductsDao
-import services.FoodSrv
+import services.ProductSrv
 import scala.util.Random
 import scala.concurrent.Future
 import play.api.Logger
@@ -21,32 +21,32 @@ object Products extends Controller with MongoController {
 
   def getAll = Action {
     Async {
-      FoodSrv.getAllProducts().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
+      ProductSrv.getAllProducts().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
     }
   }
 
   def getAllCookers = Action {
     Async {
-      FoodSrv.getAllCookersProducts().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
+      ProductSrv.getAllCookersProducts().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
     }
   }
 
   def getAllOpenFoodFacts = Action {
     Async {
-      FoodSrv.getAllOpenFoodFactsProducts().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
+      ProductSrv.getAllOpenFoodFactsProducts().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
     }
   }
 
   def getAllPrixing = Action {
     Async {
-      FoodSrv.getAllPrixingProducts().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
+      ProductSrv.getAllPrixingProducts().map { products => Ok(ApiUtils.Ok(Json.toJson(products))) }
     }
   }
 
   def getWithStore(storeId: String, barcode: String) = Action {
     Async {
       val future: Future[(Option[Product], Option[StoreProduct])] = for {
-        productOpt <- FoodSrv.getProduct(barcode)
+        productOpt <- ProductSrv.getProduct(barcode)
         storeProductOpt <- StoresDao.findProduct(storeId, barcode)
       } yield (productOpt, storeProductOpt)
 
@@ -68,7 +68,7 @@ object Products extends Controller with MongoController {
 
   def get(barcode: String) = Action {
     Async {
-      FoodSrv.getProduct(barcode).map { productOpt =>
+      ProductSrv.getProduct(barcode).map { productOpt =>
         if (productOpt.isEmpty) {
           Ok(ApiUtils.NotFound("Product not found !"))
         } else {
@@ -91,7 +91,7 @@ object Products extends Controller with MongoController {
 
   def getCookers(barcode: String) = Action {
     Async {
-      FoodSrv.getCookersProduct(barcode).map { productOpt =>
+      ProductSrv.getCookersProduct(barcode).map { productOpt =>
         if (productOpt.isEmpty) {
           Ok(ApiUtils.NotFound("Product not found !"))
         } else {
@@ -103,7 +103,7 @@ object Products extends Controller with MongoController {
 
   def getOpenFoodFacts(barcode: String) = Action {
     Async {
-      FoodSrv.getOpenFoodFactsProduct(barcode).map { productOpt =>
+      ProductSrv.getOpenFoodFactsProduct(barcode).map { productOpt =>
         if (productOpt.isEmpty) {
           Ok(ApiUtils.NotFound("Product not found !"))
         } else {
@@ -115,7 +115,7 @@ object Products extends Controller with MongoController {
 
   def getPrixing(barcode: String) = Action {
     Async {
-      FoodSrv.getPrixingProduct(barcode).map { productOpt =>
+      ProductSrv.getPrixingProduct(barcode).map { productOpt =>
         if (productOpt.isEmpty) {
           Ok(ApiUtils.NotFound("Product not found !"))
         } else {

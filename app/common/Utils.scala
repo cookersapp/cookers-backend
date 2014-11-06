@@ -42,6 +42,16 @@ object Utils {
   def transform[T, U](pair: (Option[T], Option[U])): Option[(T, U)] = for (a <- pair._1; b <- pair._2) yield (a, b)
   def transform[A](o: Option[Future[A]]): Future[Option[A]] = o.map(f => f.map(Option(_))).getOrElse(Future.successful(None))
 
+  def toSlug(input: String): String = {
+    import java.text.Normalizer
+    Normalizer.normalize(input, Normalizer.Form.NFD)
+      .replaceAll("[^\\w\\s-]", "") // Remove all non-word, non-space or non-dash characters
+      .replace('-', ' ') // Replace dashes with spaces
+      .trim // Trim leading/trailing whitespace (including what used to be leading/trailing dashes)
+      .replaceAll("\\s+", "-") // Replace whitespace (including newlines and repetitions) with single dashes
+      .toLowerCase // Lowercase the final results
+  }
+
   def addId(json: JsValue): JsValue = {
     val addIdTransformer = (__).json.update(__.read[JsObject].map { originalData => originalData ++ Json.obj("id" -> BSONObjectID.generate.stringify) })
     json.transform(addIdTransformer).get

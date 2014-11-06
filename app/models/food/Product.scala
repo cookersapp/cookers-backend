@@ -38,6 +38,7 @@ object ProductMore {
 }
 
 case class Product(
+  id: String,
   barcode: String,
   name: String,
   image: String,
@@ -56,7 +57,7 @@ case class Product(
   infos: Option[ProductInfo],
   nutrition: Option[ProductNutrition],
   more: ProductMore) {
-  def withAdditives(additives: List[Additive]) = new Product(this.barcode, this.name, this.image, this.foodId, this.quantity, this.serving, this.rating, this.price, this.brand, this.category, this.labels, this.ingredients, this.traces, Some(additives), this.keywords, this.infos, this.nutrition, this.more)
+  def withAdditives(additives: List[Additive]) = new Product(this.id, this.barcode, this.name, this.image, this.foodId, this.quantity, this.serving, this.rating, this.price, this.brand, this.category, this.labels, this.ingredients, this.traces, Some(additives), this.keywords, this.infos, this.nutrition, this.more)
 }
 
 object Product {
@@ -82,7 +83,7 @@ object Product {
 
   private def from(product: CookersProduct): Product = {
     val more = new ProductMore(List(), None, None, None, None, None, List("cookers"))
-    new Product(product.barcode, "", "", product.foodId, None, None, None, None, None, None, None, None, None, None, None, None, None, more)
+    new Product(product.barcode, product.barcode, "", "", product.foodId, None, None, None, None, None, None, None, None, None, None, None, None, None, more)
   }
 
   private def from(product: OpenFoodFactsProduct): Product = {
@@ -112,7 +113,7 @@ object Product {
     val link = product.more.link
     val sources = List("openfoodfacts")
     val more = new ProductMore(allImages, allQuantities, allServings, brands, categories, link, sources)
-    new Product(barcode, name, image, foodId, quantity, serving, rating, price, brand, category, labels, ingredients, traces, additives, keywords, infos, nutrition, more)
+    new Product(barcode, barcode, name, image, foodId, quantity, serving, rating, price, brand, category, labels, ingredients, traces, additives, keywords, infos, nutrition, more)
   }
 
   private def from(product: PrixingProduct): Product = {
@@ -145,7 +146,7 @@ object Product {
     val link = None
     val sources = List("prixing")
     val more = new ProductMore(allImages, allQuantities, allServings, brands, categories, link, sources)
-    new Product(barcode, name, image, foodId, quantity, serving, rating, price, brand, category, labels, ingredients, traces, additives, keywords, infos, nutrition, more)
+    new Product(barcode, barcode, name, image, foodId, quantity, serving, rating, price, brand, category, labels, ingredients, traces, additives, keywords, infos, nutrition, more)
   }
 
   private def merge(p1: Product, p2: Product): Product = {
@@ -174,7 +175,7 @@ object Product {
     val link = Utils.first(p1.more.link, p2.more.link)
     val sources = p1.more.sources ++ p2.more.sources
     val more = new ProductMore(allImages, allQuantities, allServings, brands, categories, link, sources)
-    new Product(barcode, name, image, foodId, quantity, serving, rating, price, brand, category, labels, ingredients, traces, additives, keywords, infos, nutrition, more)
+    new Product(barcode, barcode, name, image, foodId, quantity, serving, rating, price, brand, category, labels, ingredients, traces, additives, keywords, infos, nutrition, more)
   }
 
   private def distinct(list: List[Additive]): List[Additive] = {

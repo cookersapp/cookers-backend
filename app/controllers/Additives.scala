@@ -7,7 +7,7 @@ import models.food.Quantity
 import models.StoreProduct
 import dao.StoresDao
 import dao.ProductsDao
-import services.FoodSrv
+import services.AdditiveSrv
 import scala.util.Random
 import scala.concurrent.Future
 import play.api.Logger
@@ -21,25 +21,25 @@ object Additives extends Controller with MongoController {
 
   def getAll = Action {
     Async {
-      FoodSrv.getAllAdditives().map { additives => Ok(ApiUtils.Ok(Json.toJson(additives))) }
+      AdditiveSrv.getAllAdditives().map { additives => Ok(ApiUtils.Ok(Json.toJson(additives))) }
     }
   }
 
   def getAllAdditifAlimentaires = Action {
     Async {
-      FoodSrv.getAllAdditifAlimentairesAdditive().map { additives => Ok(ApiUtils.Ok(Json.toJson(additives))) }
+      AdditiveSrv.getAllAdditifAlimentairesAdditive().map { additives => Ok(ApiUtils.Ok(Json.toJson(additives))) }
     }
   }
 
   def getAllPrixing = Action {
     Async {
-      FoodSrv.getAllPrixingAdditives().map { additives => Ok(ApiUtils.Ok(Json.toJson(additives))) }
+      AdditiveSrv.getAllPrixingAdditives().map { additives => Ok(ApiUtils.Ok(Json.toJson(additives))) }
     }
   }
 
   def get(reference: String) = Action {
     Async {
-      FoodSrv.getAdditive(reference.toLowerCase()).map { additiveOpt =>
+      AdditiveSrv.getAdditive(reference.toLowerCase()).map { additiveOpt =>
         if (additiveOpt.isEmpty) {
           Ok(ApiUtils.NotFound("Additive not found !"))
         } else {
@@ -51,7 +51,7 @@ object Additives extends Controller with MongoController {
 
   def getAdditifAlimentaires(reference: String) = Action {
     Async {
-      FoodSrv.getAdditifAlimentairesAdditive(reference.toLowerCase()).map { additiveOpt =>
+      AdditiveSrv.getAdditifAlimentairesAdditive(reference.toLowerCase()).map { additiveOpt =>
         if (additiveOpt.isEmpty) {
           Ok(ApiUtils.NotFound("Additive not found !"))
         } else {
@@ -63,7 +63,7 @@ object Additives extends Controller with MongoController {
 
   def getPrixing(reference: String) = Action {
     Async {
-      FoodSrv.getPrixingAdditive(reference.toLowerCase()).map { additiveOpt =>
+      AdditiveSrv.getPrixingAdditive(reference.toLowerCase()).map { additiveOpt =>
         if (additiveOpt.isEmpty) {
           Ok(ApiUtils.NotFound("Additive not found !"))
         } else {

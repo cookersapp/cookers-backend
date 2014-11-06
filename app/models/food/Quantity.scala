@@ -2,9 +2,6 @@ package models.food
 
 import play.api.Logger
 import play.api.libs.json._
-import play.api.libs.functional.syntax.functionalCanBuildApplicative
-import play.api.libs.functional.syntax.toFunctionalBuilderOps
-import scala.Array.canBuildFrom
 
 case class Quantity(
   value: Double,

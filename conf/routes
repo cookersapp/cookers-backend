@@ -29,6 +29,13 @@ POST      /api/v1/globalmessages                             controllers.GlobalM
 PUT       /api/v1/globalmessages/:id                         controllers.GlobalMessages.update(id: String)
 DELETE    /api/v1/globalmessages/:id                         controllers.GlobalMessages.remove(id: String)
 
+GET       /api/v1/foods                                      controllers.FirebaseExtract.getFoods
+GET       /api/v1/foods/:id                                  controllers.FirebaseExtract.getFood(id: String)
+GET       /api/v1/recipes                                    controllers.FirebaseExtract.getRecipes
+GET       /api/v1/recipes/:id                                controllers.FirebaseExtract.getRecipe(id: String)
+GET       /api/v1/selections                                 controllers.FirebaseExtract.getSelections
+GET       /api/v1/selections/:id                             controllers.FirebaseExtract.getSelection(id: String)
+
 GET       /api/v1/stores                                     controllers.Stores.getAll
 POST      /api/v1/stores                                     controllers.Stores.create
 GET       /api/v1/stores/:id                                 controllers.Stores.get(id: String)
