@@ -1,37 +1,27 @@
 package models.food
 
+import services.FirebaseSrv
 import models.food.dataImport.FirebaseSelection
 import models.food.dataImport.FirebaseSelectionRecipe
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 import play.api.libs.json._
-
-case class SelectionRecipe(
-  id: String,
-  name: String)
-object SelectionRecipe {
-  implicit val selectionRecipeFormat = Json.format[SelectionRecipe]
-
-  def from(recipe: FirebaseSelectionRecipe): SelectionRecipe = {
-    val id = recipe.id
-    val name = recipe.name
-    new SelectionRecipe(id, name)
-  }
-}
 
 case class Selection(
   id: String,
   week: Int,
-  recipes: List[SelectionRecipe],
+  recipes: List[Recipe],
   created: Long,
   updated: Long)
 object Selection {
   implicit val selectionFormat = Json.format[Selection]
 
-  def from(selection: FirebaseSelection): Selection = {
+  def from(selection: FirebaseSelection): Future[Selection] = {
     val id = selection.id
     val week = selection.week
-    val recipes = selection.recipes.map(r => SelectionRecipe.from(r))
+    val recipesFuture = Future.sequence(selection.recipes.map(r => FirebaseSrv.fetchRecipe(r.id)))
     val created = selection.created
     val updated = selection.updated
-    new Selection(id, week, recipes, created, updated)
+    recipesFuture.map(recipes => new Selection(id, week, recipes, created, updated))
   }
 }

@@ -7,6 +7,9 @@ import models.food.dataImport.FirebaseRecipeTool
 import models.food.dataImport.FirebaseRecipeInstruction
 import models.food.dataImport.FirebaseRecipeTimer
 import models.food.dataImport.FirebaseRecipeTimes
+import services.FirebaseSrv
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 import play.api.libs.json._
 
 case class RecipeTimes(
@@ -69,41 +72,24 @@ object RecipeTool {
   }
 }
 
-case class RecipeIngredientFood(
-  id: String,
-  name: String,
-  slug: Option[String],
-  category: String)
-object RecipeIngredientFood {
-  implicit val recipeIngredientFoodFormat = Json.format[RecipeIngredientFood]
-
-  def from(food: FirebaseRecipeIngredientFood): RecipeIngredientFood = {
-    val id = food.id
-    val name = food.name
-    val slug = food.slug
-    val category = food.category
-    new RecipeIngredientFood(id, name, slug, category)
-  }
-}
-
 case class RecipeIngredient(
   role: String,
   quantity: Quantity,
   pre: Option[String],
-  food: RecipeIngredientFood,
+  food: Food,
   post: Option[String],
   price: Price)
 object RecipeIngredient {
   implicit val recipeIngredientFormat = Json.format[RecipeIngredient]
 
-  def from(ingredient: FirebaseRecipeIngredient): RecipeIngredient = {
+  def from(ingredient: FirebaseRecipeIngredient): Future[RecipeIngredient] = {
     val role = ingredient.role
     val quantity = ingredient.quantity
     val pre = ingredient.pre
-    val food = RecipeIngredientFood.from(ingredient.food)
+    val foodFuture = FirebaseSrv.fetchFood(ingredient.food.id)
     val post = ingredient.post
     val price = ingredient.price
-    new RecipeIngredient(role, quantity, pre, food, post, price)
+    foodFuture.map(food => new RecipeIngredient(role, quantity, pre, food, post, price))
   }
 }
 
@@ -126,14 +112,14 @@ case class Recipe(
 object Recipe {
   implicit val recipeFormat = Json.format[Recipe]
 
-  def from(recipe: FirebaseRecipe): Recipe = {
+  def from(recipe: FirebaseRecipe): Future[Recipe] = {
     val id = recipe.id
     val name = recipe.name
     val slug = recipe.slug
     val category = recipe.category
     val images = recipe.images
     val price = recipe.price
-    val ingredients = recipe.ingredients.map(i => RecipeIngredient.from(i))
+    val ingredientsFutures = recipe.ingredients.map(i => RecipeIngredient.from(i))
     val tools = recipe.tools.map(_.map(t => RecipeTool.from(t)))
     val instructions = recipe.instructions.map(i => RecipeInstruction.from(i))
     val servings = recipe.servings
@@ -142,6 +128,8 @@ object Recipe {
     val privateNotes = recipe.privateNotes
     val updated = recipe.updated
     val created = recipe.created
-    new Recipe(id, name, slug, category, images, price, ingredients, tools, instructions, servings, time, source, privateNotes, updated, created)
+    Future.sequence(ingredientsFutures).map { ingredients =>
+      new Recipe(id, name, slug, category, images, price, ingredients, tools, instructions, servings, time, source, privateNotes, updated, created)
+    }
   }
 }
