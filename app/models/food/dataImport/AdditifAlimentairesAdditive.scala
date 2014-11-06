@@ -1,7 +1,6 @@
 package models.food.dataImport
 
 import common.Utils
-import services.FoodSrv
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 import play.api.libs.json._
