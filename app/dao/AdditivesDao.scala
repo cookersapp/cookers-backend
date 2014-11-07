@@ -14,11 +14,11 @@ import reactivemongo.core.commands._
 object AdditivesDao {
   /*
    * See also :
-   * http://www.additifs-alimentaires.net/additifs.php
-   * http://www.quechoisir.org/alimentation/securite-hygiene/etude-liste-des-additifs-alimentaires
-   * http://www.avenir-bio.fr/additifs_alimentaires.php
-   * http://fr.wikipedia.org/wiki/Liste_des_additifs_alimentaires
-   * http://fr.wiki.openfoodfacts.org/Liste_des_additifs_reconnus
+   * 500 additifs : http://www.additifs-alimentaires.net/additifs.php
+   * 302 additifs : http://www.quechoisir.org/alimentation/securite-hygiene/etude-liste-des-additifs-alimentaires
+   * 354 additifs : http://www.avenir-bio.fr/additifs_alimentaires.php
+   * 658 additifs : http://fr.wikipedia.org/wiki/Liste_des_additifs_alimentaires
+   * 570 additifs : http://fr.wiki.openfoodfacts.org/Liste_des_additifs_reconnus
    * ??? http://www.food-detektiv.de/suche.php ???
    * ~ http://www.danger-sante.org/additifs-alimentaires-nourriture/
    */
