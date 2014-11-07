@@ -10,10 +10,17 @@ import play.api.libs.json._
 
 case class ProductNutriment(
   name: String,
+  displayName: String,
   level: Int,
   levelName: String,
   quantity_100g: Option[Double]) {
-  def this(name: String, levelName: String, quantity_100g: Option[Double]) = this(name, levelName match {
+  def this(name: String, levelName: String, quantity_100g: Option[Double]) = this(name, name match {
+    case "salt" => "Sel"
+    case "sugars" => "Sucre"
+    case "fat" => "Matières grasses"
+    case "saturated-fat" => "Matières grasses saturées"
+    case _ => name
+  }, levelName match {
     case "low" => 1
     case "moderate" => 2
     case "high" => 3
