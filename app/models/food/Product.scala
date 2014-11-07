@@ -129,7 +129,7 @@ object Product {
     val labels = product.labels
     val ingredients = product.ingredients
     val traces = product.traces
-    val additives = product.additives.map(elt => elt.map(str => new Additive(str)))
+    val additives = product.additives.map(list => list.map(str => new Additive(str)))
     val keywords = product.keywords
     val infos = None
     val nutrition = ProductNutrition.from(product.nutrition)
@@ -159,7 +159,7 @@ object Product {
     val labels = None
     val ingredients = None
     val traces = None
-    val additives = product.additives.map(elt => elt.map { additive => Additive.from(additive) }.toList)
+    val additives = product.additives.map(list => list.map(additive => Additive.from(additive)))
     val keywords = None
     val productInfo = new ProductInfo(
       Utils.first(product.infos.description, product.infos.informations, product.infos.presentation),
