@@ -9,10 +9,11 @@ import play.api.Logger
 import play.api.libs.json._
 
 case class ProductNutriment(
+  name: String,
   level: Int,
   levelName: String,
   quantity_100g: Option[Double]) {
-  def this(levelName: String, quantity_100g: Option[Double]) = this(levelName match {
+  def this(name: String, levelName: String, quantity_100g: Option[Double]) = this(name, levelName match {
     case "low" => 1
     case "moderate" => 2
     case "high" => 3
@@ -25,7 +26,7 @@ object ProductNutriment {
 
 case class ProductNutrition(
   grade: Option[String],
-  nutriments: Option[Map[String, ProductNutriment]])
+  nutriments: Option[List[ProductNutriment]])
 object ProductNutrition {
   implicit val productNutritionFormat = Json.format[ProductNutrition]
 
@@ -33,8 +34,8 @@ object ProductNutrition {
     val grade = nutrition.grade
     val nutriments = nutrition.levels.flatMap(_.asOpt[Map[String, String]]).map {
       _.map {
-        case (nutriment, level) => (nutriment, new ProductNutriment(level, get100g(nutriment, nutrition.nutriments)))
-      }
+        case (nutriment, level) => new ProductNutriment(nutriment, level, get100g(nutriment, nutrition.nutriments))
+      }.toList
     }
     if (grade.isEmpty && nutriments.isEmpty) None else Some(new ProductNutrition(grade, nutriments))
   }
