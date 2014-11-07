@@ -30,6 +30,7 @@ object ProductsDao {
   def getCookers(barcode: String)(implicit db: DB): Future[Option[CookersProduct]] = collectionCookers().find(Json.obj("barcode" -> barcode)).one[CookersProduct]
   def insertCookers(product: CookersProduct)(implicit db: DB): Future[LastError] = collectionCookers().insert(product)
   def setFoodId(barcode: String, foodId: String)(implicit db: DB): Future[LastError] = collectionCookers().update(Json.obj("barcode" -> barcode), Json.obj("$set" -> Json.obj("foodId" -> foodId)))
+  def scanned(barcode: String)(implicit db: DB): Future[LastError] = collectionCookers().update(Json.obj("barcode" -> barcode), Json.obj("$inc" -> Json.obj("scans" -> 1)))
 
   def getAllOpenFoodFacts()(implicit db: DB): Future[List[OpenFoodFactsProduct]] =
     collectionOpenFoodFacts().find(Json.obj()).cursor[JsValue].toList

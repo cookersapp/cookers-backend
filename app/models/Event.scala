@@ -15,6 +15,8 @@ case class Event(
   time: Long,
   dateinfo: DateInfo,
   user: String,
+  device: Option[String], // should be Option to be compatible with events from app 1.1.0
+  appVersion: Option[String], // should be Option to be compatible with events from app 1.1.0
   source: Option[JsValue],
   data: Option[JsValue])
 

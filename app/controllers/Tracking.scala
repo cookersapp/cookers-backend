@@ -6,6 +6,7 @@ import models.Event.eventFormat
 import dao.EventsDao
 import dao.MalformedEventsDao
 import dao.UsersDao
+import services.EventSrv
 import scala.concurrent._
 import play.api.libs.json._
 import play.api.mvc._
@@ -48,8 +49,7 @@ object Tracking extends Controller with MongoController {
   def add = Action(parse.json) { request =>
     request.body.validate[Event].map { event =>
       EventsDao.insert(event).map { lastError =>
-        UsersDao.lastSeen(event.user)
-        // TODO : update user appVersion
+        EventSrv.aggregateData(event)
       }
     }.getOrElse {
       MalformedEventsDao.insert(request.body)
@@ -63,8 +63,7 @@ object Tracking extends Controller with MongoController {
     request.body.validate[Array[Event]].map { events =>
       events.map { event =>
         EventsDao.insert(event).map { lastError =>
-          UsersDao.lastSeen(event.user)
-          // TODO : update user appVersion
+          EventSrv.aggregateData(event)
         }
       }
     }.getOrElse {

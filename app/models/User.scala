@@ -10,6 +10,7 @@ case class User(
   email: String,
   created: Long,
   lastSeen: Long,
+  appVersion: Option[String],
   settings: Option[JsValue],
   devices: Option[JsValue],
   gravatar: Option[JsValue]) {
@@ -19,6 +20,7 @@ case class User(
     email,
     new Date().getTime(),
     new Date().getTime(),
+    None,
     Some(Json.obj(
       "recipeShiftOffset" -> Math.floor(new Random().nextDouble() * 10),
       "defaultServings" -> 2,
