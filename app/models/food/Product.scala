@@ -3,17 +3,41 @@ package models.food
 import common.Utils
 import models.food.dataImport.CookersProduct
 import models.food.dataImport.OpenFoodFactsProduct
+import models.food.dataImport.OpenFoodFactsProductNutrition
 import models.food.dataImport.PrixingProduct
 import play.api.Logger
 import play.api.libs.json._
 
+case class ProductNutriment(
+  level: String,
+  quantity_100g: Option[Double])
+object ProductNutriment {
+  implicit val productNutrimentFormat = Json.format[ProductNutriment]
+}
+
 case class ProductNutrition(
   grade: Option[String],
-  levels: Option[JsValue]) {
-  def isEmpty: Boolean = grade.isEmpty && levels.isEmpty
-}
+  nutriments: Option[Map[String, ProductNutriment]])
 object ProductNutrition {
   implicit val productNutritionFormat = Json.format[ProductNutrition]
+
+  def from(nutrition: OpenFoodFactsProductNutrition): Option[ProductNutrition] = {
+    val grade = nutrition.grade
+    val nutriments = nutrition.levels.flatMap(_.asOpt[Map[String, String]]).map {
+      _.map {
+        case (nutriment, level) => (nutriment, new ProductNutriment(level, get100g(nutriment, nutrition.nutriments)))
+      }
+    }
+    if (grade.isEmpty && nutriments.isEmpty) None else Some(new ProductNutrition(grade, nutriments))
+  }
+
+  private def get100g(nutriment: String, jsonOpt: Option[JsValue]): Option[Double] = {
+    jsonOpt.flatMap { json =>
+      val value = (json \ (nutriment + "_100g"))
+      val strOpt = value.asOpt[String]
+      if (strOpt.isDefined) strOpt.map(_.toDouble) else value.asOpt[Double]
+    }
+  }
 }
 
 case class ProductInfo(
@@ -108,8 +132,7 @@ object Product {
     val additives = product.additives.map(elt => elt.map(str => new Additive(str)))
     val keywords = product.keywords
     val infos = None
-    val productNutrition = new ProductNutrition(product.nutrition.grade, product.nutrition.levels)
-    val nutrition = if (productNutrition.isEmpty) None else Some(productNutrition)
+    val nutrition = ProductNutrition.from(product.nutrition)
     val link = product.more.link
     val sources = List("openfoodfacts")
     val more = new ProductMore(allImages, allQuantities, allServings, brands, categories, link, sources)
