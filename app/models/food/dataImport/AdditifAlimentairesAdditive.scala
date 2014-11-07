@@ -5,6 +5,10 @@ import scala.concurrent._
 import ExecutionContext.Implicits.global
 import play.api.libs.json._
 
+/*
+ * Data from http://les-additifs-alimentaires.com/
+ */
+
 case class AdditifAlimentairesAdditiveDanger(level: Int, description: String) {
   def this(level: Int) = this(level, level match {
     case 0 => "Inconnu"

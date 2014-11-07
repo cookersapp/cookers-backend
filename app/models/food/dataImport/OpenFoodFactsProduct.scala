@@ -5,6 +5,10 @@ import models.food.Quantity
 import dao.ProductsDao
 import play.api.libs.json._
 
+/*
+ * Data from http://fr.openfoodfacts.org/
+ */
+
 case class OpenFoodFactsProductNutrition(
   grade: Option[String],
   levels: Option[JsValue],

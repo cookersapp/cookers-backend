@@ -3,6 +3,10 @@ package models.food.dataImport
 import common.Utils
 import play.api.libs.json._
 
+/*
+ * Data from http://www.prixing.fr/
+ */
+
 case class PrixingAdditive(
   version: Int,
   id: String,

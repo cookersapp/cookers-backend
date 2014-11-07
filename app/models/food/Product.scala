@@ -9,8 +9,16 @@ import play.api.Logger
 import play.api.libs.json._
 
 case class ProductNutriment(
-  level: String,
-  quantity_100g: Option[Double])
+  level: Int,
+  levelName: String,
+  quantity_100g: Option[Double]) {
+  def this(levelName: String, quantity_100g: Option[Double]) = this(levelName match {
+    case "low" => 1
+    case "moderate" => 2
+    case "high" => 3
+    case _ => 0
+  }, levelName, quantity_100g)
+}
 object ProductNutriment {
   implicit val productNutrimentFormat = Json.format[ProductNutriment]
 }
@@ -75,13 +83,13 @@ case class Product(
   category: Option[String],
   labels: Option[List[String]],
   ingredients: Option[List[String]],
-  traces: Option[List[String]],
+  nutrition: Option[ProductNutrition],
   additives: Option[List[Additive]],
+  traces: Option[List[String]],
   keywords: Option[List[String]],
   infos: Option[ProductInfo],
-  nutrition: Option[ProductNutrition],
   more: ProductMore) {
-  def withAdditives(additives: List[Additive]) = new Product(this.id, this.barcode, this.name, this.image, this.foodId, this.quantity, this.serving, this.rating, this.price, this.brand, this.category, this.labels, this.ingredients, this.traces, Some(additives), this.keywords, this.infos, this.nutrition, this.more)
+  def withAdditives(additives: List[Additive]) = new Product(this.id, this.barcode, this.name, this.image, this.foodId, this.quantity, this.serving, this.rating, this.price, this.brand, this.category, this.labels, this.ingredients, this.nutrition, Some(additives), this.traces, this.keywords, this.infos, this.more)
 }
 
 object Product {
@@ -128,15 +136,15 @@ object Product {
     val category = categories.flatMap(Utils.firstStr(_))
     val labels = product.labels
     val ingredients = product.ingredients
-    val traces = product.traces
+    val nutrition = ProductNutrition.from(product.nutrition)
     val additives = product.additives.map(list => list.map(str => new Additive(str)))
+    val traces = product.traces
     val keywords = product.keywords
     val infos = None
-    val nutrition = ProductNutrition.from(product.nutrition)
     val link = product.more.link
     val sources = List("openfoodfacts")
     val more = new ProductMore(allImages, allQuantities, allServings, brands, categories, link, sources)
-    new Product(barcode, barcode, name, image, foodId, quantity, serving, rating, price, brand, category, labels, ingredients, traces, additives, keywords, infos, nutrition, more)
+    new Product(barcode, barcode, name, image, foodId, quantity, serving, rating, price, brand, category, labels, ingredients, nutrition, additives, traces, keywords, infos, more)
   }
 
   private def from(product: PrixingProduct): Product = {
@@ -158,18 +166,18 @@ object Product {
     val category = categories.flatMap(Utils.firstStr(_))
     val labels = None
     val ingredients = None
-    val traces = None
+    val nutrition = None
     val additives = product.additives.map(list => list.map(additive => Additive.from(additive)))
+    val traces = None
     val keywords = None
     val productInfo = new ProductInfo(
       Utils.first(product.infos.description, product.infos.informations, product.infos.presentation),
       Utils.first(product.infos.tips, product.infos.help))
     val infos = if (productInfo.isEmpty) None else Some(productInfo)
-    val nutrition = None
     val link = None
     val sources = List("prixing")
     val more = new ProductMore(allImages, allQuantities, allServings, brands, categories, link, sources)
-    new Product(barcode, barcode, name, image, foodId, quantity, serving, rating, price, brand, category, labels, ingredients, traces, additives, keywords, infos, nutrition, more)
+    new Product(barcode, barcode, name, image, foodId, quantity, serving, rating, price, brand, category, labels, ingredients, nutrition, additives, traces, keywords, infos, more)
   }
 
   private def merge(p1: Product, p2: Product): Product = {
@@ -190,15 +198,15 @@ object Product {
     val category = categories.flatMap(Utils.firstStr(_))
     val labels = Utils.mergeLists(p1.labels, p2.labels)
     val ingredients = Utils.mergeLists(p1.ingredients, p2.ingredients)
-    val traces = Utils.mergeLists(p1.traces, p2.traces)
+    val nutrition = Utils.first(p1.nutrition, p2.nutrition)
     val additives = Utils.notEmpty(distinct(p1.additives.getOrElse(List()) ++ p2.additives.getOrElse(List())))
+    val traces = Utils.mergeLists(p1.traces, p2.traces)
     val keywords = Utils.mergeLists(p1.keywords, p2.keywords)
     val infos = Utils.first(p1.infos, p2.infos)
-    val nutrition = Utils.first(p1.nutrition, p2.nutrition)
     val link = Utils.first(p1.more.link, p2.more.link)
     val sources = p1.more.sources ++ p2.more.sources
     val more = new ProductMore(allImages, allQuantities, allServings, brands, categories, link, sources)
-    new Product(barcode, barcode, name, image, foodId, quantity, serving, rating, price, brand, category, labels, ingredients, traces, additives, keywords, infos, nutrition, more)
+    new Product(barcode, barcode, name, image, foodId, quantity, serving, rating, price, brand, category, labels, ingredients, nutrition, additives, traces, keywords, infos, more)
   }
 
   private def distinct(list: List[Additive]): List[Additive] = {

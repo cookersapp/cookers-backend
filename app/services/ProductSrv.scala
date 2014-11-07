@@ -43,7 +43,7 @@ object ProductSrv {
         Utils.transform(opt.map { product =>
           if (product.additives.isDefined) {
             val loadAdditives = product.additives.get.map { additive => AdditiveSrv.getAdditive(additive.reference) }
-            Future.sequence(loadAdditives).map(additives => product.withAdditives(additives.sortBy(_.map(-_.danger.map(_.level).getOrElse(0))).flatten))
+            Future.sequence(loadAdditives).map(additives => product.withAdditives(additives.flatten))
           } else {
             Future.successful(product)
           }

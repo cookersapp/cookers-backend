@@ -6,6 +6,10 @@ import models.food.Price
 import java.util.Date
 import play.api.libs.json._
 
+/*
+ * Data from http://www.prixing.fr/
+ */
+
 case class PrixingProductInfo(
   allergenes: Option[String],
   composition: Option[String],
