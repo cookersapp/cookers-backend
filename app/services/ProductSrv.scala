@@ -58,7 +58,7 @@ object ProductSrv {
         opt
       } else {
         val product = CookersProduct.create(barcode)
-        ProductsDao.insertCookers(product)
+        ProductsDao.upsertCookers(product)
         Some(product)
       }
     }

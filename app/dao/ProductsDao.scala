@@ -26,11 +26,11 @@ object ProductsDao {
   private def collectionOpenFoodFacts()(implicit db: DB): JSONCollection = db.collection[JSONCollection](COLLECTION_OPEN_FOOD_FACTS)
   private def collectionPrixing()(implicit db: DB): JSONCollection = db.collection[JSONCollection](COLLECTION_PRIXING)
 
-  def getAllCookers()(implicit db: DB): Future[List[CookersProduct]] = collectionCookers().find(Json.obj()).cursor[CookersProduct].toList
-  def getCookers(barcode: String)(implicit db: DB): Future[Option[CookersProduct]] = collectionCookers().find(Json.obj("barcode" -> barcode)).one[CookersProduct]
-  def insertCookers(product: CookersProduct)(implicit db: DB): Future[LastError] = collectionCookers().insert(product)
+  def getAllCookers()(implicit db: DB): Future[List[CookersProduct]] = collectionCookers().find(Json.obj()).cursor[JsValue].toList.map(_.map(json => json.asOpt[CookersProduct]).flatten)
+  def getCookers(barcode: String)(implicit db: DB): Future[Option[CookersProduct]] = collectionCookers().find(Json.obj("barcode" -> barcode)).one[JsValue].map(_.flatMap(_.asOpt[CookersProduct]))
+  def upsertCookers(product: CookersProduct)(implicit db: DB): Future[LastError] = collectionCookers().update(Json.obj("barcode" -> product.barcode), product, upsert = true)
   def setFoodId(barcode: String, foodId: String)(implicit db: DB): Future[LastError] = collectionCookers().update(Json.obj("barcode" -> barcode), Json.obj("$set" -> Json.obj("foodId" -> foodId)))
-  def scanned(barcode: String)(implicit db: DB): Future[LastError] = collectionCookers().update(Json.obj("barcode" -> barcode), Json.obj("$inc" -> Json.obj("scans" -> 1)))
+  def scanned(barcode: String, item: String)(implicit db: DB): Future[LastError] = collectionCookers().update(Json.obj("barcode" -> barcode), Json.obj("$inc" -> Json.obj("scans" -> 1, ("scannedWith." + item) -> 1)))
 
   def getAllOpenFoodFacts()(implicit db: DB): Future[List[OpenFoodFactsProduct]] =
     collectionOpenFoodFacts().find(Json.obj()).cursor[JsValue].toList

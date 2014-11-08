@@ -19,6 +19,9 @@ See spec.txt
 
 ## Notes
 
+- AngularJS server side pagination :
+    - http://nadeemkhedr.wordpress.com/2013/09/01/build-angularjs-grid-with-server-side-paging-sorting-filtering/
+    - https://github.com/michaelbromley/angularUtils
 - Autentification : https://github.com/mohiva/play-silhouette
 - Play sass compile : https://github.com/jlitola/play-sass
 - Charts : http://www.highcharts.com/ or http://www.chartjs.org/
