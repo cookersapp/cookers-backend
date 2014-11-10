@@ -12,6 +12,7 @@ case class User(
   lastSeen: Long,
   appVersion: Option[String],
   settings: Option[JsValue],
+  closedMessages: Option[List[String]],
   devices: Option[JsValue],
   gravatar: Option[JsValue]) {
 
@@ -28,6 +29,7 @@ case class User(
       "bigImages" -> true,
       "skipCookFeatures" -> false,
       "skipCartFeatures" -> false)),
+    None,
     None,
     None)
 }

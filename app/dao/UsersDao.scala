@@ -23,6 +23,7 @@ object UsersDao {
 
   def insert(user: User)(implicit db: DB): Future[LastError] = collection().insert(user)
   def updateSetting(id: String, setting: String, settingValue: JsValue)(implicit db: DB): Future[LastError] = collection().update(Json.obj("id" -> id), Json.obj("$set" -> Json.obj("settings." + setting -> settingValue)))
+  def messageClosed(id: String, message: String)(implicit db: DB): Future[LastError] = collection().update(Json.obj("id" -> id), Json.obj("$addToSet" -> Json.obj("closedMessages" -> message)))
   def addDevice(id: String, device: JsValue)(implicit db: DB): Future[LastError] = collection().update(Json.obj("id" -> id), Json.obj("$addToSet" -> Json.obj("devices" -> device)))
   def userSeen(id: String, appVersion: String)(implicit db: DB): Future[LastError] = collection().update(Json.obj("id" -> id), Json.obj("$set" -> Json.obj("lastSeen" -> new Date().getTime(), "appVersion" -> appVersion)))
 

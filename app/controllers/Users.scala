@@ -72,6 +72,18 @@ object Users extends Controller with MongoController {
     }
   }
 
+  // Add messageId to list of closed messages
+  def setMessageClosed(id: String, messageId: String) = Action {
+    Async {
+      UsersDao.messageClosed(id, messageId).map { lastError =>
+        lastError.inError match {
+          case false => Ok(ApiUtils.Ok)
+          case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
+        }
+      }
+    }
+  }
+
   // link a device to a user if not done yet
   def setUserDevice(id: String) = Action(parse.json) { request =>
     Async {
