@@ -16,12 +16,17 @@ case class Selection(
 object Selection {
   implicit val selectionFormat = Json.format[Selection]
 
-  def from(selection: FirebaseSelection): Future[Selection] = {
-    val id = selection.id
-    val week = selection.week
-    val recipesFuture = Future.sequence(selection.recipes.map(r => FirebaseSrv.fetchRecipe(r.id)))
-    val created = selection.created
-    val updated = selection.updated
-    recipesFuture.map(recipes => new Selection(id, week, recipes, created, updated))
+  def from(selectionOpt: Option[FirebaseSelection]): Future[Option[Selection]] = {
+    if (selectionOpt.isDefined) {
+      val selection = selectionOpt.get
+      val id = selection.id
+      val week = selection.week
+      val recipesFuture = Future.sequence(selection.recipes.map(r => FirebaseSrv.fetchRecipe(r.id)))
+      val created = selection.created
+      val updated = selection.updated
+      recipesFuture.map(recipes => Some(new Selection(id, week, recipes.flatten, created, updated)))
+    } else {
+      Future.successful(None)
+    }
   }
 }

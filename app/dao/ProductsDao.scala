@@ -18,6 +18,7 @@ object ProductsDao {
   // http://www.shopwise.fr/
   // http://www.mesgouts.fr/
   // http://www.nutritionix.com/api
+  // http://www.digit-eyes.com/
   private val COLLECTION_COOKERS = "cookersProducts"
   private val COLLECTION_OPEN_FOOD_FACTS = "importOpenFoodFactsProducts"
   private val COLLECTION_PRIXING = "importPrixingProducts"

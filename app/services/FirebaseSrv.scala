@@ -15,39 +15,51 @@ object FirebaseSrv {
 
   def fetchFoods(): Future[List[Food]] = {
     WS.url(firebaseUrl + "/foods.json").get().map { response =>
-      response.json.as[Map[String, FirebaseFood]].map { case (id, data) => Food.from(data) }.toList
+      response.json.as[Map[String, FirebaseFood]].map { case (id, data) => Food.from(Some(data)) }.toList.flatten
     }
   }
 
-  def fetchFood(id: String): Future[Food] = {
+  def fetchFood(id: String): Future[Option[Food]] = {
     WS.url(firebaseUrl + "/foods/" + id + ".json").get().map { response =>
-      Food.from(response.json.as[FirebaseFood])
+      if (response.json != null) {
+        Food.from(response.json.asOpt[FirebaseFood])
+      } else {
+        None
+      }
     }
   }
 
   def fetchRecipes(): Future[List[Recipe]] = {
     WS.url(firebaseUrl + "/recipes.json").get().flatMap { response =>
-      val futures = response.json.as[Map[String, FirebaseRecipe]].map { case (id, data) => Recipe.from(data) }.toList
-      Future.sequence(futures)
+      val futures = response.json.as[Map[String, FirebaseRecipe]].map { case (id, data) => Recipe.from(Some(data)) }.toList
+      Future.sequence(futures).map(_.flatten)
     }
   }
 
-  def fetchRecipe(id: String): Future[Recipe] = {
+  def fetchRecipe(id: String): Future[Option[Recipe]] = {
     WS.url(firebaseUrl + "/recipes/" + id + ".json").get().flatMap { response =>
-      Recipe.from(response.json.as[FirebaseRecipe])
+      if (response.json != null) {
+        Recipe.from(response.json.asOpt[FirebaseRecipe])
+      } else {
+        Future.successful(None)
+      }
     }
   }
 
   def fetchSelections(): Future[List[Selection]] = {
     WS.url(firebaseUrl + "/selections.json").get().flatMap { response =>
-      val futures = response.json.as[Map[String, FirebaseSelection]].map { case (id, data) => Selection.from(data) }.toList
-      Future.sequence(futures)
+      val futures = response.json.as[Map[String, FirebaseSelection]].map { case (id, data) => Selection.from(Some(data)) }.toList
+      Future.sequence(futures).map(_.flatten)
     }
   }
 
-  def fetchSelection(id: String): Future[Selection] = {
+  def fetchSelection(id: String): Future[Option[Selection]] = {
     WS.url(firebaseUrl + "/selections/" + id + ".json").get().flatMap { response =>
-      Selection.from(response.json.as[FirebaseSelection])
+      if (response.json != null) {
+        Selection.from(response.json.asOpt[FirebaseSelection])
+      } else {
+        Future.successful(None)
+      }
     }
   }
 }

@@ -114,7 +114,7 @@ angular.module('app')
     link: function(scope, element, attr){
       scope.username = scope.id;
       UsersSrv.get(scope.id, false).then(function(user){
-        scope.username = user.email;
+        if(user){ scope.username = user.email; }
       });
     }
   };

@@ -18,7 +18,7 @@ object FirebaseExtract extends Controller {
 
   def getFood(id: String) = Action {
     Async {
-      FirebaseSrv.fetchFood(id).map { res => Ok(ApiUtils.Ok(Json.toJson(res))) }
+      FirebaseSrv.fetchFood(id).map { res => if (res.isDefined) Ok(ApiUtils.Ok(Json.toJson(res.get))) else Ok(ApiUtils.NotFound("Food not found !")) }
     }
   }
 
@@ -30,7 +30,7 @@ object FirebaseExtract extends Controller {
 
   def getRecipe(id: String) = Action {
     Async {
-      FirebaseSrv.fetchRecipe(id).map { res => Ok(ApiUtils.Ok(Json.toJson(res))) }
+      FirebaseSrv.fetchRecipe(id).map { res => if (res.isDefined) Ok(ApiUtils.Ok(Json.toJson(res.get))) else Ok(ApiUtils.NotFound("Recipe not found !")) }
     }
   }
 
@@ -42,7 +42,7 @@ object FirebaseExtract extends Controller {
 
   def getSelection(id: String) = Action {
     Async {
-      FirebaseSrv.fetchSelection(id).map { res => Ok(ApiUtils.Ok(Json.toJson(res))) }
+      FirebaseSrv.fetchSelection(id).map { res => if (res.isDefined) Ok(ApiUtils.Ok(Json.toJson(res.get))) else Ok(ApiUtils.NotFound("Selection not found !")) }
     }
   }
 

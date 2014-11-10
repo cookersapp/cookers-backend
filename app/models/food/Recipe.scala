@@ -82,14 +82,14 @@ case class RecipeIngredient(
 object RecipeIngredient {
   implicit val recipeIngredientFormat = Json.format[RecipeIngredient]
 
-  def from(ingredient: FirebaseRecipeIngredient): Future[RecipeIngredient] = {
+  def from(ingredient: FirebaseRecipeIngredient): Future[Option[RecipeIngredient]] = {
     val role = ingredient.role
     val quantity = ingredient.quantity
     val pre = ingredient.pre
     val foodFuture = FirebaseSrv.fetchFood(ingredient.food.id)
     val post = ingredient.post
     val price = ingredient.price
-    foodFuture.map(food => new RecipeIngredient(role, quantity, pre, food, post, price))
+    foodFuture.map(_.map(food => new RecipeIngredient(role, quantity, pre, food, post, price)))
   }
 }
 
@@ -112,24 +112,29 @@ case class Recipe(
 object Recipe {
   implicit val recipeFormat = Json.format[Recipe]
 
-  def from(recipe: FirebaseRecipe): Future[Recipe] = {
-    val id = recipe.id
-    val name = recipe.name
-    val slug = recipe.slug
-    val category = recipe.category
-    val images = recipe.images
-    val price = recipe.price
-    val ingredientsFutures = recipe.ingredients.map(i => RecipeIngredient.from(i))
-    val tools = recipe.tools.map(_.map(t => RecipeTool.from(t)))
-    val instructions = recipe.instructions.map(i => RecipeInstruction.from(i))
-    val servings = recipe.servings
-    val time = RecipeTimes.from(recipe.time)
-    val source = recipe.source
-    val privateNotes = recipe.privateNotes
-    val updated = recipe.updated
-    val created = recipe.created
-    Future.sequence(ingredientsFutures).map { ingredients =>
-      new Recipe(id, name, slug, category, images, price, ingredients, tools, instructions, servings, time, source, privateNotes, updated, created)
+  def from(recipeOpt: Option[FirebaseRecipe]): Future[Option[Recipe]] = {
+    if (recipeOpt.isDefined) {
+      val recipe = recipeOpt.get
+      val id = recipe.id
+      val name = recipe.name
+      val slug = recipe.slug
+      val category = recipe.category
+      val images = recipe.images
+      val price = recipe.price
+      val ingredientsFutures = recipe.ingredients.map(i => RecipeIngredient.from(i))
+      val tools = recipe.tools.map(_.map(t => RecipeTool.from(t)))
+      val instructions = recipe.instructions.map(i => RecipeInstruction.from(i))
+      val servings = recipe.servings
+      val time = RecipeTimes.from(recipe.time)
+      val source = recipe.source
+      val privateNotes = recipe.privateNotes
+      val updated = recipe.updated
+      val created = recipe.created
+      Future.sequence(ingredientsFutures).map { ingredients =>
+        Some(new Recipe(id, name, slug, category, images, price, ingredients.flatten, tools, instructions, servings, time, source, privateNotes, updated, created))
+      }
+    } else {
+      Future.successful(None)
     }
   }
 }

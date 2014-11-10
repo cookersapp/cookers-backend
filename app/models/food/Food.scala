@@ -44,14 +44,19 @@ case class Food(
 object Food {
   implicit val foodFormat = Json.format[Food]
 
-  def from(food: FirebaseFood): Food = {
-    val id = food.id
-    val name = food.name
-    val slug = Utils.toSlug(food.name)
-    val category = FoodCategory.from(food.category)
-    val prices = food.prices.map(_.map(p => new PriceQuantity(p.value, p.currency, p.unit)))
-    val created = food.created
-    val updated = food.updated.getOrElse(food.created)
-    new Food(id, name, slug, category, prices, created, updated)
+  def from(foodOpt: Option[FirebaseFood]): Option[Food] = {
+    if (foodOpt.isDefined) {
+      val food = foodOpt.get
+      val id = food.id
+      val name = food.name
+      val slug = Utils.toSlug(food.name)
+      val category = FoodCategory.from(food.category)
+      val prices = food.prices.map(_.map(p => new PriceQuantity(p.value, p.currency, p.unit)))
+      val created = food.created
+      val updated = food.updated.getOrElse(food.created)
+      Some(new Food(id, name, slug, category, prices, created, updated))
+    } else {
+      None
+    }
   }
 }
