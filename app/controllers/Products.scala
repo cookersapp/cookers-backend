@@ -43,29 +43,6 @@ object Products extends Controller with MongoController {
     }
   }
 
-  def getWithStore(storeId: String, barcode: String) = Action {
-    Async {
-      val future: Future[(Option[Product], Option[StoreProduct])] = for {
-        productOpt <- ProductSrv.getProduct(barcode)
-        storeProductOpt <- StoresDao.findProduct(storeId, barcode)
-      } yield (productOpt, storeProductOpt)
-
-      future.map {
-        case (productOpt, storeProductOpt) =>
-          if (productOpt.isEmpty) {
-            Ok(ApiUtils.NotFound("Product not found !"))
-          } else {
-            val product = productOpt.get
-            val storeProduct = storeProductOpt.getOrElse(StoreProduct.mockFor(product, storeId))
-
-            val addStore = (__).json.update(__.read[JsObject].map { originalData => originalData ++ Json.obj("store" -> storeProduct) })
-            val data = Json.toJson(product).transform(addStore).get
-            Ok(ApiUtils.Ok(data))
-          }
-      }
-    }
-  }
-
   def get(barcode: String) = Action {
     Async {
       ProductSrv.getProduct(barcode).map { productOpt =>

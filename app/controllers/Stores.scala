@@ -2,7 +2,9 @@ package controllers
 
 import common.ApiUtils
 import models.Store
+import models.StoreProduct
 import dao.StoresDao
+import services.ProductSrv
 import scala.concurrent.Future
 import play.api.mvc._
 import play.api.libs.json._
@@ -22,6 +24,24 @@ object Stores extends Controller with MongoController {
       StoresDao.findById(id).map {
         case Some(store) => Ok(ApiUtils.Ok(store))
         case None => Ok(ApiUtils.NotFound("Store not found !"))
+      }
+    }
+  }
+
+  def getProduct(storeId: String, barcode: String) = Action {
+    Async {
+      StoresDao.findProduct(storeId, barcode).flatMap { storeProductOpt =>
+        if (storeProductOpt.isDefined) {
+          Future.successful(Ok(ApiUtils.Ok(storeProductOpt.get)))
+        } else {
+          ProductSrv.getProduct(barcode).map { productOpt =>
+            if (productOpt.isDefined) {
+              Ok(ApiUtils.Ok(StoreProduct.mockFor(productOpt.get, storeId)))
+            } else {
+              Ok(ApiUtils.NotFound("Product not found in Store !"))
+            }
+          }
+        }
       }
     }
   }

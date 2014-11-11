@@ -1,6 +1,7 @@
 package common
 
 import models.Store
+import models.StoreProduct
 import models.User
 import models.Event
 import models.food.Product
@@ -26,6 +27,7 @@ object ApiUtils {
   def Ok(data: AdditifAlimentairesAdditive): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: PrixingAdditive): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: Store): JsObject = Json.obj("status" -> 200, "data" -> data)
+  def Ok(data: StoreProduct): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: Event): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: User): JsObject = Json.obj("status" -> 200, "data" -> data)
   def Ok(data: GlobalMessage): JsObject = Json.obj("status" -> 200, "data" -> data)
