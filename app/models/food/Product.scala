@@ -112,8 +112,13 @@ object Product {
 
   def mergeSources(list: List[Product]): Option[Product] = {
     if (list.isEmpty) None
-    else if (list.size == 1) Some(list(0))
-    else Some(list.tail.foldLeft(list(0)) { case (acc, elt) => merge(acc, elt) })
+    else if (list.size == 1) isValid(list(0))
+    else isValid(list.tail.foldLeft(list(0)) { case (acc, elt) => merge(acc, elt) })
+  }
+
+  private def isValid(p: Product): Option[Product] = {
+    if (Utils.isEmpty(p.name) || Utils.isEmpty(p.image)) None
+    else Some(p)
   }
 
   private def from(product: CookersProduct): Product = {
