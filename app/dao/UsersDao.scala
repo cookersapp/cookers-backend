@@ -26,6 +26,7 @@ object UsersDao {
   def messageClosed(id: String, message: String)(implicit db: DB): Future[LastError] = collection().update(Json.obj("id" -> id), Json.obj("$addToSet" -> Json.obj("closedMessages" -> message)))
   def addDevice(id: String, device: JsValue)(implicit db: DB): Future[LastError] = collection().update(Json.obj("id" -> id), Json.obj("$addToSet" -> Json.obj("devices" -> device)))
   def userSeen(id: String, appVersion: String)(implicit db: DB): Future[LastError] = collection().update(Json.obj("id" -> id), Json.obj("$set" -> Json.obj("lastSeen" -> new Date().getTime(), "appVersion" -> appVersion)))
+  def userScan(id: String, barcode: String)(implicit db: DB): Future[LastError] = collection().update(Json.obj("id" -> id), Json.obj("$inc" -> Json.obj("scans" -> 1, ("scannedProducts." + barcode) -> 1)))
 
   def createdBefore(time: Long)(implicit db: DB): Future[Int] = {
     val query: JsObject = Json.obj("created" -> Json.obj("$lt" -> time))

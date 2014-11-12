@@ -14,7 +14,9 @@ case class User(
   settings: Option[JsValue],
   closedMessages: Option[List[String]],
   devices: Option[JsValue],
-  gravatar: Option[JsValue]) {
+  gravatar: Option[JsValue],
+  scans: Option[Int],
+  scannedProducts: Option[Map[String, Int]]) {
 
   def this(email: String) = this(
     BSONObjectID.generate.stringify,
@@ -31,6 +33,8 @@ case class User(
       "skipCartFeatures" -> false)),
     None,
     None,
+    None,
+    Some(0),
     None)
 }
 

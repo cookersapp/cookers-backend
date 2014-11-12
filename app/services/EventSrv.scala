@@ -13,7 +13,10 @@ object EventSrv {
     if ("cart-product-scanned".equals(event.name)) {
       val barcodeOpt = event.data.flatMap(json => (json \ "barcode").asOpt[String])
       val item = event.data.flatMap(json => (json \ "item").asOpt[String]).getOrElse(CookersProduct.defaultFoodId)
-      barcodeOpt.map(barcode => ProductsDao.scanned(barcode, item))
+      barcodeOpt.map { barcode =>
+        ProductsDao.scanned(barcode, item)
+        UsersDao.userScan(event.user, barcode)
+      }
     }
   }
 }
