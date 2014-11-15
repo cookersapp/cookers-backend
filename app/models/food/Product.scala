@@ -13,8 +13,8 @@ case class ProductNutriment(
   displayName: String,
   level: Int,
   levelName: String,
-  quantity_100g: Option[Double]) {
-  def this(name: String, levelName: String, quantity_100g: Option[Double]) = this(name, name match {
+  quantity_100g: Option[Quantity]) {
+  def this(name: String, levelName: String, quantity_100g: Option[Quantity]) = this(name, name match {
     case "salt" => "Sel"
     case "sugars" => "Sucre"
     case "fat" => "Matières grasses"
@@ -33,26 +33,34 @@ object ProductNutriment {
 
 case class ProductNutrition(
   grade: Option[String],
+  energy_100g: Option[Quantity],
   nutriments: Option[List[ProductNutriment]])
 object ProductNutrition {
   implicit val productNutritionFormat = Json.format[ProductNutrition]
 
   def from(nutrition: OpenFoodFactsProductNutrition): Option[ProductNutrition] = {
     val grade = nutrition.grade
+    val energy = getQuantity("energy", nutrition.nutriments)
     val nutriments = nutrition.levels.flatMap(_.asOpt[Map[String, String]]).map {
       _.map {
-        case (nutriment, level) => new ProductNutriment(nutriment, level, get100g(nutriment, nutrition.nutriments))
+        case (nutriment, level) => new ProductNutriment(nutriment, level, getQuantity(nutriment, nutrition.nutriments))
       }.toList
     }
-    if (grade.isEmpty && nutriments.isEmpty) None else Some(new ProductNutrition(grade, nutriments))
+    if (grade.isEmpty && energy.isEmpty && nutriments.isEmpty) None else Some(new ProductNutrition(grade, energy, nutriments))
   }
 
+  private def getQuantity(nutriment: String, jsonOpt: Option[JsValue]): Option[Quantity] = {
+    get100g(nutriment, jsonOpt).map(value => new Quantity(value, getUnit(nutriment, jsonOpt).getOrElse("")))
+  }
   private def get100g(nutriment: String, jsonOpt: Option[JsValue]): Option[Double] = {
     jsonOpt.flatMap { json =>
       val value = (json \ (nutriment + "_100g"))
       val strOpt = value.asOpt[String]
       if (strOpt.isDefined) strOpt.map(_.toDouble) else value.asOpt[Double]
     }
+  }
+  private def getUnit(nutriment: String, jsonOpt: Option[JsValue]): Option[String] = {
+    jsonOpt.flatMap { json => (json \ (nutriment + "_unit")).asOpt[String] }
   }
 }
 
