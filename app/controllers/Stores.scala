@@ -48,17 +48,27 @@ object Stores extends Controller with MongoController {
 
   def create = Action(parse.json) { request =>
     Async {
-      val name = (request.body \ "name").asOpt[String]
-      if (name.isDefined) {
-        val store = new Store(name.get)
-        StoresDao.insert(store).map { lastError =>
+      val store = Store.from(request.body)
+      if (store.isDefined) {
+        StoresDao.insert(store.get).map { lastError =>
           lastError.inError match {
-            case false => Ok(ApiUtils.Ok(store))
+            case false => Ok(ApiUtils.Ok(store.get))
             case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
           }
         }
       } else {
-        Future.successful(Ok(ApiUtils.BadRequest("Can't find property 'name' of Store !")))
+        Future.successful(Ok(ApiUtils.BadRequest("Malformed Store object !")))
+      }
+    }
+  }
+
+  def updateField(id: String, field: String, value: String) = Action {
+    Async {
+      StoresDao.update(id, field, value).map { lastError =>
+        lastError.inError match {
+          case false => Ok(ApiUtils.Ok)
+          case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
+        }
       }
     }
   }

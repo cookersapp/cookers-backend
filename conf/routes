@@ -41,6 +41,7 @@ GET       /api/v1/stores                                     controllers.Stores.
 POST      /api/v1/stores                                     controllers.Stores.create
 GET       /api/v1/stores/:id                                 controllers.Stores.get(id: String)
 GET       /api/v1/stores/:id/products/:barcode               controllers.Stores.getProduct(id: String, barcode: String)
+PUT       /api/v1/stores/:id                                 controllers.Stores.updateField(id: String, field: String, value: String)
 DELETE    /api/v1/stores/:id                                 controllers.Stores.remove(id: String)
 GET       /api/v1/products                                   controllers.Products.getAll
 GET       /api/v1/products/cookers                           controllers.Products.getAllCookers

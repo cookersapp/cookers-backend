@@ -24,6 +24,7 @@ object StoresDao {
 
   def insert(store: Store)(implicit db: DB): Future[LastError] = collection().insert(store)
   def insert(storeProduct: StoreProduct)(implicit db: DB): Future[LastError] = collectionProducts().insert(storeProduct)
+  def update(id: String, field: String, value: String)(implicit db: DB): Future[LastError] = collection().update(Json.obj("id" -> id), Json.obj("$set" -> Json.obj(field -> value)))
   def remove(id: String)(implicit db: DB): Future[LastError] = collection().remove(Json.obj("id" -> id))
   def remove(store: String, barcode: String)(implicit db: DB): Future[LastError] = collectionProducts().remove(Json.obj("store" -> store, "barcode" -> barcode))
 }
