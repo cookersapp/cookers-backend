@@ -40,6 +40,80 @@ angular.module('app')
 })
 
 
+.controller('FoodsCtrl', function($rootScope, $scope, FoodSrv, CrudBuilder, Utils, dataList){
+  'use strict';
+  if(!$rootScope.config.foods){
+    angular.extend($rootScope.config, {
+      foods: {
+        sort: { order: 'name' }
+      }
+    });
+  }
+
+  var ctx = {
+    title: 'Aliments',
+    breadcrumb: [
+      {name: 'Home', state: 'user.home'},
+      {name: 'Aliments'}
+    ],
+    header: $rootScope.config.header,
+    config: {
+      defaultValues: {
+        elt: {
+          category: dataList.foodCategories[0]
+        },
+        prices: {
+          currency: dataList.currencies[0],
+          unit: dataList.quantityUnits[0]
+        }
+      },
+      sort: $rootScope.config.foods.sort
+    },
+    data: {
+      foodCategories: dataList.foodCategories,
+      currencies: dataList.currencies,
+      quantityUnits: dataList.quantityUnits
+    },
+    status: {
+      loading: true,
+      removing: false,
+      saving: false,
+      error: null
+    },
+    model: {
+      elts: FoodSrv.cacheArr,
+      selected: null,
+      form: null
+    }
+  };
+
+  $scope.config = ctx.config;
+  $scope.data = ctx.data;
+  $scope.status = ctx.status;
+  $scope.model = ctx.model;
+
+  var crud = CrudBuilder.create(FoodSrv, ctx);
+  crud.init();
+
+  $scope.sort = crud.sort;
+
+  $scope.toggle = crud.toggle;
+
+  $scope.create = crud.create;
+  $scope.edit = crud.edit;
+  $scope.cancelEdit = crud.cancelEdit;
+  $scope.save = crud.save;
+  $scope.remove = crud.remove;
+
+  $scope.addElt = crud.addElt;
+  $scope.removeElt = crud.removeElt;
+
+  $scope.eltRestUrl = crud.eltRestUrl;
+
+  $scope.isUrl = Utils.isUrl;
+})
+
+
 .controller('RecipesCtrl', function($rootScope, $scope, RecipeSrv, CrudBuilder){
   'use strict';
   if(!$rootScope.config.recipes){
@@ -328,78 +402,23 @@ angular.module('app')
   $scope.eltRestUrl = crud.eltRestUrl;
 })
 
-.controller('FoodsCtrl', function($rootScope, $scope, FoodSrv, CrudBuilder, Utils, dataList){
-  'use strict';
-  if(!$rootScope.config.foods){
-    angular.extend($rootScope.config, {
-      foods: {
-        sort: { order: 'name' }
-      }
-    });
-  }
 
-  var ctx = {
-    title: 'Aliments',
-    breadcrumb: [
-      {name: 'Home', state: 'user.home'},
-      {name: 'Aliments'}
-    ],
-    header: $rootScope.config.header,
-    config: {
-      defaultValues: {
-        elt: {
-          category: dataList.foodCategories[0]
-        },
-        prices: {
-          currency: dataList.currencies[0],
-          unit: dataList.quantityUnits[0]
-        }
-      },
-      sort: $rootScope.config.foods.sort
-    },
-    data: {
-      foodCategories: dataList.foodCategories,
-      currencies: dataList.currencies,
-      quantityUnits: dataList.quantityUnits
-    },
-    status: {
-      loading: true,
-      removing: false,
-      saving: false,
-      error: null
-    },
-    model: {
-      elts: FoodSrv.cacheArr,
-      selected: null,
-      form: null
-    }
+.controller('StoresCtrl', function($rootScope, $scope, StoresSrv, CrudUtils, dataList){
+  'use strict';
+  $rootScope.config.header.levels = [
+    {name: 'Home', state: 'user.home'},
+    {name: 'Magasins'}
+  ];
+
+  $scope.data = {
+    ionicColors: dataList.ionicColors
   };
 
-  $scope.config = ctx.config;
-  $scope.data = ctx.data;
-  $scope.status = ctx.status;
-  $scope.model = ctx.model;
-
-  var crud = CrudBuilder.create(FoodSrv, ctx);
-  crud.init();
-
-  $scope.sort = crud.sort;
-
-  $scope.toggle = crud.toggle;
-
-  $scope.create = crud.create;
-  $scope.edit = crud.edit;
-  $scope.cancelEdit = crud.cancelEdit;
-  $scope.save = crud.save;
-  $scope.remove = crud.remove;
-
-  $scope.addElt = crud.addElt;
-  $scope.removeElt = crud.removeElt;
-
-  $scope.eltRestUrl = crud.eltRestUrl;
-
-  $scope.isUrl = Utils.isUrl;
+  var defaultSort = {order: 'name'};
+  var defaultFormElt = {};
+  $scope.crud = CrudUtils.createCrudCtrl('Magasins', $rootScope.config.header, StoresSrv, defaultSort, defaultFormElt);
 })
+
 
 .controller('GlobalmessagesCtrl', function($rootScope, $scope, GlobalmessageSrv, CrudUtils, dataList){
   'use strict';

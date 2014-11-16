@@ -1,0 +1,78 @@
+<div class="row">
+  <div class="col-md-6">
+    <div class="widget">
+      <div class="widget-header">
+        <i class="fa fa-shopping-cart"></i> Magasins ({{filtered.length}})
+        <button type="button" class="btn btn-sm btn-success pull-right" ng-click="crud.fn.create()" style="margin-left: 10px;"><i class="fa fa-plus"></i> Créer un magasin</button>
+        <input type="text" class="form-control input-sm pull-right" placeholder="Search ..." ng-model="search">
+        <div class="clearfix"></div>
+      </div>
+      <div class="widget-body no-padding">
+        <rd-loading ng-show="crud.data.status.loading && !(crud.data.elts && crud.data.elts.length > 0)"></rd-loading>
+        <div class="alert alert-danger" role="alert" ng-show="crud.data.status.error"><strong>Error!</strong> {{crud.data.status.error}}</div>
+        <div class="table-responsive" ng-show="crud.data.elts && crud.data.elts.length > 0">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th sort="crud.data.currentSort" name="name" ng-click="crud.fn.sort('name')">Nom</th>
+                <th>Couleur</th>
+                <th>Logo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="elt in filtered = (crud.data.elts | filter:search)" ng-click="crud.fn.toggle(elt)" ng-class="{active: crud.data.selectedElt && elt.id === crud.data.selectedElt.id}">
+                <td>{{elt.name}}</td>
+                <td>{{elt.color}}</td>
+                <td><img ng-src="{{elt.logo}}" style="height: 20px;"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6" ng-show="crud.data.selectedElt && !crud.data.form">
+    <div class="card">
+      <h4 class="card-heading">
+        <span class="pull-right">
+          <a class="btn btn-xs btn-default" href="{{crud.fn.eltRestUrl(crud.data.selectedElt)}}" target="_blank"><i class="fa fa-external-link"></i></a>
+          <a class="btn btn-xs btn-info" ng-click="crud.fn.edit(crud.data.selectedElt)"><i class="fa fa-pencil-square-o"></i></a>
+          <loading-button btn-class="btn-xs btn-danger" btn-icon="fa fa-trash-o" btn-loading="crud.data.status.removing" ng-click="crud.fn.remove(crud.data.selectedElt)"></loading-button>
+        </span>
+        {{crud.data.selectedElt.name}} ({{crud.data.selectedElt.color}})
+      </h4>
+      <img ng-src="{{crud.data.selectedElt.logo}}" style="max-width: 100%;">
+    </div>
+  </div>
+
+  <div class="col-md-6" ng-show="crud.data.form">
+    <form ng-submit="crud.fn.save()">
+      <div class="card">
+        <div class="form-group">
+          <label for="content">Nom</label>
+          <input type="text" class="form-control" id="name" name="name" placeholder="Nom du magasin" ng-model="crud.data.form.name" required>
+        </div>
+        <div class="form-group">
+          <label for="color">Couleur</label>
+          <select id="color" name="color" class="form-control" ng-model="crud.data.form.color" ng-options="color for color in data.ionicColors" required>
+            <option value="">--</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="logo">Logo</label>
+          <media-crush-upload ng-model="crud.data.form.logo"></media-crush-upload>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="pull-right">
+          <loading-button btn-type="submit" btn-class="btn-primary" btn-loading="crud.data.status.saving" ng-show="!crud.data.form.id">Créer</loading-button>
+          <loading-button btn-type="submit" btn-class="btn-success" btn-loading="crud.data.status.saving" ng-show="crud.data.form.id">Enregistrer</loading-button>
+        </div>
+        <a class="btn btn-default" ng-click="crud.fn.cancelEdit()">Annuler</a>
+        <div class="clearfix"></div>
+      </div>
+    </form>
+  </div>
+</div>

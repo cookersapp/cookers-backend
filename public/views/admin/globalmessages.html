@@ -20,15 +20,15 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="message in filtered = (crud.data.elts | filter:search)" ng-click="crud.fn.toggle(message)" ng-class="{active: crud.data.selectedElt && message.id === crud.data.selectedElt.id}">
-                <td><span class="label" ng-class="{'label-default': !message.sticky, 'label-danger': message.sticky}">{{message.sticky ? 'Oui' : 'Non'}}</span></td>
+              <tr ng-repeat="elt in filtered = (crud.data.elts | filter:search)" ng-click="crud.fn.toggle(elt)" ng-class="{active: crud.data.selectedElt && elt.id === crud.data.selectedElt.id}">
+                <td><span class="label" ng-class="{'label-default': !elt.sticky, 'label-danger': elt.sticky}">{{elt.sticky ? 'Oui' : 'Non'}}</span></td>
                 <td>
-                  <div class="alert alert-{{message.category}}" style="max-width: 384px;">
-                    <span ng-bind-html="trustHtml(message.content)"></span>
+                  <div class="alert alert-{{elt.category}}" style="max-width: 384px;">
+                    <span ng-bind-html="trustHtml(elt.content)"></span>
                   </div>
                 </td>
                 <td>
-                  <span ng-repeat="version in message.versions">
+                  <span ng-repeat="version in elt.versions">
                     <span class="label label-primary">{{version}}</span>
                   </span>
                 </td>

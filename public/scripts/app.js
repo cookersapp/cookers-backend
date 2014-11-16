@@ -113,6 +113,11 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
     abstract: true,
     template: '<ui-view/>'
   })
+  .state('user.data.foods', {
+    url: '/foods',
+    templateUrl: 'assets/views/data/foods.html',
+    controller: 'FoodsCtrl'
+  })
   .state('user.data.recipes', {
     url: '/recipes',
     templateUrl: 'assets/views/data/recipes.html',
@@ -138,10 +143,10 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
     templateUrl: 'assets/views/data/selections.html',
     controller: 'SelectionsCtrl'
   })
-  .state('user.data.foods', {
-    url: '/foods',
-    templateUrl: 'assets/views/data/foods.html',
-    controller: 'FoodsCtrl'
+  .state('user.data.stores', {
+    url: '/stores',
+    templateUrl: 'assets/views/data/stores.html',
+    controller: 'StoresCtrl'
   })
   .state('user.admin', {
     abstract: true,
@@ -197,6 +202,7 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
   foodCategories:   ['Viandes & Poissons', 'Fruits & Légumes', 'Pains & Pâtisseries', 'Frais', 'Surgelés', 'Épicerie salée', 'Épicerie sucrée', 'Boissons', 'Bébé', 'Bio', 'Hygiène & Beauté', 'Entretien & Nettoyage', 'Animalerie', 'Bazar & Textile'],
   currencies:       ['€'],
   messageCategories:['default', 'success', 'info', 'warning', 'danger'],
+  ionicColors:      ['light', 'stable', 'positive', 'calm', 'balanced', 'energized', 'assertive', 'royal', 'dark'],
   appVersions:      ['~', '1.1.0', '1.2.0']
 })
 

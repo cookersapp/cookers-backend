@@ -10,4 +10,12 @@ angular.module('app')
   };
 
   return CrudUtils.createCrud(baseUrl, processBreforeSave);
+})
+
+.factory('StoresSrv', function(CrudUtils){
+  'use strict';
+  var baseUrl = '/api/v1/stores';
+  var processBreforeSave = function(elt){};
+
+  return CrudUtils.createCrud(baseUrl, processBreforeSave);
 });
