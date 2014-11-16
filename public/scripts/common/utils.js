@@ -178,7 +178,7 @@ angular.module('app')
   }
 
   function _autoSort(arr, params){
-    var elt = arr[0][params.order];
+    var elt = _getDeep(arr[0], params.order.split('.'));
     if(typeof elt === 'boolean')      { _boolSort(arr, params.order, params.desc); }
     else if(typeof elt === 'number')  { _intSort(arr, params.order, params.desc);  }
     else if(typeof elt === 'string')  { _strSort(arr, params.order, params.desc);  }
@@ -188,8 +188,8 @@ angular.module('app')
   }
   function _strSort(arr, attr, desc){
     arr.sort(function(a, b){
-      var aStr = a && a[attr] ? a[attr].toLowerCase() : '';
-      var bStr = b && b[attr] ? b[attr].toLowerCase() : '';
+      var aStr = _getDeep(a, attr.split('.'), '').toLowerCase();
+      var bStr = _getDeep(b, attr.split('.'), '').toLowerCase();
       if(aStr > bStr)       { return 1 * (desc ? -1 : 1);   }
       else if(aStr < bStr)  { return -1 * (desc ? -1 : 1);  }
       else                  { return 0;                     }
@@ -197,17 +197,30 @@ angular.module('app')
   }
   function _intSort(arr, attr, desc){
     arr.sort(function(a, b){
-      var aInt = a && a[attr] ? a[attr] : 0;
-      var bInt = b && b[attr] ? b[attr] : 0;
+      var aInt = _getDeep(a, attr.split('.'), 0);
+      var bInt = _getDeep(b, attr.split('.'), 0);
       return (aInt - bInt) * (desc ? -1 : 1);
     });
   }
   function _boolSort(arr, attr, desc){
     arr.sort(function(a, b){
-      var aBool = a && a[attr] ? a[attr] : 0;
-      var bBool = b && b[attr] ? b[attr] : 0;
+      var aBool = _getDeep(a, attr.split('.'), 0);
+      var bBool = _getDeep(b, attr.split('.'), 0);
       return (aBool === bBool ? 0 : (aBool ? -1 : 1)) * (desc ? -1 : 1);
     });
+  }
+
+  function _getDeep(obj, params, _defaultValue){
+    if(obj){
+      if(params.length > 0){
+        var attr = params.shift();
+        return _getDeep(obj[attr], params, _defaultValue);
+      } else {
+        return obj;
+      }
+    } else {
+      return _defaultValue;
+    }
   }
 
   return service;

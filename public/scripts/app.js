@@ -148,6 +148,11 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
     templateUrl: 'assets/views/data/stores.html',
     controller: 'StoresCtrl'
   })
+  .state('user.data.storeProducts', {
+    url: '/stores/:storeId/products',
+    templateUrl: 'assets/views/data/storeProducts.html',
+    controller: 'StoreProductsCtrl'
+  })
   .state('user.admin', {
     abstract: true,
     template: '<ui-view/>'

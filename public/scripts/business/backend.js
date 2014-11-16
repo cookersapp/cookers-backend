@@ -18,4 +18,24 @@ angular.module('app')
   var processBreforeSave = function(elt){};
 
   return CrudUtils.createCrud(baseUrl, processBreforeSave);
+})
+
+.factory('StoreProductsSrv', function(CrudUtils){
+  'use strict';
+  var service = {
+    create: create
+  };
+
+  function create(storeId){
+    var baseUrl = '/api/v1/stores/'+storeId+'/products';
+    var processBreforeSave = function(elt){
+      if(elt && elt.barcode){
+        elt.id = elt.barcode;
+        delete elt.barcode;
+      }
+    };
+    return CrudUtils.createCrud(baseUrl, processBreforeSave);
+  }
+
+  return service;
 });

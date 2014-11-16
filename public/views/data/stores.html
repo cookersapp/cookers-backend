@@ -42,7 +42,10 @@
         </span>
         {{crud.data.selectedElt.name}} ({{crud.data.selectedElt.color}})
       </h4>
-      <img ng-src="{{crud.data.selectedElt.logo}}" style="max-width: 100%;">
+      <div>
+        <img ng-src="{{crud.data.selectedElt.logo}}" style="max-width: 100%;">
+      </div>
+      <a class="btn btn-default" ui-sref="user.data.storeProducts({storeId: crud.data.selectedElt.id})">Voir les produits du magasin</a>
     </div>
   </div>
 

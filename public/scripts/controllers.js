@@ -420,6 +420,39 @@ angular.module('app')
 })
 
 
+.controller('StoreProductsCtrl', function($rootScope, $scope, $stateParams, StoresSrv, StoreProductsSrv, CrudUtils, dataList){
+  'use strict';
+  var storeId = $stateParams.storeId;
+  StoresSrv.get(storeId).then(function(store){
+    $scope.store = store;
+    $rootScope.config.header.levels = [
+      {name: 'Home', state: 'user.home'},
+      {name: 'Magasins', state: 'user.data.stores'},
+      {name: store.name},
+      {name: 'Produits'}
+    ];
+  });
+
+  $scope.data = {
+    currencies: dataList.currencies,
+    quantityUnits: dataList.quantityUnits
+  };
+
+  var defaultSort = {order: 'product'};
+  var defaultFormElt = {
+    store: storeId
+  };
+  $scope.crud = CrudUtils.createCrudCtrl('Produits', $rootScope.config.header, StoreProductsSrv.create(storeId), defaultSort, defaultFormElt);
+
+  $scope.$watch('crud.data.form.promo', function(val){
+    $scope.promo = !!val;
+  });
+  $scope.$watch('crud.data.form.recipe', function(val){
+    $scope.recipe = !!val;
+  });
+})
+
+
 .controller('GlobalmessagesCtrl', function($rootScope, $scope, GlobalmessageSrv, CrudUtils, dataList){
   'use strict';
   $rootScope.config.header.levels = [

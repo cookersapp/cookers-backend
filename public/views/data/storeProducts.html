@@ -1,0 +1,148 @@
+<div class="row">
+  <div class="col-md-6">
+    <div class="widget">
+      <div class="widget-header">
+        <i class="fa fa-barcode"></i> Produits de <b>{{store.name}}</b> ({{filtered.length}})
+        <button type="button" class="btn btn-sm btn-success pull-right" ng-click="crud.fn.create()" style="margin-left: 10px;"><i class="fa fa-plus"></i> Créer un produit</button>
+        <input type="text" class="form-control input-sm pull-right" placeholder="Search ..." ng-model="search">
+        <div class="clearfix"></div>
+      </div>
+      <div class="widget-body no-padding">
+        <rd-loading ng-show="crud.data.status.loading && !(crud.data.elts && crud.data.elts.length > 0)"></rd-loading>
+        <div class="alert alert-danger" role="alert" ng-show="crud.data.status.error"><strong>Error!</strong> {{crud.data.status.error}}</div>
+        <div class="table-responsive" ng-show="crud.data.elts && crud.data.elts.length > 0">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th sort="crud.data.currentSort" name="product" ng-click="crud.fn.sort('product')">Code barre</th>
+                <th sort="crud.data.currentSort" name="price.value" ng-click="crud.fn.sort('price.value')">Prix</th>
+                <th>Promo</th>
+                <th>Recette</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="elt in filtered = (crud.data.elts | filter:search)" ng-click="crud.fn.toggle(elt)" ng-class="{active: crud.data.selectedElt && elt.id === crud.data.selectedElt.id}">
+                <td>{{elt.product}}</td>
+                <td>{{elt.price | price}}</td>
+                <td><img ng-src="{{elt.promo.image}}" style="height: 60px;"></td>
+                <td><img ng-src="{{elt.recipe.image}}" style="height: 60px;"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6" ng-show="crud.data.selectedElt && !crud.data.form">
+    <div class="card">
+      <h4 class="card-heading">
+        <span class="pull-right">
+          <a class="btn btn-xs btn-default" href="{{crud.fn.eltRestUrl(crud.data.selectedElt)}}" target="_blank"><i class="fa fa-external-link"></i></a>
+          <a class="btn btn-xs btn-info" ng-click="crud.fn.edit(crud.data.selectedElt)"><i class="fa fa-pencil-square-o"></i></a>
+          <loading-button btn-class="btn-xs btn-danger" btn-icon="fa fa-trash-o" btn-loading="crud.data.status.removing" ng-click="crud.fn.remove(crud.data.selectedElt)"></loading-button>
+        </span>
+        {{crud.data.selectedElt.product}}
+      </h4>
+      <p>
+        Prix: {{crud.data.selectedElt.price | price}}<br>
+        Prix générique: {{crud.data.selectedElt.genericPrice | price}}
+      </p>
+      <div ng-show="crud.data.selectedElt.promo">
+        Promo: <span class="label label-danger">{{crud.data.selectedElt.promo.badge}}</span><br>
+        <img ng-src="{{crud.data.selectedElt.promo.image}}">
+      </div>
+      <div ng-show="crud.data.selectedElt.recipe">
+        Recette: {{crud.data.selectedElt.recipe.id}}<br>
+        <img ng-src="{{crud.data.selectedElt.recipe.image}}">
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6" ng-show="crud.data.form">
+    <form ng-submit="crud.fn.save()">
+      <div class="card">
+        <div class="form-group">
+          <label for="id">Code barre</label>
+          <input type="text" class="form-control" id="product" name="product" ng-model="crud.data.form.product" required>
+        </div>
+        <div class="form-group">
+          <label>Prix</label>
+          <div class="form-inline">
+            <div class="form-group">
+              <input type="number" step="any" class="form-control" id="priceValue" name="priceValue" ng-model="crud.data.form.price.value" required>
+            </div>
+            <div class="form-group">
+              <select class="form-control" id="priceCurrency" name="priceCurrency" ng-model="crud.data.form.price.currency" ng-options="currencies for currencies in data.currencies" required>
+                <option value="">--</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Prix générique</label>
+          <div class="form-inline">
+            <div class="form-group">
+              <input type="number" step="any" class="form-control" id="genericPriceValue" name="genericPriceValue" ng-model="crud.data.form.genericPrice.value" required>
+            </div>
+            <div class="form-group">
+              <select class="form-control" id="genericPriceCurrency" name="genericPriceCurrency" ng-model="crud.data.form.genericPrice.currency" ng-options="currencies for currencies in data.currencies" required>
+                <option value="">--</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <select class="form-control" id="genericPriceUnit" name="genericPriceUnit" ng-model="crud.data.form.genericPrice.unit" ng-options="unit for unit in data.quantityUnits" required>
+                <option value="">--</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="checkbox">
+          <label for="promo">
+            <input type="checkbox" id="promo" name="promo" ng-model="promo"> Proposer une promotion avec ce produit ?
+          </label>
+        </div>
+        <div ng-if="promo">
+          <div class="form-group">
+            <label for="productPromo">Produit en promotion</label>
+            <input type="text" class="form-control" id="productPromo" name="productPromo" ng-model="crud.data.form.promo.product" required>
+          </div>
+          <div class="form-group">
+            <label for="badgePromo">Badge</label>
+            <input type="text" class="form-control" id="badgePromo" name="badgePromo" ng-model="crud.data.form.promo.badge" maxlength="5" required>
+          </div>
+          <div class="form-group">
+            <label for="imagePromo">Image</label>
+            <media-crush-upload ng-model="crud.data.form.promo.image" format="380x120"></media-crush-upload>
+            <p class="help-block">Taille: 380x120</p>
+          </div>
+        </div>
+        <div class="checkbox">
+          <label for="recipe">
+            <input type="checkbox" id="recipe" name="recipe" ng-model="recipe"> Associer une recette à ce produit ?
+          </label>
+        </div>
+        <div ng-if="recipe">
+          <div class="form-group">
+            <label for="idRecipe">Recette liée (id)</label>
+            <input type="text" class="form-control" id="idRecipe" name="idRecipe" ng-model="crud.data.form.recipe.id" required>
+          </div>
+          <div class="form-group">
+            <label for="imageRecipe">Image</label>
+            <media-crush-upload ng-model="crud.data.form.recipe.image" format="380x120"></media-crush-upload>
+            <p class="help-block">Taille: 380x120</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="pull-right">
+          <loading-button btn-type="submit" btn-class="btn-primary" btn-loading="crud.data.status.saving" ng-show="!crud.data.form.id">Créer</loading-button>
+          <loading-button btn-type="submit" btn-class="btn-success" btn-loading="crud.data.status.saving" ng-show="crud.data.form.id">Enregistrer</loading-button>
+        </div>
+        <a class="btn btn-default" ng-click="crud.fn.cancelEdit()">Annuler</a>
+        <div class="clearfix"></div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -99,6 +99,12 @@ angular.module('app')
         if(res && res.data && res.data.data){
           CollectionUtils.upsertElt(cache, res.data.data);
           return res.data.data;
+        } else {
+          if(res && res.data && res.data.message){
+            return $q.reject(res.data.message);
+          } else {
+            return $q.reject();
+          }
         }
       });
     } else {
@@ -179,6 +185,7 @@ angular.module('app')
     }, function(err){
       console.log('Error', err);
       data.status.saving = false;
+      data.status.error = err;
     });
   }
 
@@ -195,6 +202,7 @@ angular.module('app')
       }, function(err){
         console.log('Error', err);
         data.status.removing = false;
+        data.status.error = err;
       });
     } else {
       return $q.when();

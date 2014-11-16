@@ -79,7 +79,7 @@ object Stores extends Controller with MongoController {
 
   def createProduct(store: String) = Action(parse.json) { request =>
     Async {
-      val storeProduct = request.body.asOpt[StoreProduct]
+      val storeProduct = StoreProduct.from(request.body)
       if (storeProduct.isDefined) {
         StoresDao.insertProduct(storeProduct.get).map { lastError =>
           lastError.inError match {
@@ -93,13 +93,13 @@ object Stores extends Controller with MongoController {
     }
   }
 
-  def getProduct(store: String, product: String) = Action {
+  def getProduct(store: String, productId: String) = Action {
     Async {
-      StoresDao.findProduct(store, product).flatMap { storeProductOpt =>
+      StoresDao.findProduct(store, productId).flatMap { storeProductOpt =>
         if (storeProductOpt.isDefined) {
           Future.successful(Ok(ApiUtils.Ok(storeProductOpt.get)))
         } else {
-          ProductSrv.getProduct(product).map { productOpt =>
+          ProductSrv.getProduct(productId).map { productOpt =>
             if (productOpt.isDefined) {
               Ok(ApiUtils.Ok(StoreProduct.mockFor(productOpt.get, store)))
             } else {
@@ -111,11 +111,11 @@ object Stores extends Controller with MongoController {
     }
   }
 
-  def updateProduct(store: String, product: String) = Action(parse.json) { request =>
+  def updateProduct(store: String, productId: String) = Action(parse.json) { request =>
     Async {
       val storeProduct = request.body.asOpt[StoreProduct]
       if (storeProduct.isDefined) {
-        StoresDao.updateProduct(store, product, storeProduct.get).map { lastError =>
+        StoresDao.updateProduct(store, productId, storeProduct.get).map { lastError =>
           lastError.inError match {
             case false => Ok(ApiUtils.Ok(storeProduct.get))
             case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
@@ -127,9 +127,9 @@ object Stores extends Controller with MongoController {
     }
   }
 
-  def removeProduct(store: String, product: String) = Action {
+  def removeProduct(store: String, productId: String) = Action {
     Async {
-      StoresDao.removeProduct(store, product).map { lastError =>
+      StoresDao.removeProduct(store, productId).map { lastError =>
         lastError.inError match {
           case false => Ok(ApiUtils.Ok)
           case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
