@@ -19,33 +19,6 @@ object Stores extends Controller with MongoController {
     }
   }
 
-  def get(id: String) = Action {
-    Async {
-      StoresDao.findById(id).map {
-        case Some(store) => Ok(ApiUtils.Ok(store))
-        case None => Ok(ApiUtils.NotFound("Store not found !"))
-      }
-    }
-  }
-
-  def getProduct(storeId: String, barcode: String) = Action {
-    Async {
-      StoresDao.findProduct(storeId, barcode).flatMap { storeProductOpt =>
-        if (storeProductOpt.isDefined) {
-          Future.successful(Ok(ApiUtils.Ok(storeProductOpt.get)))
-        } else {
-          ProductSrv.getProduct(barcode).map { productOpt =>
-            if (productOpt.isDefined) {
-              Ok(ApiUtils.Ok(StoreProduct.mockFor(productOpt.get, storeId)))
-            } else {
-              Ok(ApiUtils.NotFound("Product not found in Store !"))
-            }
-          }
-        }
-      }
-    }
-  }
-
   def create = Action(parse.json) { request =>
     Async {
       val store = Store.from(request.body)
@@ -62,9 +35,34 @@ object Stores extends Controller with MongoController {
     }
   }
 
-  def updateField(id: String, field: String, value: String) = Action {
+  def get(id: String) = Action {
     Async {
-      StoresDao.update(id, field, value).map { lastError =>
+      StoresDao.find(id).map {
+        case Some(store) => Ok(ApiUtils.Ok(store))
+        case None => Ok(ApiUtils.NotFound("Store not found !"))
+      }
+    }
+  }
+
+  def update(id: String) = Action(parse.json) { request =>
+    Async {
+      val store = request.body.asOpt[Store]
+      if (store.isDefined) {
+        StoresDao.update(id, store.get).map { lastError =>
+          lastError.inError match {
+            case false => Ok(ApiUtils.Ok(store.get))
+            case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
+          }
+        }
+      } else {
+        Future.successful(Ok(ApiUtils.BadRequest("Malformed Store object !")))
+      }
+    }
+  }
+
+  def remove(id: String) = Action {
+    Async {
+      StoresDao.remove(id).map { lastError =>
         lastError.inError match {
           case false => Ok(ApiUtils.Ok)
           case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
@@ -73,9 +71,65 @@ object Stores extends Controller with MongoController {
     }
   }
 
-  def remove(id: String) = Action {
+  def getAllProducts(store: String) = Action {
     Async {
-      StoresDao.remove(id).map { lastError =>
+      StoresDao.allProducts(store).map { storeProducts => Ok(ApiUtils.Ok(Json.toJson(storeProducts))) }
+    }
+  }
+
+  def createProduct(store: String) = Action(parse.json) { request =>
+    Async {
+      val storeProduct = request.body.asOpt[StoreProduct]
+      if (storeProduct.isDefined) {
+        StoresDao.insertProduct(storeProduct.get).map { lastError =>
+          lastError.inError match {
+            case false => Ok(ApiUtils.Ok(storeProduct.get))
+            case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
+          }
+        }
+      } else {
+        Future.successful(Ok(ApiUtils.BadRequest("Malformed StoreProduct object !")))
+      }
+    }
+  }
+
+  def getProduct(store: String, product: String) = Action {
+    Async {
+      StoresDao.findProduct(store, product).flatMap { storeProductOpt =>
+        if (storeProductOpt.isDefined) {
+          Future.successful(Ok(ApiUtils.Ok(storeProductOpt.get)))
+        } else {
+          ProductSrv.getProduct(product).map { productOpt =>
+            if (productOpt.isDefined) {
+              Ok(ApiUtils.Ok(StoreProduct.mockFor(productOpt.get, store)))
+            } else {
+              Ok(ApiUtils.NotFound("Product not found in Store !"))
+            }
+          }
+        }
+      }
+    }
+  }
+
+  def updateProduct(store: String, product: String) = Action(parse.json) { request =>
+    Async {
+      val storeProduct = request.body.asOpt[StoreProduct]
+      if (storeProduct.isDefined) {
+        StoresDao.updateProduct(store, product, storeProduct.get).map { lastError =>
+          lastError.inError match {
+            case false => Ok(ApiUtils.Ok(storeProduct.get))
+            case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
+          }
+        }
+      } else {
+        Future.successful(Ok(ApiUtils.BadRequest("Malformed StoreProduct object !")))
+      }
+    }
+  }
+
+  def removeProduct(store: String, product: String) = Action {
+    Async {
+      StoresDao.removeProduct(store, product).map { lastError =>
         lastError.inError match {
           case false => Ok(ApiUtils.Ok)
           case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
