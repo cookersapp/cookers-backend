@@ -29,9 +29,8 @@ angular.module('app')
   function create(storeId){
     var baseUrl = '/api/v1/stores/'+storeId+'/products';
     var processBreforeSave = function(elt){
-      if(elt && elt.barcode){
-        elt.id = elt.barcode;
-        delete elt.barcode;
+      if(elt && elt.promo && elt.promo.product){
+        elt.promo.id = elt.promo.product;
       }
     };
     return CrudUtils.createCrud(baseUrl, processBreforeSave);

@@ -8,10 +8,19 @@ import scala.util.Random
 import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 
+case class ProductPromoBenefit(
+  category: String,
+  value: Double)
+object ProductPromoBenefit {
+  implicit val productPromoBenefitFormat = Json.format[ProductPromoBenefit]
+}
+
 case class ProductPromo(
+  id: Option[String],
   product: String,
-  badge: String,
   name: Option[String],
+  badge: String,
+  benefit: Option[ProductPromoBenefit],
   image: String)
 object ProductPromo {
   implicit val productPromoFormat = Json.format[ProductPromo]

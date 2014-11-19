@@ -208,6 +208,7 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
   currencies:       ['€'],
   messageCategories:['default', 'success', 'info', 'warning', 'danger'],
   ionicColors:      ['light', 'stable', 'positive', 'calm', 'balanced', 'energized', 'assertive', 'royal', 'dark'],
+  promoBenefits:    ['percentage', 'value'],
   appVersions:      ['~', '1.1.0', '1.2.0']
 })
 

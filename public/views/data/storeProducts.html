@@ -49,7 +49,10 @@
         Prix générique: {{crud.data.selectedElt.genericPrice | price}}
       </p>
       <div ng-show="crud.data.selectedElt.promo">
-        <b>Promo</b>: <span class="label label-danger">{{crud.data.selectedElt.promo.badge}}</span> {{crud.data.selectedElt.promo.name}}<br>
+        <b>Promo</b>:
+        <span class="label label-danger">{{crud.data.selectedElt.promo.badge}}</span>
+        {{crud.data.selectedElt.promo.name}}
+        ({{crud.data.selectedElt.promo.benefit.value}} {{crud.data.selectedElt.promo.benefit.category}})<br>
         <img ng-src="{{crud.data.selectedElt.promo.image}}">
       </div>
       <br>
@@ -64,7 +67,7 @@
     <form ng-submit="crud.fn.save()">
       <div class="card">
         <div class="form-group">
-          <label for="id">Code barre</label>
+          <label for="product">Code barre</label>
           <input type="text" class="form-control" id="product" name="product" ng-model="crud.data.form.product" required>
         </div>
         <div class="form-group">
@@ -74,7 +77,7 @@
               <input type="number" step="any" class="form-control" id="priceValue" name="priceValue" ng-model="crud.data.form.price.value" required>
             </div>
             <div class="form-group">
-              <select class="form-control" id="priceCurrency" name="priceCurrency" ng-model="crud.data.form.price.currency" ng-options="currencies for currencies in data.currencies" required>
+              <select class="form-control" id="priceCurrency" name="priceCurrency" ng-model="crud.data.form.price.currency" ng-options="currency for currency in data.currencies" required>
                 <option value="">--</option>
               </select>
             </div>
@@ -87,7 +90,7 @@
               <input type="number" step="any" class="form-control" id="genericPriceValue" name="genericPriceValue" ng-model="crud.data.form.genericPrice.value" required>
             </div>
             <div class="form-group">
-              <select class="form-control" id="genericPriceCurrency" name="genericPriceCurrency" ng-model="crud.data.form.genericPrice.currency" ng-options="currencies for currencies in data.currencies" required>
+              <select class="form-control" id="genericPriceCurrency" name="genericPriceCurrency" ng-model="crud.data.form.genericPrice.currency" ng-options="currency for currency in data.currencies" required>
                 <option value="">--</option>
               </select>
             </div>
@@ -109,12 +112,25 @@
             <input type="text" class="form-control" id="productPromo" name="productPromo" ng-model="crud.data.form.promo.product" required>
           </div>
           <div class="form-group">
-            <label for="namePromo">Nom</label>
+            <label for="namePromo">Nom de la promotion</label>
             <input type="text" class="form-control" id="namePromo" name="namePromo" ng-model="crud.data.form.promo.name" required>
           </div>
           <div class="form-group">
             <label for="badgePromo">Badge</label>
             <input type="text" class="form-control" id="badgePromo" name="badgePromo" ng-model="crud.data.form.promo.badge" maxlength="5" required>
+          </div>
+          <div class="form-group">
+            <label>Bénéfice</label>
+            <div class="form-inline">
+              <div class="form-group">
+                <input type="number" step="any" class="form-control" id="valueBenefitPromo" name="valueBenefitPromo" ng-model="crud.data.form.promo.benefit.value" required>
+              </div>
+              <div class="form-group">
+                <select class="form-control" id="categoryBenefitPromo" name="categoryBenefitPromo" ng-model="crud.data.form.promo.benefit.category" ng-options="benefit for benefit in data.promoBenefits" required>
+                  <option value="">--</option>
+                </select>
+              </div>
+            </div>
           </div>
           <div class="form-group">
             <label for="imagePromo">Image</label>

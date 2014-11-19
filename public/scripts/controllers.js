@@ -435,12 +435,15 @@ angular.module('app')
 
   $scope.data = {
     currencies: dataList.currencies,
-    quantityUnits: dataList.quantityUnits
+    quantityUnits: dataList.quantityUnits,
+    promoBenefits: dataList.promoBenefits
   };
 
   var defaultSort = {order: 'product'};
   var defaultFormElt = {
-    store: storeId
+    store: storeId,
+    price: {currency: dataList.currencies[0]},
+    genericPrice: {currency: dataList.currencies[0], unit: dataList.quantityUnits[0]}
   };
   $scope.crud = CrudUtils.createCrudCtrl('Produits', $rootScope.config.header, StoreProductsSrv.create(storeId), defaultSort, defaultFormElt);
 
