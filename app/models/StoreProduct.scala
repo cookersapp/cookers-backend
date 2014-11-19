@@ -11,6 +11,7 @@ import reactivemongo.bson.BSONObjectID
 case class ProductPromo(
   product: String,
   badge: String,
+  name: Option[String],
   image: String)
 object ProductPromo {
   implicit val productPromoFormat = Json.format[ProductPromo]

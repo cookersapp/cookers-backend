@@ -49,11 +49,12 @@
         Prix générique: {{crud.data.selectedElt.genericPrice | price}}
       </p>
       <div ng-show="crud.data.selectedElt.promo">
-        Promo: <span class="label label-danger">{{crud.data.selectedElt.promo.badge}}</span><br>
+        <b>Promo</b>: <span class="label label-danger">{{crud.data.selectedElt.promo.badge}}</span> {{crud.data.selectedElt.promo.name}}<br>
         <img ng-src="{{crud.data.selectedElt.promo.image}}">
       </div>
+      <br>
       <div ng-show="crud.data.selectedElt.recipe">
-        Recette: {{crud.data.selectedElt.recipe.id}}<br>
+        <b>Recette</b>: {{crud.data.selectedElt.recipe.id}}<br>
         <img ng-src="{{crud.data.selectedElt.recipe.image}}">
       </div>
     </div>
@@ -104,8 +105,12 @@
         </div>
         <div ng-if="promo">
           <div class="form-group">
-            <label for="productPromo">Produit en promotion</label>
+            <label for="productPromo">Produit en promotion (code barre)</label>
             <input type="text" class="form-control" id="productPromo" name="productPromo" ng-model="crud.data.form.promo.product" required>
+          </div>
+          <div class="form-group">
+            <label for="namePromo">Nom</label>
+            <input type="text" class="form-control" id="namePromo" name="namePromo" ng-model="crud.data.form.promo.name" required>
           </div>
           <div class="form-group">
             <label for="badgePromo">Badge</label>
