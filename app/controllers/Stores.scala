@@ -79,16 +79,17 @@ object Stores extends Controller with MongoController {
 
   def createProduct(store: String) = Action(parse.json) { request =>
     Async {
-      val storeProduct = StoreProduct.from(request.body)
-      if (storeProduct.isDefined) {
-        StoresDao.insertProduct(storeProduct.get).map { lastError =>
-          lastError.inError match {
-            case false => Ok(ApiUtils.Ok(storeProduct.get))
-            case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
+      StoreProduct.from(request.body).flatMap { storeProduct =>
+        if (storeProduct.isDefined) {
+          StoresDao.insertProduct(storeProduct.get).map { lastError =>
+            lastError.inError match {
+              case false => Ok(ApiUtils.Ok(storeProduct.get))
+              case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
+            }
           }
+        } else {
+          Future.successful(Ok(ApiUtils.BadRequest("Malformed StoreProduct object !")))
         }
-      } else {
-        Future.successful(Ok(ApiUtils.BadRequest("Malformed StoreProduct object !")))
       }
     }
   }
@@ -113,16 +114,17 @@ object Stores extends Controller with MongoController {
 
   def updateProduct(store: String, productId: String) = Action(parse.json) { request =>
     Async {
-      val storeProduct = request.body.asOpt[StoreProduct]
-      if (storeProduct.isDefined) {
-        StoresDao.updateProduct(store, productId, storeProduct.get).map { lastError =>
-          lastError.inError match {
-            case false => Ok(ApiUtils.Ok(storeProduct.get))
-            case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
+      StoreProduct.from(request.body).flatMap { storeProduct =>
+        if (storeProduct.isDefined) {
+          StoresDao.updateProduct(store, productId, storeProduct.get).map { lastError =>
+            lastError.inError match {
+              case false => Ok(ApiUtils.Ok(storeProduct.get))
+              case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
+            }
           }
+        } else {
+          Future.successful(Ok(ApiUtils.BadRequest("Malformed StoreProduct object !")))
         }
-      } else {
-        Future.successful(Ok(ApiUtils.BadRequest("Malformed StoreProduct object !")))
       }
     }
   }

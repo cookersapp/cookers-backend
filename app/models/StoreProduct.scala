@@ -4,9 +4,13 @@ import models.food.Product
 import models.food.Quantity
 import models.food.Price
 import models.food.PriceQuantity
+import models.food.dataImport.CookersProduct
+import dao.ProductsDao
 import scala.util.Random
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 import play.api.libs.json._
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.DB
 
 case class ProductPromoBenefit(
   category: String,
@@ -18,6 +22,7 @@ object ProductPromoBenefit {
 case class ProductPromo(
   id: Option[String],
   product: String,
+  foodId: Option[String],
   name: Option[String],
   badge: String,
   benefit: Option[ProductPromoBenefit],
@@ -44,10 +49,17 @@ case class StoreProduct(
 object StoreProduct {
   implicit val storeProductFormat = Json.format[StoreProduct]
 
-  def from(json: JsValue): Option[StoreProduct] = {
-    val id = (json \ "product").asOpt[String].getOrElse(BSONObjectID.generate.stringify)
-    val storeProductJson = json.as[JsObject] ++ Json.obj("id" -> id)
-    storeProductJson.asOpt[StoreProduct]
+  def from(json: JsValue)(implicit db: DB): Future[Option[StoreProduct]] = {
+    (json \ "product").asOpt[String].flatMap { product =>
+      (json \ "promo" \ "product").asOpt[String].map { promoProduct =>
+        ProductsDao.getCookers(promoProduct).map(_.map(cookersProduct => cookersProduct.foodId).getOrElse(CookersProduct.defaultFoodId))
+          .map { foodId =>
+            val promoJson = (json \ "promo").as[JsObject] ++ Json.obj("foodId" -> foodId)
+            val storeProductJson = json.as[JsObject] ++ Json.obj("id" -> product, "promo" -> promoJson)
+            storeProductJson.asOpt[StoreProduct]
+          }
+      }
+    }.getOrElse(Future.successful(None))
   }
 
   def mockFor(product: Product, store: String): StoreProduct = {
