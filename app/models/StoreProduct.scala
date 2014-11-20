@@ -20,12 +20,12 @@ object ProductPromoBenefit {
 }
 
 case class ProductPromo(
-  id: Option[String],
+  id: String,
   product: String,
-  foodId: Option[String],
-  name: Option[String],
+  foodId: String,
+  name: String,
   badge: String,
-  benefit: Option[ProductPromoBenefit],
+  benefit: ProductPromoBenefit,
   image: String)
 object ProductPromo {
   implicit val productPromoFormat = Json.format[ProductPromo]

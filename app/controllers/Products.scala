@@ -59,7 +59,10 @@ object Products extends Controller with MongoController {
     Async {
       ProductsDao.setFoodId(barcode, foodId).map { lastError =>
         lastError.inError match {
-          case false => Ok(ApiUtils.Ok)
+          case false => {
+            StoresDao.setProductFoodId(barcode, foodId)
+            Ok(ApiUtils.Ok)
+          }
           case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
         }
       }
