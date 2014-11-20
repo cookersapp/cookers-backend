@@ -18,14 +18,22 @@
                 <th sort="crud.data.currentSort" name="price.value" ng-click="crud.fn.sort('price.value')">Prix</th>
                 <th>Promo</th>
                 <th>Recette</th>
+                <th>Recommandation</th>
               </tr>
             </thead>
             <tbody>
               <tr ng-repeat="elt in filtered = (crud.data.elts | filter:search)" ng-click="crud.fn.toggle(elt)" ng-class="{active: crud.data.selectedElt && elt.id === crud.data.selectedElt.id}">
                 <td>{{elt.product}}</td>
                 <td>{{elt.price | price}}</td>
-                <td><img ng-src="{{elt.promo.image}}" style="height: 60px;"></td>
+                <td>
+                  {{elt.promo.name}}<br>
+                  <img ng-src="{{elt.promo.image}}" style="height: 60px;">
+                </td>
                 <td><img ng-src="{{elt.recipe.image}}" style="height: 60px;"></td>
+                <td>
+                  {{elt.recommandation.category}}: {{elt.recommandation.name}}<br>
+                  <img ng-src="{{elt.recommandation.image}}" style="height: 60px;">
+                </td>
               </tr>
             </tbody>
           </table>
@@ -53,12 +61,17 @@
         <span class="label label-danger">{{crud.data.selectedElt.promo.badge}}</span>
         {{crud.data.selectedElt.promo.name}}
         ({{crud.data.selectedElt.promo.benefit.value}} {{crud.data.selectedElt.promo.benefit.category}})<br>
-        <img ng-src="{{crud.data.selectedElt.promo.image}}">
+        <img ng-src="{{crud.data.selectedElt.promo.image}}"> {{crud.data.selectedElt.promo.product}} ({{crud.data.selectedElt.promo.foodId}})
       </div>
       <br>
       <div ng-show="crud.data.selectedElt.recipe">
         <b>Recette</b>: {{crud.data.selectedElt.recipe.id}}<br>
         <img ng-src="{{crud.data.selectedElt.recipe.image}}">
+      </div>
+      <br>
+      <div ng-show="crud.data.selectedElt.recommandation">
+        <b>Recommandation {{crud.data.selectedElt.recommandation.category}}</b>: {{crud.data.selectedElt.recommandation.name}}<br>
+        <img ng-src="{{crud.data.selectedElt.recommandation.image}}"> {{crud.data.selectedElt.recommandation.reference}}
       </div>
     </div>
   </div>
@@ -151,6 +164,32 @@
           <div class="form-group">
             <label for="imageRecipe">Image</label>
             <media-crush-upload ng-model="crud.data.form.recipe.image" format="380x120"></media-crush-upload>
+            <p class="help-block">Taille: 380x120</p>
+          </div>
+        </div>
+        <div class="checkbox">
+          <label for="recommandation">
+            <input type="checkbox" id="recommandation" name="recommandation" ng-model="recommandation"> Promoser une recommandation avec ce produit ?
+          </label>
+        </div>
+        <div ng-if="recommandation">
+          <div class="form-group">
+            <label for="categoryRecommandation">Type de recommandation</label>
+            <select class="form-control" id="categoryRecommandation" name="categoryRecommandation" ng-model="crud.data.form.recommandation.category" ng-options="category for category in data.recommandationCategories" required>
+              <option value="">--</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="referenceRecommandation">Id de l'élément recommandé</label>
+            <input type="text" class="form-control" id="referenceRecommandation" name="referenceRecommandation" ng-model="crud.data.form.recommandation.reference" required>
+          </div>
+          <div class="form-group">
+            <label for="nameRecommandation">Nom de l'élément recommandé</label>
+            <input type="text" class="form-control" id="nameRecommandation" name="nameRecommandation" ng-model="crud.data.form.recommandation.name" required>
+          </div>
+          <div class="form-group">
+            <label for="imageRecommandation">Image</label>
+            <media-crush-upload ng-model="crud.data.form.recommandation.image" format="380x120"></media-crush-upload>
             <p class="help-block">Taille: 380x120</p>
           </div>
         </div>

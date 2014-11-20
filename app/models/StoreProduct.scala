@@ -38,6 +38,16 @@ object ProductRecipe {
   implicit val productRecipeFormat = Json.format[ProductRecipe]
 }
 
+case class ProductRecommandation(
+  id: String,
+  category: String,
+  reference: String,
+  name: String,
+  image: String)
+object ProductRecommandation {
+  implicit val productRecommandationFormat = Json.format[ProductRecommandation]
+}
+
 case class StoreProduct(
   id: String, // only used for admin CRUD
   store: String,
@@ -45,6 +55,7 @@ case class StoreProduct(
   price: Price,
   genericPrice: PriceQuantity,
   promo: Option[ProductPromo],
+  recommandation: Option[ProductRecommandation],
   recipe: Option[ProductRecipe])
 object StoreProduct {
   implicit val storeProductFormat = Json.format[StoreProduct]
@@ -65,6 +76,6 @@ object StoreProduct {
   def mockFor(product: Product, store: String): StoreProduct = {
     val price = if (product.price.isDefined) product.price.get else new Price(new Random().nextDouble() * 3, "€")
     val quantity = if (product.quantity.isDefined) product.quantity.get else new Quantity(new Random().nextDouble() * 1000, "g")
-    new StoreProduct("", store, product.barcode, price, price.forQuantity(quantity).inGeneric(quantity.unit), None, None)
+    new StoreProduct("", store, product.barcode, price, price.forQuantity(quantity).inGeneric(quantity.unit), None, None, None)
   }
 }

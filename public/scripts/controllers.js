@@ -436,7 +436,8 @@ angular.module('app')
   $scope.data = {
     currencies: dataList.currencies,
     quantityUnits: dataList.quantityUnits,
-    promoBenefits: dataList.promoBenefits
+    promoBenefits: dataList.promoBenefits,
+    recommandationCategories: dataList.recommandationCategories
   };
 
   var defaultSort = {order: 'product'};

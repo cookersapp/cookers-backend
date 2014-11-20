@@ -197,19 +197,20 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
 .constant('firebaseUrl', 'https://crackling-fire-7710.firebaseio.com')
 
 .constant('dataList', {
-  recipeCategories: ['Plat principal', 'Entrée', 'Dessert', 'Vin'],
-  servingUnits:     ['personnes'],
-  timeUnits:        ['minutes', 'secondes'],
-  quantityUnits:    ['pièce', 'g', 'kg', 'cl', 'litre'],
-  ingredientRoles:  ['essentiel', 'facultatif', 'assaisonnement', 'accompagnement'],
-  instructionTitles:['Allons-y gaiement !', 'C\'est parti !', 'En avant guingamp !', 'Cassons la croûte !'],
-  timerColors:      ['blue', 'red', 'yellow', 'green', 'orange'],
-  foodCategories:   ['Viandes & Poissons', 'Fruits & Légumes', 'Pains & Pâtisseries', 'Frais', 'Surgelés', 'Épicerie salée', 'Épicerie sucrée', 'Boissons', 'Bébé', 'Bio', 'Hygiène & Beauté', 'Entretien & Nettoyage', 'Animalerie', 'Bazar & Textile'],
-  currencies:       ['€'],
-  messageCategories:['default', 'success', 'info', 'warning', 'danger'],
-  ionicColors:      ['light', 'stable', 'positive', 'calm', 'balanced', 'energized', 'assertive', 'royal', 'dark'],
-  promoBenefits:    ['percentage', 'value'],
-  appVersions:      ['~', '1.1.0', '1.2.0']
+  recipeCategories:         ['Plat principal', 'Entrée', 'Dessert', 'Vin'],
+  servingUnits:             ['personnes'],
+  timeUnits:                ['minutes', 'secondes'],
+  quantityUnits:            ['pièce', 'g', 'kg', 'cl', 'litre'],
+  ingredientRoles:          ['essentiel', 'facultatif', 'assaisonnement', 'accompagnement'],
+  instructionTitles:        ['Allons-y gaiement !', 'C\'est parti !', 'En avant guingamp !', 'Cassons la croûte !'],
+  timerColors:              ['blue', 'red', 'yellow', 'green', 'orange'],
+  foodCategories:           ['Viandes & Poissons', 'Fruits & Légumes', 'Pains & Pâtisseries', 'Frais', 'Surgelés', 'Épicerie salée', 'Épicerie sucrée', 'Boissons', 'Bébé', 'Bio', 'Hygiène & Beauté', 'Entretien & Nettoyage', 'Animalerie', 'Bazar & Textile'],
+  currencies:               ['€'],
+  messageCategories:        ['default', 'success', 'info', 'warning', 'danger'],
+  ionicColors:              ['light', 'stable', 'positive', 'calm', 'balanced', 'energized', 'assertive', 'royal', 'dark'],
+  promoBenefits:            ['percentage', 'value'],
+  recommandationCategories: ['recipe'],
+  appVersions:              ['~', '1.1.0', '1.2.0']
 })
 
 .run(function($rootScope, $sce, $state, $location, $window, AuthSrv){
