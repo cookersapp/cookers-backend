@@ -17,7 +17,6 @@
                 <th sort="crud.data.currentSort" name="product" ng-click="crud.fn.sort('product')">Code barre</th>
                 <th sort="crud.data.currentSort" name="price.value" ng-click="crud.fn.sort('price.value')">Prix</th>
                 <th>Promo</th>
-                <th>Recette</th>
                 <th>Recommandation</th>
               </tr>
             </thead>
@@ -26,13 +25,16 @@
                 <td>{{elt.product}}</td>
                 <td>{{elt.price | price}}</td>
                 <td>
-                  {{elt.promo.name}}<br>
-                  <img ng-src="{{elt.promo.image}}" style="height: 60px;">
+                  <div ng-show="elt.promo">
+                    {{elt.promo.name}}<br>
+                    <img ng-src="{{elt.promo.image}}" style="height: 60px;">
+                  </div>
                 </td>
-                <td><img ng-src="{{elt.recipe.image}}" style="height: 60px;"></td>
                 <td>
-                  {{elt.recommandation.category}}: {{elt.recommandation.name}}<br>
-                  <img ng-src="{{elt.recommandation.image}}" style="height: 60px;">
+                  <div ng-show="elt.recommandation">
+                    {{elt.recommandation.category}}: {{elt.recommandation.name}}<br>
+                    <img ng-src="{{elt.recommandation.image}}" style="height: 60px;">
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -62,11 +64,6 @@
         {{crud.data.selectedElt.promo.name}}
         ({{crud.data.selectedElt.promo.benefit.value}} {{crud.data.selectedElt.promo.benefit.category}})<br>
         <img ng-src="{{crud.data.selectedElt.promo.image}}"> {{crud.data.selectedElt.promo.product}} ({{crud.data.selectedElt.promo.foodId}})
-      </div>
-      <br>
-      <div ng-show="crud.data.selectedElt.recipe">
-        <b>Recette</b>: {{crud.data.selectedElt.recipe.id}}<br>
-        <img ng-src="{{crud.data.selectedElt.recipe.image}}">
       </div>
       <br>
       <div ng-show="crud.data.selectedElt.recommandation">
@@ -148,22 +145,6 @@
           <div class="form-group">
             <label for="imagePromo">Image</label>
             <media-crush-upload ng-model="crud.data.form.promo.image" format="380x120"></media-crush-upload>
-            <p class="help-block">Taille: 380x120</p>
-          </div>
-        </div>
-        <div class="checkbox">
-          <label for="recipe">
-            <input type="checkbox" id="recipe" name="recipe" ng-model="recipe"> Associer une recette à ce produit ?
-          </label>
-        </div>
-        <div ng-if="recipe">
-          <div class="form-group">
-            <label for="idRecipe">Recette liée (id)</label>
-            <input type="text" class="form-control" id="idRecipe" name="idRecipe" ng-model="crud.data.form.recipe.id" required>
-          </div>
-          <div class="form-group">
-            <label for="imageRecipe">Image</label>
-            <media-crush-upload ng-model="crud.data.form.recipe.image" format="380x120"></media-crush-upload>
             <p class="help-block">Taille: 380x120</p>
           </div>
         </div>

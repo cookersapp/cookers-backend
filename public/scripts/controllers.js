@@ -446,13 +446,21 @@ angular.module('app')
     price: {currency: dataList.currencies[0]},
     genericPrice: {currency: dataList.currencies[0], unit: dataList.quantityUnits[0]}
   };
-  $scope.crud = CrudUtils.createCrudCtrl('Produits', $rootScope.config.header, StoreProductsSrv.create(storeId), defaultSort, defaultFormElt);
+  var crud = CrudUtils.createCrudCtrl('Produits', $rootScope.config.header, StoreProductsSrv.create(storeId), defaultSort, defaultFormElt);
+  $scope.crud = crud;
+  var crudSave = crud.fn.save;
+  $scope.crud.fn.save = function(){
+    var elt = crud.data.form;
+    if(!$scope.promo){ delete elt.promo; }
+    if(!$scope.recommandation){ delete elt.recommandation; }
+    return crudSave(elt);
+  };
 
   $scope.$watch('crud.data.form.promo', function(val){
     $scope.promo = !!val;
   });
-  $scope.$watch('crud.data.form.recipe', function(val){
-    $scope.recipe = !!val;
+  $scope.$watch('crud.data.form.recommandation', function(val){
+    $scope.recommandation = !!val;
   });
 })
 

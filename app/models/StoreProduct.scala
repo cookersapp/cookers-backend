@@ -31,13 +31,6 @@ object ProductPromo {
   implicit val productPromoFormat = Json.format[ProductPromo]
 }
 
-case class ProductRecipe(
-  id: String,
-  image: String)
-object ProductRecipe {
-  implicit val productRecipeFormat = Json.format[ProductRecipe]
-}
-
 case class ProductRecommandation(
   id: String,
   category: String,
@@ -55,20 +48,22 @@ case class StoreProduct(
   price: Price,
   genericPrice: PriceQuantity,
   promo: Option[ProductPromo],
-  recommandation: Option[ProductRecommandation],
-  recipe: Option[ProductRecipe])
+  recommandation: Option[ProductRecommandation])
 object StoreProduct {
   implicit val storeProductFormat = Json.format[StoreProduct]
 
   def from(json: JsValue)(implicit db: DB): Future[Option[StoreProduct]] = {
-    (json \ "product").asOpt[String].flatMap { product =>
+    (json \ "product").asOpt[String].map { product =>
       (json \ "promo" \ "product").asOpt[String].map { promoProduct =>
         ProductsDao.getCookers(promoProduct).map(_.map(cookersProduct => cookersProduct.foodId).getOrElse(CookersProduct.defaultFoodId))
           .map { foodId =>
             val promoJson = (json \ "promo").as[JsObject] ++ Json.obj("foodId" -> foodId)
-            val storeProductJson = json.as[JsObject] ++ Json.obj("id" -> product, "promo" -> promoJson)
-            storeProductJson.asOpt[StoreProduct]
+            json.as[JsObject] ++ Json.obj("id" -> product, "promo" -> promoJson)
           }
+      }.getOrElse {
+        Future.successful(json.as[JsObject] ++ Json.obj("id" -> product))
+      }.map {
+        storeProductJson => storeProductJson.asOpt[StoreProduct]
       }
     }.getOrElse(Future.successful(None))
   }
@@ -76,6 +71,6 @@ object StoreProduct {
   def mockFor(product: Product, store: String): StoreProduct = {
     val price = if (product.price.isDefined) product.price.get else new Price(new Random().nextDouble() * 3, "€")
     val quantity = if (product.quantity.isDefined) product.quantity.get else new Quantity(new Random().nextDouble() * 1000, "g")
-    new StoreProduct("", store, product.barcode, price, price.forQuantity(quantity).inGeneric(quantity.unit), None, None, None)
+    new StoreProduct("", store, product.barcode, price, price.forQuantity(quantity).inGeneric(quantity.unit), None, None)
   }
 }

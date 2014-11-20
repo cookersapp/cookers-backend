@@ -36,19 +36,6 @@ angular.module('app')
         if(elt.recommandation){
           elt.recommandation.id = elt.recommandation.category+'~'+elt.recommandation.reference;
         }
-        if(elt.recipe && !elt.recommandation){
-          elt.recommandation = {
-            id: elt.recipe.id,
-            category: 'recipe',
-            reference: elt.recipe.id,
-            name: elt.recipe.id,
-            image: elt.recipe.image
-          };
-          delete elt.recipe;
-        }
-        if(elt.recipe){
-          delete elt.recipe;
-        }
       }
     };
     return CrudUtils.createCrud(baseUrl, processBreforeSave);
