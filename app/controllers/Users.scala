@@ -5,6 +5,7 @@ import common.Validator
 import common.ApiUtils
 import models.User
 import dao.UsersDao
+import dao.CartsDao
 import scala.concurrent.Future
 import play.api.libs.json._
 import play.api.mvc._
@@ -89,6 +90,25 @@ object Users extends Controller with MongoController {
     Async {
       val device = request.body
       UsersDao.addDevice(id, device).map { lastError =>
+        lastError.inError match {
+          case false => Ok(ApiUtils.Ok)
+          case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
+        }
+      }
+    }
+  }
+
+  def getUserCarts(id: String) = Action {
+    Async {
+      CartsDao.getCarts(id).map { carts => Ok(ApiUtils.Ok(Json.toJson(carts))) }
+    }
+  }
+
+  // Save cart when user archive it
+  def archiveUserCart(id: String, cartId: String) = Action(parse.json) { request =>
+    Async {
+      val cart = request.body
+      CartsDao.addArchivedCart(id, cartId, cart).map { lastError =>
         lastError.inError match {
           case false => Ok(ApiUtils.Ok)
           case true => InternalServerError(ApiUtils.Error(lastError.errMsg.getOrElse("").toString()))
