@@ -6,6 +6,7 @@ import models.food.dataImport.FirebaseRecipeIngredientFood
 import models.food.dataImport.FirebaseRecipeTool
 import models.food.dataImport.FirebaseRecipeInstruction
 import models.food.dataImport.FirebaseRecipeTimer
+import models.food.dataImport.FirebaseRecipeTimerStep
 import models.food.dataImport.FirebaseRecipeTimes
 import services.FirebaseSrv
 import scala.concurrent._
@@ -29,10 +30,24 @@ object RecipeTimes {
   }
 }
 
+case class RecipeTimerStep(
+  label: String,
+  time: Int)
+object RecipeTimerStep {
+  implicit val recipeTimerStepFormat = Json.format[RecipeTimerStep]
+
+  def from(step: FirebaseRecipeTimerStep): RecipeTimerStep = {
+    val label = step.label
+    val time = step.time
+    new RecipeTimerStep(label, time)
+  }
+}
+
 case class RecipeTimer(
   color: String,
   label: Option[String],
-  seconds: Option[Int])
+  seconds: Option[Int],
+  steps: Option[List[RecipeTimerStep]])
 object RecipeTimer {
   implicit val recipeTimerFormat = Json.format[RecipeTimer]
 
@@ -40,7 +55,8 @@ object RecipeTimer {
     val color = timer.color
     val label = timer.label
     val seconds = timer.seconds
-    new RecipeTimer(color, label, seconds)
+    val steps = timer.steps.map(_.map(s => RecipeTimerStep.from(s)))
+    new RecipeTimer(color, label, seconds, steps)
   }
 }
 

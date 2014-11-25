@@ -20,10 +20,18 @@ object FirebaseRecipeTimes {
   implicit val firebaseRecipeTimesFormat = Json.format[FirebaseRecipeTimes]
 }
 
+case class FirebaseRecipeTimerStep(
+  label: String,
+  time: Int)
+object FirebaseRecipeTimerStep {
+  implicit val firebaseRecipeTimerStepFormat = Json.format[FirebaseRecipeTimerStep]
+}
+
 case class FirebaseRecipeTimer(
   color: String,
   label: Option[String],
-  seconds: Option[Int])
+  seconds: Option[Int],
+  steps: Option[List[FirebaseRecipeTimerStep]])
 object FirebaseRecipeTimer {
   implicit val firebaseRecipeTimerFormat = Json.format[FirebaseRecipeTimer]
 }
@@ -62,7 +70,7 @@ case class FirebaseRecipe(
   category: String,
   name: String,
   slug: String,
-  images: Option[Map[String,String]],
+  images: Option[Map[String, String]],
   price: PriceQuantity,
   ingredients: List[FirebaseRecipeIngredient],
   tools: Option[List[FirebaseRecipeTool]],
