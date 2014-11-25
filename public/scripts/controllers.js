@@ -448,20 +448,18 @@ angular.module('app')
   };
   var crud = CrudUtils.createCrudCtrl('Produits', $rootScope.config.header, StoreProductsSrv.create(storeId), defaultSort, defaultFormElt);
   $scope.crud = crud;
-  var crudSave = crud.fn.save;
-  $scope.crud.fn.save = function(){
-    var elt = crud.data.form;
-    if(!$scope.promo){ delete elt.promo; }
-    if(!$scope.recommandation){ delete elt.recommandation; }
-    return crudSave(elt);
-  };
 
   $scope.$watch('crud.data.form.promo', function(val){
-    $scope.promo = !!val;
+    $scope.data.hasPromo = !!val;
+    if(!$scope.data.hasPromo && $scope.crud.data.form){ delete $scope.crud.data.form.promo; }
   });
-  $scope.$watch('crud.data.form.recommandation', function(val){
-    $scope.recommandation = !!val;
+  $scope.$watch('crud.data.form.recommandations', function(val){
+    $scope.data.hasRecommandations = !!val;
+    if(!$scope.data.hasRecommandations && $scope.crud.data.form){ delete $scope.crud.data.form.recommandations; }
   });
+  $scope.defaultFormRecommandation = {
+    category: dataList.recommandationCategories[0]
+  };
 })
 
 

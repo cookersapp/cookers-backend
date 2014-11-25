@@ -48,7 +48,7 @@ case class StoreProduct(
   price: Price,
   genericPrice: PriceQuantity,
   promo: Option[ProductPromo],
-  recommandation: Option[ProductRecommandation])
+  recommandations: Option[List[ProductRecommandation]])
 object StoreProduct {
   implicit val storeProductFormat = Json.format[StoreProduct]
 

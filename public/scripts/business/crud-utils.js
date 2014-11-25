@@ -52,6 +52,8 @@ angular.module('app')
         toggle: function(elt){ _ctrlToggle(elt, data); },
         create: function(){ _ctrlCreate(data); },
         edit: function(elt){ _ctrlEdit(elt, data); },
+        addElt: function(obj, attr, _elt){ _ctrlAddElt(obj, attr, _elt); },
+        removeElt: function(arr, index){ _ctrlRemoveElt(arr, index); },
         cancelEdit: function(){ _ctrlCancelEdit(data); },
         save: function(_elt){ return _ctrlSave(_elt, CrudSrv, data, title); },
         remove: function(elt){ return _ctrlRemove(elt, CrudSrv, data, title); },
@@ -63,7 +65,6 @@ angular.module('app')
 
     return ctrl;
   }
-
   function _crudGetUrl(endpointUrl, _id){
     return endpointUrl+(_id ? '/'+_id : '');
   }
@@ -165,6 +166,20 @@ angular.module('app')
 
   function _ctrlEdit(elt, data){
     data.form = angular.copy(elt);
+  }
+
+  function _ctrlAddElt(obj, attr, _elt){
+    if(obj && typeof obj === 'object'){
+      if(!Array.isArray(obj[attr])){ obj[attr] = []; }
+      var elt = _elt ? angular.copy(_elt) : {};
+      obj[attr].push(elt);
+    } else {
+      console.warn('Unable to addElt to', obj);
+    }
+  }
+  function _ctrlRemoveElt(arr, index){
+    if(Array.isArray(arr) && index < arr.length){ arr.splice(index, 1); }
+    else { console.warn('Unable to removeElt <'+index+'> from', arr); }
   }
 
   function _ctrlCancelEdit(data){

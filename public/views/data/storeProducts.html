@@ -17,7 +17,7 @@
                 <th sort="crud.data.currentSort" name="product" ng-click="crud.fn.sort('product')">Code barre</th>
                 <th sort="crud.data.currentSort" name="price.value" ng-click="crud.fn.sort('price.value')">Prix</th>
                 <th>Promo</th>
-                <th>Recommandation</th>
+                <th>Recommandations</th>
               </tr>
             </thead>
             <tbody>
@@ -31,9 +31,9 @@
                   </div>
                 </td>
                 <td>
-                  <div ng-show="elt.recommandation">
-                    {{elt.recommandation.category}}: {{elt.recommandation.name}}<br>
-                    <img ng-src="{{elt.recommandation.image}}" style="height: 60px;">
+                  <div ng-repeat="recommandation in elt.recommandations">
+                    {{recommandation.category}}: {{recommandation.name}}<br>
+                    <img ng-src="{{recommandation.image}}" style="height: 60px;">
                   </div>
                 </td>
               </tr>
@@ -66,9 +66,9 @@
         <img ng-src="{{crud.data.selectedElt.promo.image}}"> {{crud.data.selectedElt.promo.product}} ({{crud.data.selectedElt.promo.foodId}})
       </div>
       <br>
-      <div ng-show="crud.data.selectedElt.recommandation">
-        <b>Recommandation {{crud.data.selectedElt.recommandation.category}}</b>: {{crud.data.selectedElt.recommandation.name}}<br>
-        <img ng-src="{{crud.data.selectedElt.recommandation.image}}"> {{crud.data.selectedElt.recommandation.reference}}
+      <div ng-repeat="recommandation in crud.data.selectedElt.recommandations">
+        <b>Recommandation {{recommandation.category}}</b>: {{recommandation.name}}<br>
+        <img ng-src="{{recommandation.image}}"> {{recommandation.reference}}
       </div>
     </div>
   </div>
@@ -113,10 +113,10 @@
         </div>
         <div class="checkbox">
           <label for="promo">
-            <input type="checkbox" id="promo" name="promo" ng-model="promo"> Proposer une promotion avec ce produit ?
+            <input type="checkbox" id="promo" name="promo" ng-model="data.hasPromo"> Proposer une promotion avec ce produit ?
           </label>
         </div>
-        <div ng-if="promo">
+        <div ng-if="data.hasPromo">
           <div class="form-group">
             <label for="productPromo">Produit en promotion (code barre)</label>
             <input type="text" class="form-control" id="productPromo" name="productPromo" ng-model="crud.data.form.promo.product" required>
@@ -150,29 +150,33 @@
         </div>
         <div class="checkbox">
           <label for="recommandation">
-            <input type="checkbox" id="recommandation" name="recommandation" ng-model="recommandation"> Promoser une recommandation avec ce produit ?
+            <input type="checkbox" id="recommandation" name="recommandation" ng-model="data.hasRecommandations"> Promoser des recommandations avec ce produit ?
           </label>
         </div>
-        <div ng-if="recommandation">
-          <div class="form-group">
-            <label for="categoryRecommandation">Type de recommandation</label>
-            <select class="form-control" id="categoryRecommandation" name="categoryRecommandation" ng-model="crud.data.form.recommandation.category" ng-options="category for category in data.recommandationCategories" required>
-              <option value="">--</option>
-            </select>
+        <div ng-if="data.hasRecommandations">
+          <div ng-repeat="recommandation in crud.data.form.recommandations">
+            <button class="btn btn-danger" ng-click="crud.fn.removeElt(crud.data.form.recommandations, $index)"><i class="fa fa-minus"></i> Supprimer cette recommandation</button>
+            <div class="form-group">
+              <label for="categoryRecommandation{{$index}}">Type de recommandation</label>
+              <select class="form-control" id="categoryRecommandation{{$index}}" name="categoryRecommandation{{$index}}" ng-model="recommandation.category" ng-options="category for category in data.recommandationCategories" required>
+                <option value="">--</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="referenceRecommandation{{$index}}">Id de l'élément recommandé</label>
+              <input type="text" class="form-control" id="referenceRecommandation{{$index}}" name="referenceRecommandation{{$index}}" ng-model="recommandation.reference" required>
+            </div>
+            <div class="form-group">
+              <label for="nameRecommandation{{$index}}">Nom de l'élément recommandé</label>
+              <input type="text" class="form-control" id="nameRecommandation{{$index}}" name="nameRecommandation{{$index}}" ng-model="recommandation.name" required>
+            </div>
+            <div class="form-group">
+              <label for="imageRecommandation{{$index}}">Image</label>
+              <media-crush-upload ng-model="recommandation.image" format="380x120"></media-crush-upload>
+              <p class="help-block">Taille: 380x120</p>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="referenceRecommandation">Id de l'élément recommandé</label>
-            <input type="text" class="form-control" id="referenceRecommandation" name="referenceRecommandation" ng-model="crud.data.form.recommandation.reference" required>
-          </div>
-          <div class="form-group">
-            <label for="nameRecommandation">Nom de l'élément recommandé</label>
-            <input type="text" class="form-control" id="nameRecommandation" name="nameRecommandation" ng-model="crud.data.form.recommandation.name" required>
-          </div>
-          <div class="form-group">
-            <label for="imageRecommandation">Image</label>
-            <media-crush-upload ng-model="crud.data.form.recommandation.image" format="380x120"></media-crush-upload>
-            <p class="help-block">Taille: 380x120</p>
-          </div>
+          <button class="btn btn-default" ng-click="crud.fn.addElt(crud.data.form, 'recommandations', defaultFormRecommandation)"><i class="fa fa-plus"></i> Ajouter une recommandation</button>
         </div>
       </div>
 

@@ -33,8 +33,10 @@ angular.module('app')
         if(elt.promo && elt.promo.product){
           elt.promo.id = elt.promo.product;
         }
-        if(elt.recommandation){
-          elt.recommandation.id = elt.recommandation.category+'~'+elt.recommandation.reference;
+        if(Array.isArray(elt.recommandations)){
+          for(var i in elt.recommandations){
+            elt.recommandations[i].id = elt.recommandations[i].category+'~'+elt.recommandations[i].reference;
+          }
         }
       }
     };
