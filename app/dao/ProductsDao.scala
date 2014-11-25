@@ -42,7 +42,7 @@ object ProductsDao {
     collectionOpenFoodFacts().update(Json.obj("key" -> barcode), Json.obj(
       "key" -> barcode,
       "saved" -> new Date().getTime(),
-      "source" -> product,
+      //"source" -> product,
       "data" -> productFormated), upsert = true)
 
   def getPrixingProducts()(implicit db: DB): Future[List[PrixingProduct]] =
@@ -54,7 +54,7 @@ object ProductsDao {
     collectionPrixing().update(Json.obj("key" -> barcode), Json.obj(
       "key" -> barcode,
       "saved" -> new Date().getTime(),
-      "source" -> product,
+      //"source" -> product,
       "data" -> productFormated), upsert = true)
 
   /*def count()(implicit db: DB): Future[Int] = {

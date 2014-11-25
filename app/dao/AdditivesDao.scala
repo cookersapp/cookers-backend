@@ -37,7 +37,7 @@ object AdditivesDao {
     collectionAdditifAlimentaires().update(Json.obj("key" -> reference), Json.obj(
       "key" -> reference,
       "saved" -> new Date().getTime(),
-      "source" -> additive,
+      //"source" -> additive,
       "data" -> additiveFormated), upsert = true)
 
   def getPrixingAdditives()(implicit db: DB): Future[List[PrixingAdditive]] =
@@ -49,6 +49,6 @@ object AdditivesDao {
     collectionPrixing().update(Json.obj("key" -> reference), Json.obj(
       "key" -> reference,
       "saved" -> new Date().getTime(),
-      "source" -> additive,
+      //"source" -> additive,
       "data" -> additiveFormated), upsert = true)
 }
