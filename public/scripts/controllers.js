@@ -457,6 +457,9 @@ angular.module('app')
     $scope.data.hasRecommandations = !!val;
     if(!$scope.data.hasRecommandations && $scope.crud.data.form){ delete $scope.crud.data.form.recommandations; }
   });
+  $scope.defaultFormPromo = {
+    benefit: { category: dataList.promoBenefits[0] }
+  };
   $scope.defaultFormRecommandation = {
     category: dataList.recommandationCategories[0]
   };

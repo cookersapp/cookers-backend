@@ -16,7 +16,7 @@
               <tr>
                 <th sort="crud.data.currentSort" name="product" ng-click="crud.fn.sort('product')">Code barre</th>
                 <th sort="crud.data.currentSort" name="price.value" ng-click="crud.fn.sort('price.value')">Prix</th>
-                <th>Promo</th>
+                <th>Promos</th>
                 <th>Recommandations</th>
               </tr>
             </thead>
@@ -25,9 +25,9 @@
                 <td>{{elt.product}}</td>
                 <td>{{elt.price | price}}</td>
                 <td>
-                  <div ng-show="elt.promo">
-                    {{elt.promo.name}}<br>
-                    <img ng-src="{{elt.promo.image}}" style="height: 60px;">
+                  <div ng-repeat="promo in elt.promos">
+                    {{promo.name}}<br>
+                    <img ng-src="{{promo.image}}" style="height: 60px;">
                   </div>
                 </td>
                 <td>
@@ -58,12 +58,12 @@
         Prix: {{crud.data.selectedElt.price | price}}<br>
         Prix générique: {{crud.data.selectedElt.genericPrice | price}}
       </p>
-      <div ng-show="crud.data.selectedElt.promo">
+      <div ng-repeat="promo in crud.data.selectedElt.promos">
         <b>Promo</b>:
-        <span class="label label-danger">{{crud.data.selectedElt.promo.badge}}</span>
-        {{crud.data.selectedElt.promo.name}}
-        ({{crud.data.selectedElt.promo.benefit.value}} {{crud.data.selectedElt.promo.benefit.category}})<br>
-        <img ng-src="{{crud.data.selectedElt.promo.image}}"> {{crud.data.selectedElt.promo.product}} ({{crud.data.selectedElt.promo.foodId}})
+        <span class="label label-danger">{{promo.badge}}</span>
+        {{promo.name}}
+        ({{promo.benefit.value}} {{promo.benefit.category}})<br>
+        <img ng-src="{{promo.image}}"> {{promo.product}} ({{promo.foodId}})
       </div>
       <br>
       <div ng-repeat="recommandation in crud.data.selectedElt.recommandations">
@@ -117,36 +117,40 @@
           </label>
         </div>
         <div ng-if="data.hasPromo">
-          <div class="form-group">
-            <label for="productPromo">Produit en promotion (code barre)</label>
-            <input type="text" class="form-control" id="productPromo" name="productPromo" ng-model="crud.data.form.promo.product" required>
-          </div>
-          <div class="form-group">
-            <label for="namePromo">Nom de la promotion</label>
-            <input type="text" class="form-control" id="namePromo" name="namePromo" ng-model="crud.data.form.promo.name" required>
-          </div>
-          <div class="form-group">
-            <label for="badgePromo">Badge</label>
-            <input type="text" class="form-control" id="badgePromo" name="badgePromo" ng-model="crud.data.form.promo.badge" maxlength="6" required>
-          </div>
-          <div class="form-group">
-            <label>Bénéfice</label>
-            <div class="form-inline">
-              <div class="form-group">
-                <input type="number" step="any" class="form-control" id="valueBenefitPromo" name="valueBenefitPromo" ng-model="crud.data.form.promo.benefit.value" required>
-              </div>
-              <div class="form-group">
-                <select class="form-control" id="categoryBenefitPromo" name="categoryBenefitPromo" ng-model="crud.data.form.promo.benefit.category" ng-options="benefit for benefit in data.promoBenefits" required>
-                  <option value="">--</option>
-                </select>
+          <div ng-repeat="promo in crud.data.form.promos">
+            <button class="btn btn-danger" ng-click="crud.fn.removeElt(crud.data.form.promos, $index)"><i class="fa fa-minus"></i> Supprimer cette promotion</button>
+            <div class="form-group">
+              <label for="productPromo{{$index}}">Produit en promotion (code barre)</label>
+              <input type="text" class="form-control" id="productPromo{{$index}}" name="productPromo{{$index}}" ng-model="promo.product" required>
+            </div>
+            <div class="form-group">
+              <label for="namePromo{{$index}}">Nom de la promotion</label>
+              <input type="text" class="form-control" id="namePromo{{$index}}" name="namePromo{{$index}}" ng-model="promo.name" required>
+            </div>
+            <div class="form-group">
+              <label for="badgePromo{{$index}}">Badge</label>
+              <input type="text" class="form-control" id="badgePromo{{$index}}" name="badgePromo{{$index}}" ng-model="promo.badge" maxlength="6" required>
+            </div>
+            <div class="form-group">
+              <label>Bénéfice</label>
+              <div class="form-inline">
+                <div class="form-group">
+                  <input type="number" step="any" class="form-control" id="valueBenefitPromo{{$index}}" name="valueBenefitPromo{{$index}}" ng-model="promo.benefit.value" required>
+                </div>
+                <div class="form-group">
+                  <select class="form-control" id="categoryBenefitPromo{{$index}}" name="categoryBenefitPromo{{$index}}" ng-model="promo.benefit.category" ng-options="benefit for benefit in data.promoBenefits" required>
+                    <option value="">--</option>
+                  </select>
+                </div>
               </div>
             </div>
+            <div class="form-group">
+              <label for="imagePromo">Image</label>
+              <media-crush-upload ng-model="promo.image" format="380x120"></media-crush-upload>
+              <p class="help-block">Taille: 380x120</p>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="imagePromo">Image</label>
-            <media-crush-upload ng-model="crud.data.form.promo.image" format="380x120"></media-crush-upload>
-            <p class="help-block">Taille: 380x120</p>
-          </div>
+          <button class="btn btn-default" ng-click="crud.fn.addElt(crud.data.form, 'promos', defaultFormPromo)"><i class="fa fa-plus"></i> Ajouter une promotion</button>
         </div>
         <div class="checkbox">
           <label for="recommandation">

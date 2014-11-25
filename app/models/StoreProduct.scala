@@ -1,5 +1,6 @@
 package models
 
+import common.Utils
 import models.food.Product
 import models.food.Quantity
 import models.food.Price
@@ -47,24 +48,23 @@ case class StoreProduct(
   product: String,
   price: Price,
   genericPrice: PriceQuantity,
-  promo: Option[ProductPromo],
+  promos: Option[List[ProductPromo]],
   recommandations: Option[List[ProductRecommandation]])
 object StoreProduct {
   implicit val storeProductFormat = Json.format[StoreProduct]
 
   def from(json: JsValue)(implicit db: DB): Future[Option[StoreProduct]] = {
     (json \ "product").asOpt[String].map { product =>
-      (json \ "promo" \ "product").asOpt[String].map { promoProduct =>
-        ProductsDao.getCookers(promoProduct).map(_.map(cookersProduct => cookersProduct.foodId).getOrElse(CookersProduct.defaultFoodId))
-          .map { foodId =>
-            val promoJson = (json \ "promo").as[JsObject] ++ Json.obj("foodId" -> foodId)
-            json.as[JsObject] ++ Json.obj("id" -> product, "promo" -> promoJson)
-          }
-      }.getOrElse {
-        Future.successful(json.as[JsObject] ++ Json.obj("id" -> product))
-      }.map {
-        storeProductJson => storeProductJson.asOpt[StoreProduct]
-      }
+      (json \ "promos").asOpt[List[JsValue]].map(opt => opt.map { promoJson =>
+        (promoJson \ "product").asOpt[String].map { promoProduct =>
+          ProductsDao.getCookers(promoProduct)
+            .map(_.map(cookersProduct => cookersProduct.foodId).getOrElse(CookersProduct.defaultFoodId))
+            .map { foodId => Some(promoJson.as[JsObject] ++ Json.obj("foodId" -> foodId)) }
+        }.getOrElse(Future.successful(None))
+      }).map(results => Future.sequence(results).map(optList => Utils.notEmpty(optList.flatten)))
+        .map(_.map(promos => json.as[JsObject] ++ Json.obj("id" -> product, "promos" -> promos)))
+        .getOrElse(Future.successful(json.as[JsObject] ++ Json.obj("id" -> product)))
+        .map(storeProductJson => storeProductJson.asOpt[StoreProduct])
     }.getOrElse(Future.successful(None))
   }
 

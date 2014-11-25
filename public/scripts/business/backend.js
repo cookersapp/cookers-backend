@@ -30,8 +30,10 @@ angular.module('app')
     var baseUrl = '/api/v1/stores/'+storeId+'/products';
     var processBreforeSave = function(elt){
       if(elt){
-        if(elt.promo && elt.promo.product){
-          elt.promo.id = elt.promo.product;
+        if(Array.isArray(elt.promos)){
+          for(var i in elt.promos){
+            elt.promos[i].id = elt.promos[i].product;
+          }
         }
         if(Array.isArray(elt.recommandations)){
           for(var i in elt.recommandations){
