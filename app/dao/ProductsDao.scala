@@ -13,6 +13,7 @@ import reactivemongo.api.DB
 import reactivemongo.core.commands._
 
 object ProductsDao {
+  // http://www.ewg.org/foodscores/products/799210980027
   // http://www.product-open-data.com/
   // http://www.noteo.info/
   // http://www.shopwise.fr/
