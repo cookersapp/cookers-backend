@@ -27,8 +27,8 @@ case class User(
     Some(Json.obj(
       "recipeShiftOffset" -> Math.floor(new Random().nextDouble() * 10),
       "defaultServings" -> 2,
-      "showPrices" -> false,
-      "bigImages" -> true,
+      "showPrices" -> true,
+      "bigImages" -> false,
       "skipCookFeatures" -> false,
       "skipCartFeatures" -> false)),
     None,
