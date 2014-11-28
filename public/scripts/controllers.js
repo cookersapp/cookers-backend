@@ -449,7 +449,7 @@ angular.module('app')
   var crud = CrudUtils.createCrudCtrl('Produits', $rootScope.config.header, StoreProductsSrv.create(storeId), defaultSort, defaultFormElt);
   $scope.crud = crud;
 
-  $scope.$watch('crud.data.form.promo', function(val){
+  $scope.$watch('crud.data.form.promos', function(val){
     $scope.data.hasPromo = !!val;
     if(!$scope.data.hasPromo && $scope.crud.data.form){ delete $scope.crud.data.form.promo; }
   });
