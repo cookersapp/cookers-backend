@@ -178,7 +178,13 @@ angular.module('app')
   }
 
   function _autoSort(arr, params){
-    var elt = _getDeep(arr[0], params.order.split('.'));
+    var elt = null;
+    for(var i in arr){
+      elt = _getDeep(arr[i], params.order.split('.'));
+      if(typeof elt !== 'undefined'){
+        break;
+      }
+    }
     if(typeof elt === 'boolean')      { _boolSort(arr, params.order, params.desc); }
     else if(typeof elt === 'number')  { _intSort(arr, params.order, params.desc);  }
     else if(typeof elt === 'string')  { _strSort(arr, params.order, params.desc);  }

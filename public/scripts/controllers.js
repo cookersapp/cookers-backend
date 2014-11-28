@@ -40,6 +40,113 @@ angular.module('app')
 })
 
 
+.controller('StoresCtrl', function($rootScope, $scope, StoresSrv, CrudUtils, dataList){
+  'use strict';
+  $rootScope.config.header.levels = [
+    {name: 'Home', state: 'user.home'},
+    {name: 'Magasins'}
+  ];
+
+  $scope.data = {
+    ionicColors: dataList.ionicColors
+  };
+
+  var defaultSort = {order: 'name'};
+  var defaultFormElt = {};
+  $scope.crud = CrudUtils.createCrudCtrl('Magasins', $rootScope.config.header, StoresSrv, defaultSort, defaultFormElt);
+})
+
+
+.controller('StoreProductsCtrl', function($rootScope, $scope, $stateParams, StoresSrv, StoreProductsSrv, CrudUtils, dataList){
+  'use strict';
+  var storeId = $stateParams.storeId;
+  StoresSrv.get(storeId).then(function(store){
+    $scope.store = store;
+    $rootScope.config.header.levels = [
+      {name: 'Home', state: 'user.home'},
+      {name: 'Magasins', state: 'user.data.stores'},
+      {name: store.name},
+      {name: 'Produits'}
+    ];
+  });
+
+  $scope.data = {
+    currencies: dataList.currencies,
+    quantityUnits: dataList.quantityUnits,
+    promoBenefits: dataList.promoBenefits,
+    recommandationCategories: dataList.recommandationCategories
+  };
+
+  var defaultSort = {order: 'product'};
+  var defaultFormElt = {
+    store: storeId,
+    price: {currency: dataList.currencies[0]},
+    genericPrice: {currency: dataList.currencies[0], unit: dataList.quantityUnits[0]}
+  };
+  var crud = CrudUtils.createCrudCtrl('Produits', $rootScope.config.header, StoreProductsSrv.create(storeId), defaultSort, defaultFormElt);
+  $scope.crud = crud;
+
+  $scope.$watch('crud.data.form.promos', function(val){
+    $scope.data.hasPromo = !!val;
+    if(!$scope.data.hasPromo && $scope.crud.data.form){ delete $scope.crud.data.form.promo; }
+  });
+  $scope.$watch('crud.data.form.recommandations', function(val){
+    $scope.data.hasRecommandations = !!val;
+    if(!$scope.data.hasRecommandations && $scope.crud.data.form){ delete $scope.crud.data.form.recommandations; }
+  });
+  $scope.defaultFormPromo = {
+    benefit: { category: dataList.promoBenefits[0] }
+  };
+  $scope.defaultFormRecommandation = {
+    category: dataList.recommandationCategories[0]
+  };
+})
+
+
+.controller('ProductsCtrl', function($rootScope, $scope, ProductsSrv, FoodSrv, CrudUtils, dataList){
+  'use strict';
+  $rootScope.config.header.levels = [
+    {name: 'Home', state: 'user.home'},
+    {name: 'Produits'}
+  ];
+
+  var defaultSort = {order: 'name'};
+  var defaultFormElt = {};
+  $scope.crud = CrudUtils.createCrudCtrl('Produits', $rootScope.config.header, ProductsSrv, defaultSort, defaultFormElt);
+
+
+  // update foodId !
+  var selectedFoodId = null;
+  $scope.data = {};
+  FoodSrv.getAll().then(function(foods){
+    if(Array.isArray(foods)){
+      foods.sort(function(a, b){
+        if(a.name > b.name){ return 1; }
+        else if(a.name < b.name){ return -1; }
+        else { return 0; }
+      });
+      $scope.data.foods = foods;
+    }
+  });
+  $scope.$watch('crud.data.selectedElt', function(elt){
+    if(elt){ selectedFoodId = elt.foodId; }
+  });
+  $scope.$watch('crud.data.selectedElt.foodId', function(value, old){
+    if($scope.crud.data.selectedElt && value && value !== selectedFoodId){
+      var barcode = $scope.crud.data.selectedElt.barcode;
+      var foodId = value;
+      ProductsSrv.updateFoodId(barcode, foodId).then(function(){
+        selectedFoodId = foodId;
+      }, function(){
+        alert('Can\'t update foodId <'+foodId+'> for '+barcode+' !');
+        console.error('SelectedElt', $scope.crud.data.selectedElt);
+        $scope.crud.data.selectedElt.foodId = selectedFoodId;
+      });
+    }
+  });
+})
+
+
 .controller('FoodsCtrl', function($rootScope, $scope, FoodSrv, CrudBuilder, Utils, dataList){
   'use strict';
   if(!$rootScope.config.foods){
@@ -400,69 +507,6 @@ angular.module('app')
   $scope.eltExistsIn = crud.eltExistsIn;
 
   $scope.eltRestUrl = crud.eltRestUrl;
-})
-
-
-.controller('StoresCtrl', function($rootScope, $scope, StoresSrv, CrudUtils, dataList){
-  'use strict';
-  $rootScope.config.header.levels = [
-    {name: 'Home', state: 'user.home'},
-    {name: 'Magasins'}
-  ];
-
-  $scope.data = {
-    ionicColors: dataList.ionicColors
-  };
-
-  var defaultSort = {order: 'name'};
-  var defaultFormElt = {};
-  $scope.crud = CrudUtils.createCrudCtrl('Magasins', $rootScope.config.header, StoresSrv, defaultSort, defaultFormElt);
-})
-
-
-.controller('StoreProductsCtrl', function($rootScope, $scope, $stateParams, StoresSrv, StoreProductsSrv, CrudUtils, dataList){
-  'use strict';
-  var storeId = $stateParams.storeId;
-  StoresSrv.get(storeId).then(function(store){
-    $scope.store = store;
-    $rootScope.config.header.levels = [
-      {name: 'Home', state: 'user.home'},
-      {name: 'Magasins', state: 'user.data.stores'},
-      {name: store.name},
-      {name: 'Produits'}
-    ];
-  });
-
-  $scope.data = {
-    currencies: dataList.currencies,
-    quantityUnits: dataList.quantityUnits,
-    promoBenefits: dataList.promoBenefits,
-    recommandationCategories: dataList.recommandationCategories
-  };
-
-  var defaultSort = {order: 'product'};
-  var defaultFormElt = {
-    store: storeId,
-    price: {currency: dataList.currencies[0]},
-    genericPrice: {currency: dataList.currencies[0], unit: dataList.quantityUnits[0]}
-  };
-  var crud = CrudUtils.createCrudCtrl('Produits', $rootScope.config.header, StoreProductsSrv.create(storeId), defaultSort, defaultFormElt);
-  $scope.crud = crud;
-
-  $scope.$watch('crud.data.form.promos', function(val){
-    $scope.data.hasPromo = !!val;
-    if(!$scope.data.hasPromo && $scope.crud.data.form){ delete $scope.crud.data.form.promo; }
-  });
-  $scope.$watch('crud.data.form.recommandations', function(val){
-    $scope.data.hasRecommandations = !!val;
-    if(!$scope.data.hasRecommandations && $scope.crud.data.form){ delete $scope.crud.data.form.recommandations; }
-  });
-  $scope.defaultFormPromo = {
-    benefit: { category: dataList.promoBenefits[0] }
-  };
-  $scope.defaultFormRecommandation = {
-    category: dataList.recommandationCategories[0]
-  };
 })
 
 

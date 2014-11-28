@@ -1,6 +1,39 @@
 angular.module('app')
 
 
+.directive('food', function(FoodSrv){
+  'use strict';
+  function update(scope, id){
+    FoodSrv.get(id, false).then(function(food){
+      if(food){
+        scope.name = food.name;
+      } else {
+        scope.name = id;
+      }
+    }, function(){
+      scope.name = id;
+    });
+  }
+
+  return {
+    restrict: 'E',
+    template: '<span>{{name}}</span>',
+    scope: {
+      id: '='
+    },
+    link: function(scope, element, attr){
+      scope.name = scope.id;
+      update(scope, scope.id);
+      scope.$watch('id', function(val, old){
+        if(val !== old){
+          update(scope, val);
+        }
+      });
+    }
+  };
+})
+
+
 .directive('usersTableWidget', function(){
   'use strict';
   return {

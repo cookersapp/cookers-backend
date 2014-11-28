@@ -113,6 +113,21 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
     abstract: true,
     template: '<ui-view/>'
   })
+  .state('user.data.stores', {
+    url: '/stores',
+    templateUrl: 'assets/views/data/stores.html',
+    controller: 'StoresCtrl'
+  })
+  .state('user.data.storeProducts', {
+    url: '/stores/:storeId/products',
+    templateUrl: 'assets/views/data/storeProducts.html',
+    controller: 'StoreProductsCtrl'
+  })
+  .state('user.data.products', {
+    url: '/products',
+    templateUrl: 'assets/views/data/products.html',
+    controller: 'ProductsCtrl'
+  })
   .state('user.data.foods', {
     url: '/foods',
     templateUrl: 'assets/views/data/foods.html',
@@ -142,16 +157,6 @@ angular.module('app', ['ui.router', 'ngCookies', 'firebase', 'ui.bootstrap'])
     url: '/selections',
     templateUrl: 'assets/views/data/selections.html',
     controller: 'SelectionsCtrl'
-  })
-  .state('user.data.stores', {
-    url: '/stores',
-    templateUrl: 'assets/views/data/stores.html',
-    controller: 'StoresCtrl'
-  })
-  .state('user.data.storeProducts', {
-    url: '/stores/:storeId/products',
-    templateUrl: 'assets/views/data/storeProducts.html',
-    controller: 'StoreProductsCtrl'
   })
   .state('user.admin', {
     abstract: true,

@@ -1,0 +1,64 @@
+<div class="row">
+  <div class="col-md-6">
+    <div class="widget">
+      <div class="widget-header">
+        <i class="fa fa-barcode"></i> Produits ({{filtered.length}})
+        <input type="text" class="form-control input-sm pull-right" placeholder="Search ..." ng-model="search">
+        <div class="clearfix"></div>
+      </div>
+      <div class="widget-body no-padding">
+        <rd-loading ng-show="crud.data.status.loading && !(crud.data.elts && crud.data.elts.length > 0)"></rd-loading>
+        <div class="alert alert-danger" role="alert" ng-show="crud.data.status.error"><strong>Error!</strong> {{crud.data.status.error}}</div>
+        <div class="table-responsive" ng-show="crud.data.elts && crud.data.elts.length > 0">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th sort="crud.data.currentSort" name="barcode" ng-click="crud.fn.sort('barcode')">Code barre</th>
+                <th sort="crud.data.currentSort" name="name" ng-click="crud.fn.sort('name')">Nom</th>
+                <th sort="crud.data.currentSort" name="foodId" ng-click="crud.fn.sort('foodId')">Food</th>
+                <th sort="crud.data.currentSort" name="quantity.value" ng-click="crud.fn.sort('quantity.value')">Quantité</th>
+                <th sort="crud.data.currentSort" name="price.value" ng-click="crud.fn.sort('price.value')">Prix</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="elt in filtered = (crud.data.elts | filter:search)" ng-click="crud.fn.toggle(elt)" ng-class="{active: crud.data.selectedElt && elt.id === crud.data.selectedElt.id}">
+                <td>{{elt.barcode}}</td>
+                <td>{{elt.name}}</td>
+                <td><food id="elt.foodId"></food></td>
+                <td>{{elt.quantity | quantity}}</td>
+                <td>{{elt.price | price}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6" ng-show="crud.data.selectedElt && !crud.data.form">
+    <div class="card">
+      <h4 class="card-heading">
+        <span class="pull-right">
+          <a class="btn btn-xs btn-default" href="{{crud.fn.eltRestUrl(crud.data.selectedElt)}}" target="_blank"><i class="fa fa-external-link"></i></a>
+        </span>
+        {{crud.data.selectedElt.name}} ({{crud.data.selectedElt.barcode}})
+      </h4>
+      <img ng-src="{{crud.data.selectedElt.image}}" style="max-width: 100%;"><br>
+      <form class="form-inline" role="form">
+        <div class="form-group">
+          <label for="productFood">Food :</label>
+          <select id="productFood" name="productFood" class="form-control" ng-model="crud.data.selectedElt.foodId" ng-options="food.id as food.name for food in data.foods">
+            <option value="">--</option>
+          </select>
+        </div>
+        <button class="btn btn-danger" ng-click="crud.data.selectedElt.foodId='unknown'">x</button>
+      </form>
+      <h4>Autres images</h4>
+      <div class="row">
+        <div class="col-md-3" ng-repeat="img in crud.data.selectedElt.more.allImages">
+          <a class="thumbnail" ng-href="{{img}}" target="product-{{crud.data.selectedElt.barcode}}"><img ng-src="{{img}}"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

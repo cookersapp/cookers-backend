@@ -46,4 +46,16 @@ angular.module('app')
   }
 
   return service;
+})
+
+.factory('ProductsSrv', function($http, CrudUtils){
+  'use strict';
+  var baseUrl = '/api/v1/products';
+  var processBreforeSave = function(elt){};
+
+  var service = CrudUtils.createCrud(baseUrl, processBreforeSave);
+  service.updateFoodId = function(barcode, foodId){
+    return $http.put('/api/v1/products/'+barcode+'?foodId='+foodId);
+  };
+  return service;
 });

@@ -27,6 +27,6 @@ object StoresDao {
   def insertProduct(storeProduct: StoreProduct)(implicit db: DB): Future[LastError] = collectionProducts().insert(storeProduct)
   def findProduct(store: String, productId: String)(implicit db: DB): Future[Option[StoreProduct]] = collectionProducts().find(Json.obj("store" -> store, "product" -> productId)).one[StoreProduct]
   def updateProduct(store: String, productId: String, storeProduct: StoreProduct)(implicit db: DB): Future[LastError] = collectionProducts().update(Json.obj("store" -> store, "product" -> productId), storeProduct)
-  def setProductFoodId(barcode: String, foodId: String)(implicit db: DB): Future[LastError] = collectionProducts().update(Json.obj("promo" -> Json.obj("product" -> barcode)), Json.obj("$set" -> Json.obj("promo" -> Json.obj("foodId" -> foodId))))
+  def setProductFoodId(barcode: String, foodId: String)(implicit db: DB): Future[LastError] = collectionProducts().update(Json.obj("promos" -> Json.obj("product" -> barcode)), Json.obj("$set" -> Json.obj("promos" -> Json.obj("foodId" -> foodId))))
   def removeProduct(store: String, productId: String)(implicit db: DB): Future[LastError] = collectionProducts().remove(Json.obj("store" -> store, "product" -> productId))
 }
