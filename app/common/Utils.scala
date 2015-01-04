@@ -20,6 +20,7 @@ object Utils {
   def isEmpty(json: JsValue): Boolean = "null".equals(Json.stringify(json)) || "{}".equals(Json.stringify(json)) || "[]".equals(Json.stringify(json))
   def toOpt(json: JsValue): Option[JsValue] = if (isEmpty(json)) None else Some(json)
 
+  def get[T](list: List[T], n: Int): Option[T] = if (list.size > n) Some(list(n)) else None
   def head[T](list: List[T]): Option[T] = if (list.isEmpty) None else Some(list.head)
   def tail[T](list: List[T]): Option[List[T]] = if (list.isEmpty) None else Some(list.tail)
   def head[T](list: Option[List[T]]): Option[T] = if (list.isEmpty || list.get.isEmpty) None else Some(list.get.head)

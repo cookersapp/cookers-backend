@@ -15,7 +15,17 @@ See spec.txt
 
 ## Publish app
 
-- `git push heroku master`
+- `git push heroku-dev master`
+
+## Data sources
+
+- https://www.ars.usda.gov/Services/docs.htm?docid=8964
+- https://okfn.org/
+- http://ndb.nal.usda.gov/ndb/doc/
+- http://www.ean-search.org/
+- http://barcodesdatabase.org/
+- http://upcdatabase.org/
+- http://www.upcscavenger.com/
 
 ## Notes
 

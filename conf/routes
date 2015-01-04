@@ -65,6 +65,9 @@ GET       /api/v1/additives/:reference                       controllers.Additiv
 GET       /api/v1/additives/:reference/additifalimentaires   controllers.Additives.getAdditifAlimentaires(reference: String)
 GET       /api/v1/additives/:reference/prixing               controllers.Additives.getPrixing(reference: String)
 
+# Scrapers
+GET       /api/v1/scrapers/marmiton/recipe                   controllers.Scrapers.getMarmitonRecipe(url: String)
+
 # Admin methods
 POST      /api/v1/app-feedback                               controllers.Application.sendFeedback
 DELETE    /api/v1/reset-database                             controllers.Application.resetDatabase
