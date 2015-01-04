@@ -12,7 +12,7 @@ case class MarmitonRecipe(
   title: String,
   category: String,
   difficulty: String,
-  price: String,
+  cost: String,
   ratings: Option[MarmitonRating],
   images: List[String],
   preparationTime: Option[MarmitonQuantity],
@@ -34,7 +34,7 @@ object MarmitonRecipe {
     val categories = page.select("h1 + .m_content_recette_breadcrumb").text().split(" - ").toList
     val category = Utils.get(categories, 0).getOrElse("")
     val difficulty = Utils.get(categories, 1).getOrElse("")
-    val price = Utils.get(categories, 2).getOrElse("")
+    val cost = Utils.get(categories, 2).getOrElse("")
     val ratings = MarmitonRating.create(page.select(".hreview-aggregate").html())
     val mainImage = page.select("img.photo").attr("src")
     val moreImages = page.select(".m_content_recette_thumbs a img").iterator().toList.map(elt => elt.attr("src").replace("tn-60x60", "normal"))
@@ -48,8 +48,10 @@ object MarmitonRecipe {
     val remarks = RegexMatcher.simple(moreInfos, "(?is)<h4>Remarques :</h4>" + RegexMatcher.eol + "<p>(.*?)</p>")(0).getOrElse("")
     val recommendedDrink = RegexMatcher.simple(moreInfos, "(?is)<h4>Boisson conseillée :</h4>" + RegexMatcher.eol + "<p>(.*?)</p>")(0).getOrElse("")
     val comments = page.select(".m_commentaire_row").iterator().toList.map(elt => MarmitonComment.create(elt)).flatten
-    val relatedRecipes = page.select(".m_related_item").iterator().toList.map(elt => MarmitonRelatedRecipe.create(elt)).flatten
-    Some(MarmitonRecipe(title, category, difficulty, price, ratings, images, preparationTime, cookTime, servings, ingredients, instructions, remarks, recommendedDrink, comments, relatedRecipes, url))
+    val mainRelatedRecipes = page.select("#ctl00_cphMainContent_m_recetteDisplayMore_panelRecetteSimilaire_panelBlocRecettesImages .m_related_item").iterator().toList.map(elt => MarmitonRelatedRecipe.create(elt)).flatten
+    val moreRelatedRecipes = page.select("#ctl00_cphMainContent_m_recetteDisplayMore_panelRecetteSimilaire_panelBlocBotify li a").iterator().toList.map(elt => MarmitonRelatedRecipe.createWithListItem(elt)).flatten
+    val relatedRecipes = mainRelatedRecipes ++ moreRelatedRecipes
+    Some(MarmitonRecipe(title, category, difficulty, cost, ratings, images, preparationTime, cookTime, servings, ingredients, instructions, remarks, recommendedDrink, comments, relatedRecipes, url))
   }
 
   def getInstructions(page: Document): List[String] = {

@@ -67,6 +67,7 @@ GET       /api/v1/additives/:reference/prixing               controllers.Additiv
 
 # Scrapers
 GET       /api/v1/scrapers/marmiton/recipe                   controllers.Scrapers.getMarmitonRecipe(url: String)
+GET       /api/v1/scrapers/marmiton/search                   controllers.Scrapers.marmitonSearch(query: Option[String], photoOnly: Option[Boolean], vegetarianOnly: Option[Boolean], noCooking: Option[Boolean], category: Option[String], difficulty: Option[Int], cost: Option[Int], inIngredients: Option[Boolean], allowSponsored: Option[Boolean], sort: Option[String], start: Option[Int])
 
 # Admin methods
 POST      /api/v1/app-feedback                               controllers.Application.sendFeedback
