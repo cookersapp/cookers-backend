@@ -24,27 +24,26 @@ object MarmitonScraper {
         Future.successful(cacheOpt)
       } else {
         Logger.info("FETCH: " + url)
-        fetchUrl(url).map { content =>
-          val scrapedOpt = MarmitonRecipe.create(url, content)
-          if (scrapedOpt.isDefined) {
-            MarmitonDao.upsert(scrapedOpt.get)
+        fetchUrl(url).map {
+          _.flatMap { content =>
+            MarmitonRecipe.create(url, content).map { scraped => MarmitonDao.upsert(scraped); scraped }
           }
-          scrapedOpt
-        }.recover {
-          case e: Exception => Logger.error("catched " + e.getClass().getName() + ": " + e.getMessage()); None
         }
       }
     }
   }
 
-  def search(url: String, allowSponsored: Boolean) = {
-    fetchUrl(url).map { content =>
-      val searchOpt = MarmitonSearch.create(url, content, allowSponsored)
-      searchOpt
+  def search(url: String, allowSponsored: Boolean): Future[Option[MarmitonSearch]] = {
+    fetchUrl(url).map {
+      _.flatMap { content =>
+        MarmitonSearch.create(url, content, allowSponsored)
+      }
     }
   }
 
-  def fetchUrl(url: String): Future[String] = {
-    WS.url(url).get().map(response => response.body)
+  def fetchUrl(url: String): Future[Option[String]] = {
+    WS.url(url).get().map(response => Some(response.body)).recover {
+      case e: Exception => Logger.error("catched " + e.getClass().getName() + ": " + e.getMessage()); None
+    }
   }
 }
