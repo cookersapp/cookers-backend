@@ -1,4 +1,4 @@
-package scrapers.marmiton
+package scrapers.marmiton.models
 
 import common.Utils
 import scala.collection.JavaConversions._

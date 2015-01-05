@@ -1,4 +1,4 @@
-package scrapers.marmiton
+package scrapers.marmiton.models
 
 import common.RegexMatcher
 import common.Utils
@@ -38,7 +38,7 @@ object MarmitonRecipe {
     val ratings = MarmitonRating.create(page.select(".hreview-aggregate").html())
     val mainImage = page.select("img.photo").attr("src")
     val moreImages = page.select(".m_content_recette_thumbs a img").iterator().toList.map(elt => elt.attr("src").replace("tn-60x60", "normal"))
-    val images = List(mainImage) ++ moreImages
+    val images = (List(mainImage) ++ moreImages).filter(str => str.length() > 0)
     val preparationTime = MarmitonQuantity.forTime(page.select(".m_content_recette_info .preptime .value-title").attr("title"))
     val cookTime = MarmitonQuantity.forTime(page.select(".m_content_recette_info .cooktime .value-title").attr("title"))
     val servings = MarmitonQuantity.forServings(page.select(".m_content_recette_ingredients span").text())

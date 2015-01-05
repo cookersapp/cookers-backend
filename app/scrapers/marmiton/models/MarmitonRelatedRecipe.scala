@@ -1,4 +1,4 @@
-package scrapers.marmiton
+package scrapers.marmiton.models
 
 import play.api.libs.json._
 import org.jsoup.nodes._

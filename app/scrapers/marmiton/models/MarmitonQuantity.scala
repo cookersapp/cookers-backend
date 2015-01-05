@@ -1,4 +1,4 @@
-package scrapers.marmiton
+package scrapers.marmiton.models
 
 import common.RegexMatcher
 import play.api.libs.json._
