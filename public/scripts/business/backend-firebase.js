@@ -53,6 +53,14 @@ angular.module('app')
         if(_lazy){ service.cacheArr = selections; }
         else { service.cacheArr = fullLoadAll(selections, _errors); }
         return service.cacheArr;
+      }).then(function(selections){
+        // sort selections by week & shift them to have current week in first
+        selections.sort(function(a,b){ return a.week-b.week; });
+        var shiftOffset = moment().week()-1;
+        for(var i=0; i<shiftOffset; i++){
+          selections.push(selections.shift());
+        }
+        return selections;
       });
     },
     save: function(data, _errors){
@@ -233,7 +241,9 @@ angular.module('app')
       function update(){
         return $http.get(getUrl()).then(function(result){
           if(result && result.data && typeof result.data === 'object'){
-            angular.copy(result.data, service.cache);
+            var eltsArr = Array.isArray(result.data) ? result.data : CollectionUtils.toArray(result.data);
+            var eltsMap = CollectionUtils.toMap(_.remove(eltsArr, function(elt){ return elt !== null; }));
+            angular.copy(eltsMap, service.cache);
             CollectionUtils.clear(service.cacheArr);
             CollectionUtils.toArray(service.cache, service.cacheArr);
           } else {

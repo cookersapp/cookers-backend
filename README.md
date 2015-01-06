@@ -27,6 +27,14 @@ See spec.txt
 - http://upcdatabase.org/
 - http://www.upcscavenger.com/
 
+Drives :
+
+- http://www.auchandrive.fr
+- http://www.leclercdrive.fr
+- http://drive.intermarche.com
+- http://www.casinodrive.fr
+- http://courses.carrefour.fr
+
 ## Notes
 
 - AngularJS server side pagination :

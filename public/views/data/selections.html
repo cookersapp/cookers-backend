@@ -9,9 +9,6 @@
     <rd-loading ng-if="status.loading && !(model.elts && model.elts.length > 0)"></rd-loading>
     <div class="alert alert-danger" role="alert" ng-if="status.error"><strong>Error!</strong> {{status.error}}</div>
     <div ng-if="model.elts && model.elts.length > 0">
-      <div class="center">
-        <loading-button btn-class="btn-success" btn-icon="fa fa-plus" btn-loading="status.creating" ng-click="create()">Créer une sélection</loading-button>
-      </div>
       <div class="card" ng-class="{current: elt.week === data.currentWeek, active: model.selected && model.selected.id === elt.id}"
            ng-repeat="elt in model.elts" ng-click="toggle(elt)">
         <h4 class="card-heading">{{elt.week}}. {{elt.week | week:'D MMM'}}</h4>

@@ -448,9 +448,6 @@ angular.module('app')
       {name: 'Sélections'}
     ],
     header: $rootScope.config.header,
-    config: {
-      sort: {order: 'week', desc: true}
-    },
     data: {
       currentWeek: moment().week(),
       recipes: RecipeSrv.cacheArr
@@ -486,16 +483,7 @@ angular.module('app')
 
   $scope.toggle = crud.toggle;
 
-  $scope.create = function(){
-    ctx.status.creating = true;
-    var week = ctx.data.currentWeek;
-    while(_.find(ctx.model.elts, {week: week}) !== undefined){
-      week++;
-    }
-    crud.save({week: week, recipes: []}).then(function(){
-      ctx.status.creating = false;
-    });
-  };
+  $scope.create = function(){};
   $scope.edit = crud.edit;
   $scope.cancelEdit = crud.cancelEdit;
   $scope.save = crud.save;
