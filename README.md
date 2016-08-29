@@ -1,6 +1,6 @@
 # Cookers backend
 
-See it live at [http://cookers.herokuapp.com/](http://cookers.herokuapp.com/)
+![promo](docs/landing.jpg)
 
 ## TODO
 
